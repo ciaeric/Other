@@ -1,0 +1,10 @@
+lightweight tag 770072cc31ae2dc85bab92a9bbadb7979b453592 v1.8.1
+Author:	GitHub <noreply@github.com>
+Date:	Sun Jul 21 23:02:01 2019 +0200
+
+commit 770072cc31ae2dc85bab92a9bbadb7979b453592
+Author: Jessica <zanony@jsommer.at>
+Date:   Sun Jul 21 23:02:01 2019 +0200
+
+    Update BlizzMove.toc
+

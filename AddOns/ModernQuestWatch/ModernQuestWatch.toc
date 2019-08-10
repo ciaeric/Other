@@ -1,0 +1,9 @@
+## Interface: 11302
+## Version: 1.0.5
+## Title: Modern QuestWatch
+## Notes: Improves the Quest Watch frame
+## Author: Ketho @ EU-Boulderfist
+## X-Curse-Project-ID: 334528
+## X-WoWI-ID: 24985
+
+ModernQuestWatch.lua

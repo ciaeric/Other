@@ -1,0 +1,79 @@
+## Interface: 11302
+## Author: Lag, Arith
+## Version: v1.0.0-beta3
+## SavedVariables: AtlasLootClassicDB
+## SavedVariablesPerCharacter: AtlasLootClassicCharDB
+## OptionalDeps: LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibDBIcon-1.0, LibDialog-1.0, LibBabble-ItemSet-3.0, LibBabble-Boss-3.0, LibBabble-Faction-3.0
+
+#@non-debug@
+## Title: AtlasLoot Classic |cFF22B14C[Core]|r
+## Notes: Shows the possible loot from the bosses
+#@end-non-debug@
+#@debug@
+# ## Title: AtlasLootClassic |cFF22B14C[Core]|r
+# ## Notes: Shows the possible loot from the bosses
+#@end-debug@
+
+## X-Credits: Daviesh, Lag, Cellelach, Asurn, Pernicus, Dynaletik and many others
+## X-Category: Map
+## X-License: GPL v2
+## X-Embeds: LibStub, LibBabble-ItemSet-3.0, LibBabble-Boss-3.0, CallbackHandler-1.0, LibDataBroker-1.1, LibSharedMedia-3.0, LibDBIcon-1.0, LibDialog-1.0, LibBabble-Faction-3.0
+## X-Localizations: enUS, deDE, frFR, esES, koKR, zhCN, zhTW, esMX, ptBR, ruRU, itIT
+
+embeds.xml
+
+Init.lua
+Constants.lua
+db.lua
+
+Locales\Locales.xml
+
+AtlasLoot.xml
+AtlasLoot.lua
+Loader.lua
+
+Core\SlashCommands.lua
+Core\ClickHandler.lua
+Core\Tooltip.lua
+Core\ItemInfo.lua
+Core\TooltipScan.lua
+Core\ItemQuery.lua
+Core\ItemString.lua
+#Core\AtlasIntegration.lua
+#Core\WorldMapIntegration.xml
+
+MiniMapButton.lua
+
+Data\Token.lua
+Data\Sets.lua
+Data\Profession.lua
+Data\Recipe.lua
+
+ItemDB\ItemDB.lua
+ItemDB\SoundData.lua
+
+Button\Button.lua
+Button\Item_type.lua
+Button\Link_type.lua
+Button\Profession_type.lua
+Button\Dummy_type.lua
+Button\Faction_type.lua
+Button\Set_type.lua
+Button\Extra_Price_type.lua
+Button\Extra_Quest_type.lua
+Button\Extra_PvP_type.lua
+Button\Extra_Location_type.lua
+
+GUI\GUI.xml
+GUI\GUI.lua
+GUI\Template_CheckBox.lua
+GUI\Template_Button.lua
+GUI\Template_Select.lua
+GUI\Template_DropDown.lua
+GUI\Template_TextWithBg.lua
+GUI\Template_Model.lua
+GUI\ItemFrame.lua
+GUI\ModelFrame.lua
+GUI\SoundFrame.lua
+
+Addons\Addons.lua

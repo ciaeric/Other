@@ -1,0 +1,22 @@
+## Interface: 11302
+## Author: Lag, Proteyer, Arith	
+## Version: v1.0.0-beta3
+## Dependencies: AtlasLootClassic
+## LoadOnDemand: 1
+
+#@non-debug@
+## Title: AtlasLootClassic |cFF0099FF[PvP]|r
+## Notes: AtlasLoot loot tables from PvP
+#@end-non-debug@
+#@debug@
+# ## Title: AtlasLootClassic |cFF0099FF[PvP]|r
+# ## Notes: AtlasLoot loot tables from PvP
+#@end-debug@
+
+## X-eMail: manager@atlasloot.net
+## X-Category: Map
+## X-License: GPL v2
+
+## X-AtlasLoot-LootModule: 1
+
+data.lua

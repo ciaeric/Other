@@ -1,0 +1,14 @@
+## Interface: 11302
+## Title: alaChat
+## SavedVariablesPerCharacter: 
+## SavedVariables: alaBaseData,alaChatConfig
+## Notes: alaChat
+## Dependencies: 
+## OptionalDependencies: 
+## LoadOnDemand: 0
+## DefaultState: enabled
+## Author: alex
+## Version: 190809.113r
+
+alaChat_classic.xml
+

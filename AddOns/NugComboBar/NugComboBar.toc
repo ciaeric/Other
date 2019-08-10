@@ -1,0 +1,12 @@
+## Interface: 11302
+## Title: NugComboBar
+## Notes: Combopoints counter
+## Author: d87
+## SavedVariablesPerCharacter: NugComboBarDB_Character
+## SavedVariables: NugComboBarDB_Global
+## Version: 1.13.3
+
+## X-WoWI-ID: 24935
+
+NugComboBar.lua
+skin.lua

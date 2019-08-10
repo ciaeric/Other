@@ -1,0 +1,16 @@
+## Interface: 11302
+## Version: 2.0.0
+## Title: SniperTips
+## Author: PrivateSniper
+## Notes: Library for Tooltip Text management.
+## OptionalDeps: Ace3
+## SavedVariables: SniperTips_DB
+
+Libs\LibStub\LibStub.lua
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+
+config.lua
+lib.lua
+addon.lua
