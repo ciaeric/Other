@@ -7,3 +7,5 @@
 
 如果你不想自己配置, 想直接使用我的配置文件
 * 复制SavedVariables 文件夹到  F:\World of Warcraft Classic\World of Warcraft\_classic_\WTF\Account\ 账户名(通常为一串数字啥的) 文件夹下面
+
+![sample](https://github.com/ciaeric/Other/blob/master/Sample.jpg)
