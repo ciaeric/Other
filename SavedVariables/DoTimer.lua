@@ -1,0 +1,3 @@
+
+DoTimer_Settings = {
+}
