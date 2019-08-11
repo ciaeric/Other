@@ -6,4 +6,4 @@
 3 复制addon 文件夹 到 *:\World of Warcraft Classic\World of Warcraft\_classic_\Interface 文件夹下 替代原有的Addon
 
 如果你不想自己配置, 想直接使用我的配置文件
-1.复制SavedVariables 文件夹到  F:\World of Warcraft Classic\World of Warcraft\_classic_\WTF\Account\**账号** 文件夹下面
+1.复制SavedVariables 文件夹到  F:\World of Warcraft Classic\World of Warcraft\_classic_\WTF\Account\ 账户名(通常为一串数字啥的) 文件夹下面
