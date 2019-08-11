@@ -1,0 +1,17 @@
+
+Postal3DB = {
+	["profileKeys"] = {
+		["Tagseven - Swamp of Sorrows"] = "Tagseven - Swamp of Sorrows",
+	},
+	["global"] = {
+		["BlackBook"] = {
+			["alts"] = {
+				"Tagseven|Swamp of Sorrows|Horde|7|ROGUE", -- [1]
+			},
+		},
+	},
+	["profiles"] = {
+		["Tagseven - Swamp of Sorrows"] = {
+		},
+	},
+}

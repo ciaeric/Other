@@ -1,2 +1,362 @@
 
-QuestieConfigCharacter = nil
+QuestieConfig = {
+	["char"] = {
+		["Tagseven - Swamp of Sorrows"] = {
+			["journey"] = {
+				{
+					["Party"] = {
+					},
+					["SubType"] = "Complete",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565414407,
+					["Quest"] = 3902,
+					["Level"] = 4,
+				}, -- [1]
+				{
+					["Party"] = {
+					},
+					["SubType"] = "Complete",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565414620,
+					["Quest"] = 381,
+					["Level"] = 4,
+				}, -- [2]
+				{
+					["Timestamp"] = 1565414620,
+					["Party"] = {
+					},
+					["Event"] = "Level",
+					["NewLevel"] = 5,
+				}, -- [3]
+				{
+					["Party"] = {
+					},
+					["SubType"] = "Accept",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565414623,
+					["Quest"] = 382,
+					["Level"] = 5,
+				}, -- [4]
+				{
+					["Party"] = {
+					},
+					["SubType"] = "Accept",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565415091,
+					["Quest"] = 8,
+					["Level"] = 5,
+				}, -- [5]
+				{
+					["Party"] = {
+					},
+					["SubType"] = "Complete",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565415434,
+					["Quest"] = 382,
+					["Level"] = 5,
+				}, -- [6]
+				{
+					["Party"] = {
+					},
+					["SubType"] = "Accept",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565415436,
+					["Quest"] = 383,
+					["Level"] = 5,
+				}, -- [7]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416151,
+					["Quest"] = 365,
+					["Level"] = 5,
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+				}, -- [8]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416709,
+					["Quest"] = 404,
+					["Level"] = 5,
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+				}, -- [9]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416741,
+					["Quest"] = 365,
+					["Level"] = 5,
+					["Event"] = "Quest",
+					["SubType"] = "Complete",
+				}, -- [10]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416742,
+					["Quest"] = 407,
+					["Level"] = 5,
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+				}, -- [11]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416754,
+					["Quest"] = 383,
+					["Level"] = 5,
+					["Event"] = "Quest",
+					["SubType"] = "Complete",
+				}, -- [12]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416756,
+					["Quest"] = 427,
+					["Level"] = 5,
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+				}, -- [13]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416777,
+					["Quest"] = 8,
+					["Level"] = 5,
+					["Event"] = "Quest",
+					["SubType"] = "Complete",
+				}, -- [14]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416848,
+					["Event"] = "Level",
+					["NewLevel"] = 6,
+				}, -- [15]
+				{
+					["Party"] = {
+						{
+							["Class"] = "法師",
+							["Name"] = "Homemadepc",
+							["Level"] = 5,
+						}, -- [1]
+					},
+					["Timestamp"] = 1565416848,
+					["Quest"] = 407,
+					["Level"] = 5,
+					["Event"] = "Quest",
+					["SubType"] = "Complete",
+				}, -- [16]
+				{
+					["Party"] = {
+						{
+							["Class"] = "盜賊",
+							["Name"] = "Holyshït",
+							["Level"] = 4,
+						}, -- [1]
+					},
+					["SubType"] = "Complete",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565421890,
+					["Quest"] = 404,
+					["Level"] = 6,
+				}, -- [17]
+				{
+					["Party"] = {
+						{
+							["Class"] = "盜賊",
+							["Name"] = "Holyshït",
+							["Level"] = 4,
+						}, -- [1]
+					},
+					["SubType"] = "Accept",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565421896,
+					["Quest"] = 426,
+					["Level"] = 6,
+				}, -- [18]
+				{
+					["Party"] = {
+						{
+							["Class"] = "盜賊",
+							["Name"] = "Holyshït",
+							["Level"] = 4,
+						}, -- [1]
+					},
+					["SubType"] = "Accept",
+					["Event"] = "Quest",
+					["Timestamp"] = 1565422418,
+					["Quest"] = 5481,
+					["Level"] = 6,
+				}, -- [19]
+				{
+					["Timestamp"] = 1565435720,
+					["Party"] = {
+					},
+					["Event"] = "Level",
+					["NewLevel"] = 7,
+				}, -- [20]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+					["Level"] = 7,
+					["Quest"] = 354,
+					["Timestamp"] = 1565435761,
+				}, -- [21]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+					["Level"] = 7,
+					["Quest"] = 362,
+					["Timestamp"] = 1565435771,
+				}, -- [22]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Complete",
+					["Level"] = 7,
+					["Quest"] = 427,
+					["Timestamp"] = 1565435827,
+				}, -- [23]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+					["Level"] = 7,
+					["Quest"] = 370,
+					["Timestamp"] = 1565435829,
+				}, -- [24]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+					["Level"] = 7,
+					["Quest"] = 374,
+					["Timestamp"] = 1565435847,
+				}, -- [25]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+					["Level"] = 7,
+					["Quest"] = 375,
+					["Timestamp"] = 1565435915,
+				}, -- [26]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Complete",
+					["Level"] = 7,
+					["Quest"] = 5481,
+					["Timestamp"] = 1565436320,
+				}, -- [27]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+					["Level"] = 7,
+					["Quest"] = 5482,
+					["Timestamp"] = 1565436322,
+				}, -- [28]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+					["Level"] = 7,
+					["Quest"] = 358,
+					["Timestamp"] = 1565436851,
+				}, -- [29]
+				{
+					["Party"] = {
+					},
+					["Event"] = "Quest",
+					["SubType"] = "Accept",
+					["Level"] = 7,
+					["Quest"] = 367,
+					["Timestamp"] = 1565436875,
+				}, -- [30]
+			},
+			["complete"] = {
+				[363] = true,
+				[8] = true,
+				[364] = true,
+				[3096] = true,
+				[365] = true,
+				[404] = true,
+				[381] = true,
+				[382] = true,
+				[383] = true,
+				[6395] = true,
+				[3901] = true,
+				[5481] = true,
+				[407] = true,
+				[376] = true,
+				[427] = true,
+				[3902] = true,
+				[380] = true,
+			},
+		},
+	},
+	["profileKeys"] = {
+		["Tagseven - Swamp of Sorrows"] = "Default",
+	},
+	["profiles"] = {
+		["Default"] = {
+			["minimap"] = {
+				["minimapPos"] = 177.1634925518,
+			},
+		},
+	},
+}

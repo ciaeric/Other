@@ -1,3 +1,0 @@
-
-DoTimer_Settings = {
-}

@@ -1,0 +1,51 @@
+
+Broker_Everything_ProfileDB = {
+}
+Broker_Everything_DataDB = {
+	["Gold"] = {
+		["Profit"] = {
+			["monthly"] = {
+				["Tagseven-Swamp of Sorrows"] = {
+					[1567259999] = 392,
+					[1564581599] = false,
+				},
+			},
+			["daily"] = {
+				["Tagseven-Swamp of Sorrows"] = {
+					[1565445599] = 392,
+					[1565359199] = false,
+				},
+			},
+			["weekly"] = {
+				["Tagseven-Swamp of Sorrows"] = {
+					[1565531999] = 392,
+					[1564927199] = false,
+				},
+			},
+		},
+	},
+	["AceDBfix"] = 1,
+}
+Broker_Everything_CharacterDB = {
+	["order"] = {
+		"Tagseven-Swamp of Sorrows", -- [1]
+	},
+	["Tagseven-Swamp of Sorrows"] = {
+		["race"] = "Scourge",
+		["name"] = "Tagseven",
+		["faction"] = "Horde",
+		["gold"] = 392,
+		["orderId"] = 1,
+		["level"] = 6,
+		["class"] = "ROGUE",
+	},
+}
+Broker_Everything_AceDB = {
+	["profileKeys"] = {
+		["Tagseven - Swamp of Sorrows"] = "Default",
+	},
+	["profiles"] = {
+		["Default"] = {
+		},
+	},
+}

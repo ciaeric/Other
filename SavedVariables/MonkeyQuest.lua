@@ -1,0 +1,88 @@
+
+MonkeyQuestConfig = {
+	["Global"] = {
+		["m_bItemsEnabled"] = false,
+		["m_iFont"] = 0,
+		["m_strHeaderClosedColour"] = "|cFF9F9FFF",
+		["m_strSpecialObjectiveColour"] = "|cFFFFFF00",
+		["m_iFrameAlpha"] = 1,
+		["m_bColourTitle"] = false,
+		["m_strAnchor"] = "ANCHOR_TOPLEFT",
+		["m_bAllowRightClick"] = true,
+		["m_strZoneHighlightColour"] = "|cff494961",
+		["m_strFinishObjectiveColour"] = "|cFF33DDFF",
+		["m_bShowHidden"] = false,
+		["m_bItemsOnLeft"] = true,
+		["m_bShowNoobTips"] = true,
+		["m_bHideCompletedObjectives"] = true,
+		["m_bShowZoneHighlight"] = true,
+		["m_strCompleteObjectiveColour"] = "|cFF00FF19",
+		["m_bAlwaysHeaders"] = false,
+		["m_bDisplay"] = true,
+		["m_bMinimized"] = false,
+		["m_strInitialObjectiveColour"] = "|cFFD82619",
+		["m_iHighlightAlpha"] = 1,
+		["m_bShowQuestLevel"] = true,
+		["m_bShowDailyNumQuests"] = false,
+		["m_iFrameBottom"] = 400.926208496094,
+		["m_bHideTitleButtons"] = true,
+		["m_bLocked"] = true,
+		["m_bNoBorder"] = true,
+		["m_bNoHeaders"] = false,
+		["m_iFrameLeft"] = 1790.07751464844,
+		["m_strOverviewColour"] = "|cFF7F7F7F",
+		["m_iQuestPadding"] = 0,
+		["m_iAlpha"] = 0.299999982118607,
+		["m_bShowNumQuests"] = true,
+		["m_iFontHeight"] = 11,
+		["m_strQuestTitleColour"] = "|cFFFFFFFF",
+		["m_bWorkComplete"] = true,
+		["m_bHideQuestsEnabled"] = true,
+		["m_iFrameWidth"] = 237,
+		["m_bCrashBorder"] = true,
+		["m_strHeaderOpenColour"] = "|cFFBFBFFF",
+		["m_iFrameTop"] = 811.815185546875,
+		["m_bObjectives"] = true,
+		["m_bHideHeader"] = false,
+		["m_bShowTooltipObjectives"] = true,
+		["m_strMidObjectiveColour"] = "|cFFFFFF00",
+		["m_bColourSubObjectivesByProgress"] = true,
+		["m_bHideTitle"] = true,
+		["m_bHideCompletedQuests"] = true,
+		["m_bGrowUp"] = true,
+	},
+	["Swamp of Sorrows|Tagseven"] = {
+		["m_aQuestList"] = {
+			["新的瘟疫 - false"] = {
+				["m_bChecked"] = true,
+			},
+			["磨坊告急 - false"] = {
+				["m_bChecked"] = true,
+			},
+			["盜墓賊 - false"] = {
+				["m_bChecked"] = true,
+			},
+			["阿加曼德家族 - false"] = {
+				["m_bChecked"] = true,
+			},
+			["鬧鬼的磨坊 - false"] = {
+				["m_bChecked"] = true,
+			},
+			["死亡證明 - false"] = {
+				["m_bChecked"] = true,
+			},
+			["末日草 - false"] = {
+				["m_bChecked"] = true,
+			},
+			["死亡之寒 - false"] = {
+				["m_bChecked"] = true,
+			},
+			["提里斯法林地 - true"] = {
+				["m_bChecked"] = true,
+			},
+			["與血色十字軍的戰爭 - false"] = {
+				["m_bChecked"] = true,
+			},
+		},
+	},
+}

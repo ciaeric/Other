@@ -1,0 +1,8 @@
+
+FTDB = {
+	["notify"] = 0,
+	["forcehide"] = 0,
+	["color"] = "blue",
+	["bgtoggle"] = 0.5,
+	["display"] = 1,
+}

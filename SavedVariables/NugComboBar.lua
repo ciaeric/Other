@@ -1,7 +1,8 @@
 
-NugComboBarDB_Character = {
+NugComboBarDB_Global = {
+	["charspec"] = {
+	},
+	["adjustX"] = 2.05,
 	["preset3dlayer2"] = "glowOrangeStatic",
-	["y"] = -136.296295166016,
-	["x"] = -74.6665802001953,
-	["charspec"] = true,
+	["adjustY"] = 2.1,
 }
