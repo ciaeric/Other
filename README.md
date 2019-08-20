@@ -2,6 +2,8 @@
 
 安装插件: 
 * 1 点击download as zip 
+![sample](https://github.com/ciaeric/Other/blob/master/download.png)
+
 * 2 解压缩
 * 3 复制addon 文件夹 到 *:\World of Warcraft Classic\World of Warcraft\_classic_\Interface 文件夹下 替代原有的Addon
 
