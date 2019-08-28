@@ -16,6 +16,8 @@ Twitch [下载地址](https://www.twitch.tv/downloads)
 
 首先要locate到你游戏的插件文件夹, 通常twitch会自己scan到, 如果没有, 你可以按齿轮键手动添加. 切记正式服和怀旧服的插件文件夹所在位置不同.
 
+![twich](https://github.com/ciaeric/Other/blob/master/twitch.png)
+
 需要更新的话, 相应插件的会出现 update 按钮, 点击即可
 
 点击Get more addons, 就是新世界的大门, 看哪个给力就装哪个. 
