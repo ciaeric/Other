@@ -1,6 +1,7 @@
 # Modern QuestWatch
 
-## [1.0.5](https://github.com/ketho-wow/ModernQuestWatch/tree/1.0.5) (2019-08-10)
-[Full Changelog](https://github.com/ketho-wow/ModernQuestWatch/compare/1.0.4...1.0.5)
+## [1.0.8](https://github.com/ketho-wow/ModernQuestWatch/tree/1.0.8) (2019-08-12)
+[Full Changelog](https://github.com/ketho-wow/ModernQuestWatch/compare/1.0.7...1.0.8)
 
-- Only automatically track accepted quests when CVar autoQuestWatch is enabled  
+- Fixed quest tracker to only expand downwards.  
+    This will reset the config  

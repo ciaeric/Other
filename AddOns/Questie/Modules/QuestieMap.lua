@@ -84,6 +84,16 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
     end
     if(showFlag == nil) then showFlag = HBD_PINS_WORLDMAP_SHOW_WORLD; end
     if(floatOnEdge == nil) then floatOnEdge = true; end
+    
+    -- check toggles
+    if data.Type then
+        if ((Questie.db.global.disableObjectives and (data.Type == "monster" or data.Type == "object" or data.Type == "event" or data.Type == "item"))
+         or (Questie.db.global.disableTurnins and data.Type == "complete")
+         or (Questie.db.global.disableAvailable and data.Type == "available")) then
+            return -- dont add icon
+        end
+    end
+    
     -- check clustering
     local xcell = math.floor((x * (QUESTIE_NOTES_CLUSTERMUL_HACK)));
     local ycell = math.floor((x * (QUESTIE_NOTES_CLUSTERMUL_HACK)));
@@ -112,7 +122,7 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
         icon.texture:SetVertexColor(1, 1, 1, 1);
         -- because of how frames work, I cant seem to set the glow as being behind the note. So for now things are draw in reverse.
         if data.IconScale then
-            local scale = 16 * (data.IconScale*(Questie.db.global.globalScale or 0.7));
+            local scale = 16 * (data:GetIconScale()*(Questie.db.global.globalScale or 0.7));
             icon:SetWidth(scale)
             icon:SetHeight(scale)
         else
@@ -121,8 +131,8 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
         end
 
         local iconMinimap = QuestieFramePool:GetFrame()
-        iconMinimap:SetWidth(16 * ((data.iconScale or 1) * (Questie.db.global.globalMiniMapScale or 0.7)))
-        iconMinimap:SetHeight(16 * ((data.iconScale or 1) * (Questie.db.global.globalMiniMapScale or 0.7)))
+        iconMinimap:SetWidth(16 * ((data:GetIconScale() or 1) * (Questie.db.global.globalMiniMapScale or 0.7)))
+        iconMinimap:SetHeight(16 * ((data:GetIconScale() or 1) * (Questie.db.global.globalMiniMapScale or 0.7)))
         iconMinimap.data = data
         iconMinimap.x = x
         iconMinimap.y = y
@@ -177,8 +187,11 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
             -- We do not want to hook the OnUpdate again!
             iconMinimap:SetScript("OnUpdate", function(frame)
                 --Only run if these two are true!
-                if(frame.fadeLogic and frame.miniMapIcon) then
+                if (frame.fadeLogic and frame.miniMapIcon) then
                    frame:fadeLogic()
+                end
+                if frame.glowUpdate then
+                    frame:glowUpdate()
                 end
             end)
         end

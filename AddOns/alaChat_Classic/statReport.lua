@@ -1,5 +1,5 @@
 ﻿--[[--
-
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS=...;
@@ -72,23 +72,23 @@ function genReport()
 	--
 	--C_AzeriteItem:GetPowerLevel(C_AzeriteItem.FindActiveAzeriteItem());
 	--for k,v in pairs(C_AzeriteItem:FindActiveAzeriteItem()) do print(k,v) end
-	local hasAz=C_AzeriteItem.HasActiveAzeriteItem();
-	local azLevel=nil;
-	local neckLevel=nil;
-	if hasAz then
-		local azeriteLoc=C_AzeriteItem.FindActiveAzeriteItem();
-		azLevel=C_AzeriteItem.GetPowerLevel(azeriteLoc);
-		if azeriteLoc.equipmentSlotIndex then
-			local neckLink=GetInventoryItemLink("player",2);
-			neckLevel=neckLink and select(4,GetItemInfo(neckLink)) or -1;
-		elseif azeriteLoc.bagID and azeriteLoc.slotIndex then
-			local neckLink=GetContainerItemLink(azeriteLoc.bagID,azeriteLoc.slotIndex);
-			neckLevel=neckLink and select(4,GetItemInfo(neckLink)) or -1;
-		end
-	else
-		local neckLink=GetInventoryItemLink("player",2);
-		neckLevel=neckLink and select(4,GetItemInfo(neckLink)) or 0;
-	end
+	-- local hasAz=C_AzeriteItem.HasActiveAzeriteItem();
+	-- local azLevel=nil;
+	-- local neckLevel=nil;
+	-- if hasAz then
+	-- 	local azeriteLoc=C_AzeriteItem.FindActiveAzeriteItem();
+	-- 	azLevel=C_AzeriteItem.GetPowerLevel(azeriteLoc);
+	-- 	if azeriteLoc.equipmentSlotIndex then
+	-- 		local neckLink=GetInventoryItemLink("player",2);
+	-- 		neckLevel=neckLink and select(4,GetItemInfo(neckLink)) or -1;
+	-- 	elseif azeriteLoc.bagID and azeriteLoc.slotIndex then
+	-- 		local neckLink=GetContainerItemLink(azeriteLoc.bagID,azeriteLoc.slotIndex);
+	-- 		neckLevel=neckLink and select(4,GetItemInfo(neckLink)) or -1;
+	-- 	end
+	-- else
+	-- 	local neckLink=GetInventoryItemLink("player",2);
+	-- 	neckLevel=neckLink and select(4,GetItemInfo(neckLink)) or 0;
+	-- end
 	--
 	local text=string.format("%s:%s,%s:%s(%s),%s:%.1f(%.1f)%s,%s:%d(%.1f%%),%s:%d(%.1f%%),%s:%d(%.1f%%),%s:%d(%.1f%%)",
 		CB_DATA.T_STAT,
@@ -108,7 +108,7 @@ local function statReport_On()
 		return;
 	end
 	control_statReport=true;
-	local ICON_PATH="Interface\\AddOns\\alaChat_Classic\\icon\\"
+	local ICON_PATH = NS.ICON_PATH;
 	if btnStatReport then
 		alaBaseBtn:AddBtn(2,-1,btnStatReport,true,false,true);
 	else
@@ -117,6 +117,7 @@ local function statReport_On()
 				-1,
 				"statReportBtn",
 				"class",
+				nil,
 				nil,
 				function(self,button)
 					local editBox=ChatEdit_ChooseBoxForSend();

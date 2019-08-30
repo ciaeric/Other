@@ -5,6 +5,8 @@ questRequirementFixes = {
     [33] = {783},
     [374] = {427}, -- proof of demise requires at war with the scarlet crusade
     [1106] = {1104, 1105},
+    [431] = {366}, -- #638
+    [410] = {366}, -- #638
     [926] = {809} -- #606
 }
 
@@ -15,7 +17,11 @@ questExclusiveGroupFixes = {
     [1943] = {1944}, -- mage robe breadcrumb
     [526] = {322,324}, -- not 100% sure on this one but it seems lightforge ingots is optional, block it after completing subsequent steps (#587)
     [3765] = {1275}, -- corruption abroad breadcrumb
-    [164] = {95} -- deliveries to sven is a breadcrumb
+    [164] = {95}, -- deliveries to sven is a breadcrumb
+    -- this is a subquest
+    --[403] = {311}, -- completing the unguarded barrel quest prevents to do the optional guarded barrel prequest
+    [428] = {429}, -- lost deathstalkers breadcrumb
+    [308] = {311} -- distracting jarven can't be completed once you get the followup
 }
 
 questItemBlacklist = {
@@ -70,7 +76,7 @@ questItemBlacklist = {
     [13466] = true, -- plaguebloom
     [13467] = true, -- icecap
     [13468] = true, -- black lotus
-    
+
     -- stranglethorn pages
     [2725]=true,
     [2728]=true,
@@ -87,7 +93,7 @@ questItemBlacklist = {
     [2749]=true,
     [2750]=true,
     [2751]=true,
-    
+
     -- shredder operating manual
     [16645]=true,
     [16654]=true,
@@ -100,8 +106,11 @@ questItemBlacklist = {
     [16650]=true,
     [16651]=true,
     [16652]=true,
-    [16653]=true
-    
+    [16653]=true,
+
+
+    [12207]=true -- giant egg
+
 }
 
 questObjectFixes = {
@@ -516,12 +525,13 @@ qHide = {
   [8759] = true,
   [8760] = true,
   --Profession quests
+  [768] = true,
   [7652] = true,
   [2771] = true,
   [6625] = true,
   [8194] = true,
   [2751] = true,
-  [384] = true,
+  --[384] = true,
   [2757] = true,
   [6610] = true,
   [5307] = true,
@@ -627,7 +637,7 @@ qHide = {
   [2849] = true,
   [2856] = true,
   [6608] = true,
-  [90] = true, --Seasoned Wolf Kabobs Unsure if this is a profession quest.
+  --[90] = true, --Seasoned Wolf Kabobs Unsure if this is a profession quest.
   --All PVP Quests
   [7385] = true,
   [7362] = true,

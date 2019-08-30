@@ -1,23 +1,28 @@
+local _G = _G
 local ALName, ALPrivate = ...
 local AtlasLoot = _G.AtlasLoot
 local Item = AtlasLoot.Button:AddType("Item", "i")
 local Query = {}
 Item.Query = Query
-local AL = AtlasLoot.Locales
+local AL, ALIL = AtlasLoot.Locales, AtlasLoot.IngameLocales
 local ClickHandler = AtlasLoot.ClickHandler
 local Token = AtlasLoot.Data.Token
 local Recipe = AtlasLoot.Data.Recipe
-
-local db
+local Profession = AtlasLoot.Data.Profession
+local Sets = AtlasLoot.Data.Sets
+local Mount = AtlasLoot.Data.Mount
+local ContentPhase = AtlasLoot.Data.ContentPhase
+local ItemFrame, Favourites
 
 -- lua
-local tonumber = tonumber
-local assert = assert
-local next, wipe, tab_remove = next, wipe, table.remove
-local format, split = string.format, string.split
+local tonumber = _G.tonumber
+local assert = _G.assert
+local next, wipe, tab_remove = _G.next, _G.wipe, _G.table.remove
+local format, split, sfind, slower = _G.string.format, _G.string.split, _G.string.find, _G.string.lower
 
 -- WoW
-local GetItemInfo, IsEquippableItem = GetItemInfo, IsEquippableItem
+local GetItemInfo, IsEquippableItem = _G.GetItemInfo, _G.IsEquippableItem
+local LOOT_BORDER_BY_QUALITY = _G["LOOT_BORDER_BY_QUALITY"]
 
 -- AL
 local GetAlTooltip = AtlasLoot.Tooltip.GetTooltip
@@ -25,38 +30,54 @@ local GetItemDescInfo = AtlasLoot.ItemInfo.GetDescription
 local GetItemString = AtlasLoot.ItemString.Create
 
 local ITEM_COLORS = {}
-local WHITE_ICON_FRAME = "Interface\\Common\\WhiteIconFrame"
+local DUMMY_ITEM_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
+local SET_ITEM = "|cff00ff00"..AL["Set item"]..":|r "
+
+local itemIsOnEnter, buttonOnEnter = nil, nil
 
 local ItemClickHandler = nil
-local itemIsOnEnter = nil
-
-function Item.OnSet(button, second)
-	if not ItemClickHandler then
-		db = AtlasLoot.db.Button.Item
-		ItemClickHandler = ClickHandler:Add(
-		"Item",
-		{
-			ChatLink = { "LeftButton", "Shift" },
-			DressUp = { "LeftButton", "Ctrl" },
-			ShowExtraItems = { "LeftButton", "None" },
-			types = {
-				ChatLink = true,
-				DressUp = true,
-				ShowExtraItems = true,
-			},
+ClickHandler:Add(
+	"Item",
+	{
+		ChatLink = { "LeftButton", "Shift" },
+		DressUp = { "LeftButton", "Ctrl" },
+		SetFavourite = { "LeftButton", "Alt" },
+		ShowExtraItems = { "LeftButton", "None" },
+		types = {
+			ChatLink = true,
+			DressUp = true,
+			ShowExtraItems = true,
+			SetFavourite = true,
 		},
-		db.ClickHandler,
-		{
-			{ "ChatLink", 		AL["Chat Link"], 			AL["Add item into chat"] },
-			{ "DressUp", 		AL["Dress up"], 			AL["Shows the item in the Dressing room"] },
-			{ "ShowExtraItems", AL["Show extra items"], 	AL["Shows extra items (tokens,mats)"] },
-		})
+	},
+	{
+		{ "ChatLink", 		AL["Chat Link"], 			AL["Add item into chat"] },
+		{ "DressUp", 		AL["Dress up"], 			AL["Shows the item in the Dressing room"] },
+		{ "SetFavourite", 	AL["Set Favourite"], 		AL["Set the item as favourite"] },
+		{ "ShowExtraItems", AL["Show extra items"], 	AL["Shows extra items (tokens,mats)"] },
+	}
+)
+
+local function OnFavouritesAddonLoad(addon, enabled)
+	Favourites = enabled and addon or nil
+end
+
+local function OnInit()
+	if not ItemClickHandler then
+		ItemClickHandler = ClickHandler:GetHandler("Item")
+		AtlasLoot.Addons:GetAddon("Favourites", OnFavouritesAddonLoad)
 		-- create item colors
 		for i=0,7 do
 			local _, _, _, itemQuality = GetItemQualityColor(i)
-			ITEM_COLORS[i] = itemQuality
+			ITEM_COLORS[i] = "|c"..itemQuality
 		end
+		ItemFrame = AtlasLoot.GUI.ItemFrame
 	end
+	Item.ItemClickHandler = ItemClickHandler
+end
+AtlasLoot:AddInitFunc(OnInit)
+
+function Item.OnSet(button, second)
 	if not button then return end
 	if second and button.__atlaslootinfo.secType then
 		if type(button.__atlaslootinfo.secType[2]) == "table" then
@@ -69,6 +90,7 @@ function Item.OnSet(button, second)
 			end
 		end
 		button.secButton.Droprate = button.__atlaslootinfo.Droprate
+		button.secButton.SetID = Sets:GetItemSetForItemID(button.secButton.ItemID)
 
 		Item.Refresh(button.secButton)
 	else
@@ -82,6 +104,7 @@ function Item.OnSet(button, second)
 			end
 		end
 		button.Droprate = button.__atlaslootinfo.Droprate
+
 		Item.Refresh(button)
 	end
 end
@@ -107,6 +130,37 @@ function Item.OnMouseAction(button, mouseButton)
 		elseif Recipe.IsRecipe(button.ItemID) then
 			button.ExtraFrameShown = true
 			AtlasLoot.Button:ExtraItemFrame_GetFrame(button, Recipe.GetRecipeDataForExtraFrame(button.ItemID))
+		elseif button.type ~= "secButton" and ( button.SetData or Sets:GetItemSetForItemID(button.ItemID) ) then -- sec buttons should not be clickable for sets
+			if not button.SetData then
+				button.SetData = Sets:GetSetItems(Sets:GetItemSetForItemID(button.ItemID))
+			end
+			button.ExtraFrameShown = true
+			AtlasLoot.Button:ExtraItemFrame_GetFrame(button, button.SetData)
+		end
+	elseif mouseButton == "SetFavourite" then
+		if Favourites then
+			if Favourites:IsFavouriteItemID(button.ItemID, true) then
+				Favourites:RemoveItemID(button.ItemID)
+				if Favourites:IsFavouriteItemID(button.ItemID) then
+					Favourites:SetFavouriteIcon(button.ItemID, button.favourite)
+				else
+					if button.favourite then
+						button.favourite:Hide()
+					end
+				end
+			else
+				if Favourites:AddItemID(button.ItemID) then
+					Favourites:SetFavouriteIcon(button.ItemID, button.favourite)
+					if button.favourite then
+						button.favourite:Show()
+					end
+				end
+			end
+			if Favourites:TooltipHookEnabled() then
+				Item.OnLeave(button)
+				Item.OnEnter(button)
+			end
+			AtlasLoot.Button:ExtraItemFrame_Refresh(button)
 		end
 	elseif mouseButton == "MouseWheelUp" and Item.previewTooltipFrame and Item.previewTooltipFrame:IsShown() then  -- ^
 		local frame = Item.previewTooltipFrame.modelFrame
@@ -131,13 +185,16 @@ function Item.OnMouseAction(button, mouseButton)
 end
 
 function Item.OnEnter(button, owner)
+	if not button.ItemID then return end
 	local tooltip = GetAlTooltip()
+	local db = ItemClickHandler:GetDB()
 	tooltip:ClearLines()
 	itemIsOnEnter = tooltip
+	buttonOnEnter = button
 	if owner and type(owner) == "table" then
 		tooltip:SetOwner(owner[1], owner[2], owner[3], owner[4])
 	else
-		tooltip:SetOwner(button, "ANCHOR_RIGHT", -(button:GetWidth() * 0.5), 24)
+		tooltip:SetOwner(button, "ANCHOR_RIGHT", -(button:GetWidth() * 0.5), 5)
 	end
 	if button.ItemString then
 		tooltip:SetHyperlink(button.ItemString)
@@ -147,19 +204,28 @@ function Item.OnEnter(button, owner)
 	if button.Droprate and db.showDropRate then
 		tooltip:AddDoubleLine(AL["Droprate:"], button.Droprate.."%")
 	end
+	if AtlasLoot.db.showIDsInTT then
+		tooltip:AddDoubleLine("ItemID:", button.ItemID or 0)
+	end
+	if AtlasLoot.db.ContentPhase.enableTT and ContentPhase:GetForItemID(button.ItemID) then
+		tooltip:AddDoubleLine(AL["Content phase:"], ContentPhase:GetForItemID(button.ItemID))
+	end
+	if button.ItemID == 12784 then tooltip:AddLine("Arcanite Reaper Hoooooo!") end
 	tooltip:Show()
 	if IsShiftKeyDown() or db.alwaysShowCompareTT then
 		GameTooltip_ShowCompareItem(tooltip)
 	end
-	if IsControlKeyDown() or db.alwaysShowPreviewTT then
-		local _, link = tooltip:GetItem()
-		Item.ShowQuickDressUp(link, tooltip)
+	if Mount.IsMount(button.ItemID) then
+		Item.ShowQuickDressUp(button.ItemID, tooltip)
+	elseif IsControlKeyDown() or db.alwaysShowPreviewTT then
+		Item.ShowQuickDressUp(button.ItemID, tooltip)
 	end
 end
 
 function Item.OnLeave(button)
 	GetAlTooltip():Hide()
 	itemIsOnEnter = nil
+	buttonOnEnter = nil
 	ShoppingTooltip1:Hide()
 	ShoppingTooltip2:Hide()
 	if Item.previewTooltipFrame and Item.previewTooltipFrame:IsShown() then Item.previewTooltipFrame:Hide() end
@@ -172,15 +238,15 @@ function Item.OnClear(button)
 	button.ItemID = nil
 	button.Droprate = nil
 	button.ItemString = nil
+	button.SetData = nil
+	button.RawName = nil
 	button.secButton.ItemID = nil
 	button.secButton.Droprate = nil
 	button.secButton.ItemString = nil
-	if button.overlay then
-		button.overlay:SetDesaturated(false)
-		button.overlay:Hide()
-	end
+	button.secButton.SetData = nil
+	button.secButton.RawName = nil
+
 	button.secButton.overlay:Hide()
-	button.secButton.overlay:SetDesaturated(false)
 	if button.ExtraFrameShown then
 		AtlasLoot.Button:ExtraItemFrame_ClearFrame()
 		button.ExtraFrameShown = false
@@ -189,46 +255,55 @@ end
 
 function Item.Refresh(button)
 	if not button.ItemID then return end
-	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(button.ItemString or button.ItemID)
+	local itemID = button.ItemID
+	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(button.ItemString or itemID)
 	if not itemName then
 		Query:Add(button)
 		return false
 	end
+	button.RawName = itemName
 
 	button.overlay:Show()
-	button.overlay:SetTexture(WHITE_ICON_FRAME)
-	button.overlay:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON])
-	if not LOOT_BORDER_BY_QUALITY[itemQuality] then
-		button.overlay:SetDesaturated(true)
-	end
+	button.overlay:SetQualityBorder(itemQuality)
 
 	if button.type == "secButton" then
-		button:SetNormalTexture(itemTexture or "Interface\\Icons\\INV_Misc_QuestionMark")
+		button:SetNormalTexture(itemTexture or DUMMY_ITEM_ICON)
 	else
 		-- ##################
 		-- icon
 		-- ##################
-		button.icon:SetTexture(itemTexture or "Interface\\Icons\\INV_Misc_QuestionMark")
+		button.icon:SetTexture(itemTexture or DUMMY_ITEM_ICON)
 
 		-- ##################
 		-- name
 		-- ##################
-		button.name:SetText("|c"..ITEM_COLORS[itemQuality or 0]..itemName)
+		button.name:SetText(ITEM_COLORS[itemQuality or 0]..itemName)
 
 		-- ##################
 		-- description
 		-- ##################
-		button.extra:SetText(Token.GetTokenDescription(button.ItemID) or Recipe.GetRecipeDescription(button.ItemID) or GetItemDescInfo(itemEquipLoc, itemType, itemSubType))
+		button.extra:SetText(
+			Token.GetTokenDescription(itemID) or
+			Recipe.GetRecipeDescriptionWithRank(itemID) or
+			Profession.GetColorSkillRankItem(itemID) or
+			(Mount.IsMount(button.ItemID) and ALIL["Mount"] or nil) or
+			( Sets:GetItemSetForItemID(itemID) and AL["|cff00ff00Set item:|r "] or "")..GetItemDescInfo(itemEquipLoc, itemType, itemSubType)
+		)
 	end
-	--[[
-	if db.showCompletedHook then
-		local itemCount = GetItemCount(button.ItemString, true)
-		if itemCount and itemCount > 0 then
-			button.completed:Show()
+	if Favourites and Favourites:IsFavouriteItemID(itemID) then
+		Favourites:SetFavouriteIcon(itemID, button.favourite)
+		button.favourite:Show()
+	else
+		button.favourite:Hide()
+	end
+	--elseif Recipe.IsRecipe(itemID) then
+	if AtlasLoot.db.ContentPhase.enableOnItems then
+		local phaseT = Recipe.IsRecipe(itemID) and Recipe.GetPhaseTextureForItemID(itemID) or ContentPhase:GetPhaseTextureForItemID(itemID)
+		if phaseT then
+			button.phaseIndicator:SetTexture(phaseT)
+			button.phaseIndicator:Show()
 		end
 	end
-	]]--
-
 	return true
 end
 
@@ -246,21 +321,24 @@ end
 -- Item dess up
 --################################
 function Item.ShowQuickDressUp(itemLink, ttFrame)
-	if not itemLink or not IsEquippableItem(itemLink) then return end
+	if not itemLink or ( not IsEquippableItem(itemLink) and not Mount.IsMount(itemLink) ) then return end
 	if not Item.previewTooltipFrame then
 		local name = "AtlasLoot-SetToolTip"
 		local frame = CreateFrame("Frame", name)
 		frame:SetClampedToScreen(true)
 		frame:SetSize(230, 280)
+		frame:SetBackdrop(ALPrivate.BOX_BORDER_BACKDROP)
+		frame:SetBackdropColor(0,0,0,1)
 
 		frame.modelFrame = CreateFrame("DressUpModel", name.."-ModelFrame", frame)
 		frame.modelFrame:ClearAllPoints()
 		frame.modelFrame:SetParent(frame)
-		frame.modelFrame:SetAllPoints(frame)
+		frame.modelFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -5)
+		frame.modelFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -5, 5)
 		frame.modelFrame.defaultRotation = MODELFRAME_DEFAULT_ROTATION
 		frame.modelFrame:SetRotation(MODELFRAME_DEFAULT_ROTATION)
-		frame.modelFrame:SetBackdrop(ALPrivate.BOX_BORDER_BACKDROP)
-		frame.modelFrame:SetBackdropColor(0,0,0,1)
+		--frame.modelFrame:SetBackdrop(ALPrivate.BOX_BORDER_BACKDROP)
+		--frame.modelFrame:SetBackdropColor(0,0,0,1)
 		frame.modelFrame:SetUnit("player")
 		frame.modelFrame.minZoom = 0
 		frame.modelFrame.maxZoom = 1.0
@@ -301,14 +379,23 @@ function Item.ShowQuickDressUp(itemLink, ttFrame)
 	frame = Item.previewTooltipFrame.modelFrame
 	frame:Reset()
 	frame:Undress()
-	local info = {GetItemInfo(itemLink)}
-	if not (info[9] == "INVTYPE_CLOAK") then
-		frame:SetRotation(frame.curRotation)
+	local npcID = Mount.GetMountNpcID(itemLink)
+	if npcID then
+		frame:SetDisplayInfo(npcID)
+		frame:SetPortraitZoom(frame.zoomLevel)
+		frame:SetCamDistanceScale(2)
 	else
-		frame:SetRotation(frame.curRotation + math.pi)
+		frame:SetCamDistanceScale(1)
+		frame:SetUnit("player")
+		local info = {GetItemInfo(itemLink)}
+		if not (info[9] == "INVTYPE_CLOAK") then
+			frame:SetRotation(frame.curRotation)
+		else
+			frame:SetRotation(frame.curRotation + math.pi)
+		end
+		frame:SetPortraitZoom(frame.zoomLevelNew)
+		frame:TryOn(info[2])
 	end
-	frame:SetPortraitZoom(frame.zoomLevelNew)
-	frame:TryOn(itemLink)
 end
 
 --################################
@@ -321,13 +408,21 @@ Query.EventFrame = CreateFrame("FRAME")
 local function EventFrame_OnEvent(frame, event, arg1, arg2)
 	if event == "GET_ITEM_INFO_RECEIVED" then
 		if arg1 and button_list[arg1] then
-			local button
 			for i = 1, #button_list[arg1] do
-				button = button_list[arg1][i]
+				local button = button_list[arg1][i]
 				if button.type == "secButton" then
-					button:GetSecTypeFunctions().Refresh(button_list[arg1][i])
+					button.obj:GetSecTypeFunctions().Refresh(button)
 				else
-					button:GetTypeFunctions().Refresh(button_list[arg1][i])
+					local typFunc = button:GetTypeFunctions()
+					if typFunc then
+						typFunc.Refresh(button)
+						if ItemFrame and ItemFrame.SearchString then
+							local text = button.RawName or button.name:GetText()
+							if text and not sfind(slower(text), ItemFrame.SearchString, 1, true) then
+								button:SetAlpha(0.33)
+							end
+						end
+					end
 				end
 			end
 			button_list[arg1] = nil
@@ -343,8 +438,12 @@ local function EventFrame_OnEvent(frame, event, arg1, arg2)
 				if arg1 == "LSHIFT" or arg1 == "RSHIFT" then
 					GameTooltip_ShowCompareItem(itemIsOnEnter)
 				elseif arg1 == "LCTRL" or arg1 == "RCTRL" then
-					local _, link = itemIsOnEnter:GetItem()
-					Item.ShowQuickDressUp(link, itemIsOnEnter)
+					if Mount.IsMount(buttonOnEnter.ItemID) then
+						--Item.ShowQuickDressUp(buttonOnEnter.ItemID, itemIsOnEnter)
+					else
+						--local _, link = itemIsOnEnter:GetItem()
+						Item.ShowQuickDressUp(buttonOnEnter.ItemID, itemIsOnEnter)
+					end
 				end
 			else
 				if arg1 == "LSHIFT" or arg1 == "RSHIFT" then
@@ -352,7 +451,7 @@ local function EventFrame_OnEvent(frame, event, arg1, arg2)
 					ShoppingTooltip2:Hide()
 					--ShoppingTooltip3:Hide()
 				elseif arg1 == "LCTRL" or arg1 == "RCTRL" then
-					if Item.previewTooltipFrame and Item.previewTooltipFrame:IsShown() then Item.previewTooltipFrame:Hide() end
+					if Item.previewTooltipFrame and not Mount.IsMount(buttonOnEnter.ItemID) and Item.previewTooltipFrame:IsShown() then Item.previewTooltipFrame:Hide() end
 				end
 			end
 		end

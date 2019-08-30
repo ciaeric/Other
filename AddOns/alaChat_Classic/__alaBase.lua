@@ -1,5 +1,5 @@
 ﻿--[[--
-	virtual@0
+	alex@0
 	--
 	integer index=delayCall(function func,number delay,integer or bool period,list paraList);
 	editdCall(integer index,function func,number delay,integer or bool period,list paraList);

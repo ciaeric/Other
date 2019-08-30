@@ -1,5 +1,5 @@
 ﻿--[[--
-	virtual@0
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS = ...;
@@ -16,10 +16,6 @@ local GetCurrentResolution = GetCurrentResolution;
 local GetScreenResolutions = GetScreenResolutions;
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend;
 
---backup
-local __SendChatMessage = SendChatMessage;
-local __BNSendWhisper = BNSendWhisper;
-local __BNSendConversationMessage = BNSendConversationMessage;
 ----------------------------------------------------------------------------------------------------
 local EMOTE_STRING = L.EMOTE_STRING or {};
 local Emote_Panel_STRING_1=EMOTE_STRING.Emote_Panel_STRING_1 or "";
@@ -39,8 +35,8 @@ end
 local mainButtonSize = 24;
 
 local iconScale = 1
-local ICON_PATH = "Interface\\AddOns\\alaChat_Classic\\icon\\";
-local EMOTE_PATH = "Interface\\AddOns\\alaChat_Classic\\emote\\";
+local ICON_PATH = NS.ICON_PATH;
+local EMOTE_PATH = NS.EMOTE_PATH;
 local PANEL_HIDE_PERIOD = 1.5;
 local SystemIconTable = 
 {
@@ -162,9 +158,9 @@ local function CreateMainButton()
 	local mainButton = CreateFrame("Button", nil, UIParent);
 	mainButton:SetWidth(mainButtonSize);
 	mainButton:SetHeight(mainButtonSize);
-	mainButton:SetNormalTexture(ICON_PATH .. "text_nor_icon");
-	mainButton:SetPushedTexture(ICON_PATH .. "text_push_icon");
-	mainButton:SetHighlightTexture("Interface\\Buttons\\CheckButtonHilight");
+	mainButton:SetNormalTexture(ICON_PATH .. "emote_nor");
+	mainButton:SetPushedTexture(ICON_PATH .. "emote_push");
+	mainButton:SetHighlightTexture(ICON_PATH .. "emote_highlight");
 	mainButton:GetHighlightTexture():SetBlendMode("ADD");
 	mainButton:SetAlpha(0.8);
 	mainButton:SetFrameLevel(32);
@@ -235,7 +231,7 @@ local function CreatePanel(mainButton)
 	panel:EnableMouse(true);
 	panel:Hide();
 	panel:ClearAllPoints();
-	panel:SetPoint("BOTTOMLEFT", mainButton, "TOPRIGHT", 0, 0);
+	panel:SetPoint("BOTTOMLEFT", mainButton, "TOPRIGHT", 0, 32);
 	panel:SetBackdrop(
 		{
 			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -295,7 +291,9 @@ local function CreatePanel(mainButton)
 end
 
 local Emote_Index2Path = {};
+local Emote_Path2Index = {};
 local function ChatEmoteFilter(self, event, msg, ...)
+	--print(msg)
 	for s in string.gmatch(msg, "({[^}]+})") do
 		if (Emote_Index2Path[s]) then
 			 msg = string.gsub(msg , s, "\124T" .. Emote_Index2Path[s] .. ":" ..IconSize(self) .. "\124t", 1);
@@ -305,17 +303,22 @@ local function ChatEmoteFilter(self, event, msg, ...)
 end
 
 local function SendChatMessage_Filter(text)
-	for s in string.gmatch(text, "\124T([^:]+):%d+\124t") do
-		local index = nil;
-		for k, v in pairs(Emote_Index2Path) do
-		    if v == s then
-			    index = k;
+	if control_chatEmote then
+		for s in string.gmatch(text, "\124T([^:]+):%d+\124t") do
+			local index = Emote_Path2Index[s];
+			if index then
+			-- local index = nil;
+			-- for k, v in pairs(Emote_Index2Path) do
+			-- 	if v == s then
+			-- 		index = k;
+			-- 	end
+			-- end
+			-- if index then
+				text = string.gsub(text, "(\124T[^:]+:%d+\124t)", index, 1);
 			end
 		end
-		if index then
-			text = string.gsub(text, "(\124T[^:]+:%d+\124t)", index, 1);
-		end
 	end
+	--print(text)
 	return text;
 end
 
@@ -323,6 +326,44 @@ local function Init()
 	local mainButton = CreateMainButton();
 	local panel = CreatePanel(mainButton);
 	mainButton.panel = panel;
+
+	for _, localeTable in pairs(EMOTE_DATA) do
+		for k, v in pairs(CustomizedIconTable) do
+			Emote_Index2Path["{" .. (localeTable[v[1]] or "") .. "}"] = v[2];
+		end
+	end
+	for k, v in pairs(SystemIconTable) do
+		Emote_Index2Path["{" .. v[1] .. "}"] = v[2];
+	end
+
+	local LT = EMOTE_DATA[LOCALE] or EMOTE_DATA["enUS"];
+	for k, v in pairs(CustomizedIconTable) do
+		Emote_Path2Index[v[2]] = "{" .. (LT[v[1]] or "") .. "}";
+	end
+	for k, v in pairs(SystemIconTable) do
+		Emote_Path2Index[v[2]] = "{" .. v[1] .. "}";
+	end
+
+	return mainButton;
+end
+
+local __SendChatMessage = SendChatMessage;
+_G["SendChatMessage"] = function(text, ...) __SendChatMessage(SendChatMessage_Filter(text), ...);end
+local __BNSendWhisper = BNSendWhisper;
+_G["BNSendWhisper"] = function(presenceID, text, ...) __BNSendWhisper(presenceID, SendChatMessage_Filter(text), ...);end
+local __BNSendConversationMessage = BNSendConversationMessage;
+_G["BNSendConversationMessage"] = function(target, text, ...) __BNSendConversationMessage(target, SendChatMessage_Filter(text), ...);end
+
+local mainButton = Init();
+local function chatEmote_ToggleOn(initing)
+	if not initing and control_chatEmote then
+		return;
+	end
+	control_chatEmote = true;
+	mainButton:Show();
+	if __alaBaseBtn then
+		__alaBaseBtn:AddBtn(1, 1, mainButton, true);
+	end
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", ChatEmoteFilter)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_JOIN", ChatEmoteFilter)
@@ -341,37 +382,10 @@ local function Init()
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", ChatEmoteFilter)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", ChatEmoteFilter)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_OFFICER", ChatEmoteFilter)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", ChatEmoteFilter)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_AFK", ChatEmoteFilter)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", ChatEmoteFilter)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_DND", ChatEmoteFilter)
-	
-	for _, localeTable in pairs(EMOTE_DATA) do
-		for k, v in pairs(CustomizedIconTable) do
-			Emote_Index2Path["{" .. (localeTable[v[1]] or "") .. "}"] = v[2];
-		end
-	end
-	for k, v in pairs(SystemIconTable) do
-		Emote_Index2Path["{" .. v[1] .. "}"] = v[2];
-	end
 
-	_G["SendChatMessage"] = function(text, ...) __SendChatMessage(SendChatMessage_Filter(text), ...);end
-	_G["BNSendWhisper"] = function(presenceID, text, ...) __BNSendWhisper(presenceID, SendChatMessage_Filter(text), ...);end
-	_G["BNSendConversationMessage"] = function(target, text, ...) __BNSendConversationMessage(target, SendChatMessage_Filter(text), ...);end
-
-	return mainButton;
-end
-
-local mainButton = Init();
-local function chatEmote_ToggleOn(initing)
-	if not initing and control_chatEmote then
-		return;
-	end
-	control_chatEmote = true;
-	mainButton:Show();
-	if __alaBaseBtn then
-		__alaBaseBtn:AddBtn(1, 1, mainButton, true);
-	end
 	return control_chatEmote;
 end
 local function chatEmote_ToggleOff()
@@ -383,6 +397,32 @@ local function chatEmote_ToggleOff()
 	if __alaBaseBtn then
 		__alaBaseBtn:RemoveBtn(mainButton);
 	end
+
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_CHANNEL", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_CHANNEL_JOIN", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_CHANNEL_LEAVE", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SAY", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_YELL", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_BN_WHISPER", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_WHISPER_INFORM", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID_LEADER", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_RAID_WARNING", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_PARTY_LEADER", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_GUILD", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_OFFICER", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_AFK", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", ChatEmoteFilter)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_DND", ChatEmoteFilter)
+
+	--SendChatMessage = __SendChatMessage;
+	--BNSendWhisper = BNSendWhisper;
+	--BNSendConversationMessage = __BNSendConversationMessage;
+
 	return control_chatEmote;
 end
 

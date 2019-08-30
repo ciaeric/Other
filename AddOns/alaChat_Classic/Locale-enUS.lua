@@ -1,12 +1,11 @@
 ﻿--[[--
-
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON, NS = ...;
 ----------------------------------------------------------------------------------------------------
 NS.L = NS.L or {EMOTE = {}, };
 local L = NS.L;
-
 ----------------------------------------------------------------------------------------------------
 L.EMOTE["enUS"] = {
     Angel = "Angel",
@@ -65,6 +64,7 @@ L.EMOTE["enUS"] = {
 ----------------------------------------------------------------------------------------------------
 if L.Locale ~= nil and L.Locale ~= "" then return;end
 L.Locale = "enUS";
+L.DBIcon_Text = "Toggle Config Frame";
 L.SC_DATA1 = {
 	CHAT_WHISPER_GET = "[W]%s: ",
 	CHAT_WHISPER_INFORM_GET = "[W]to%s: ",
@@ -102,7 +102,11 @@ L.SC_DATA2 = {
 		{"Trade",       	1,5,	"T",},
 		{"LocalDefense",    1,12,	"D",},
 		{"LookingForGroup", 1,15,	"L",},
-		--
+		{"大脚世界频道",1,18,"世",},
+};
+L.SC_DATA3 = {
+	"General - ",
+	"^LookingForGroup$"
 };
 L.CHATBAR = {
 	T_SAY = "S",
@@ -138,8 +142,10 @@ L.WTG_STRING = {
 	WTG_STRING_OFF = "\124cffff4040Off\124r",
 };
 L.CONFIG = {
+	wel					 = "\124cffff3f3falaChat\124r Loaded./alac or /alachat to open config window",
 	title				 = "Settings",
 	shortChannelName	 = "Short channel name",
+	itemLinkEnhanced	 = "Public channel item link",
 	chatEmote			 = "Emote",
 	ColorNameByClass	 = "Color Name By Class In ChatFrame",
 	filterQuestAnn		 = "NONE",
@@ -154,8 +160,13 @@ L.CONFIG = {
 		YELL,
 		WHISPER,
 		OFFICER,
+		GENERAL,
+		TRADE,
+		LOCAL_DEFENSE,
+		LOOK_FOR_GROUP,
 		label			 = "Channel bar",
 	},
+	channelBarStyle		 = "Channel bar style",
 	--
 	--
 	chatFrameScroll		 = "Add a scroll to bottom button to the left of chatFrame",
@@ -166,8 +177,10 @@ L.CONFIG = {
 	ReadyCheck			 = "Do Ready Check",
 	statReport			 = "Stat Report",
 	copy				 = "Copy chat",
+	level				 = "Show guild member's level in chat frame",
 	scale				 = "Bar Scale",
 	position			 = "Position",
+	hideConfBtn			 = "Hide conf wheel",
 };
 L.REPORT = {
 	neckLevel			 = "neck",

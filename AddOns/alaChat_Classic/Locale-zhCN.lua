@@ -1,5 +1,5 @@
 ﻿--[[--
-
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS = ...;
@@ -64,6 +64,7 @@ L.EMOTE["zhCN"] = {
 ----------------------------------------------------------------------------------------------------
 if GetLocale() ~= "zhCN" then return;end
 L.Locale = "zhCN";
+L.DBIcon_Text = "开关设置窗口";
 L.SC_DATA1 = {
 	CHAT_WHISPER_GET = "[密]%s说: ",
 	CHAT_WHISPER_INFORM_GET = "[密]对%s说: ",
@@ -103,6 +104,10 @@ L.SC_DATA2 = {--短频道名字，每行最后一个字符串为显示名字
 	{"寻求组队",    1,12,"组",},
 	{"大脚世界频道",1,18,"世",},
 };
+L.SC_DATA3 = {
+	"^综合 - ",
+	"^寻求组队$",
+};
 L.CHATBAR = {
 	T_SAY = "说",
 	T_PARTY = "队",
@@ -137,7 +142,9 @@ L.WTG_STRING = {
 	WTG_STRING_OFF = "\124cffff4040已关闭\124r",
 };
 L.CONFIG = {
+	wel						 = "\124cffff3f3falaChat\124r已加载,/alac或/alachat打开设置",
 	title					 = "设置",
+	itemLinkEnhanced		 = "公共频道物品链接",
 	shortChannelName		 = "短频道名",
 	chatEmote				 = "聊天表情",
 	ColorNameByClass		 = "聊天职业着色",
@@ -153,8 +160,13 @@ L.CONFIG = {
 		YELL,
 		WHISPER,
 		OFFICER,
+		GENERAL,
+		TRADE,
+		"本地防务",
+		LOOK_FOR_GROUP,
 		label				 = "频道切换栏",
 	},
+	channelBarStyle			 = "频道切换栏风格",
 	bfWorld_Ignore_Switch	 = "启用\"屏蔽世界频道按钮\"",
 	bfWorld_Ignore_BtnSize	 = "",
 	chatFrameScroll			 = "聊天框左侧滚动到底部按钮",
@@ -165,8 +177,10 @@ L.CONFIG = {
 	ReadyCheck				 = "就位确认",
 	statReport				 = "属性通报",
 	copy					 = "复制聊天",
+	level					 = "聊天框显示公会成员等级",
 	scale					 = "缩放",
 	position				 = "位置",
+	hideConfBtn				 = "隐藏设置按钮",
 };
 L.REPORT = {
 	neckLevel			 = "项链",

@@ -1,5 +1,5 @@
 ﻿--[[--
-
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS=...;
@@ -31,10 +31,10 @@ local function FUNC_CALL(t,k,...)
 	if FUNC[t] then
 		if FUNC[t][k] then
 			return FUNC[t][k](...);
-		else
+		elseif k ~= "_version" then
 			debug("Missing FUNC handler",t,k);
 		end
-	else
+	elseif t ~= "_version" then
 		debug("Missing FUNC table",t);
 	end
 	return nil;
@@ -63,11 +63,15 @@ local borderHeight=4;
 local config=nil;
 
 local default={
+	_version				=190830.0,
+
 	shortChannelName		=true,
+	itemLinkEnhanced		=true,
 	filterQuestAnn			=false,
 	chatEmote				=true,
 	ColorNameByClass		=true,
-	channelBarChannel		={true,true,true,true,true,true,true,true,true,true},
+	channelBarChannel		={true,true,true,true,true,true,true,true,true,true,true,true,true,true},
+	channelBarStyle			="CHAR",
 
 	bfWorld_Ignore_Switch	=false,
 	bfWorld_Ignore			=false,
@@ -76,25 +80,34 @@ local default={
 	--chatFrameScroll			=false,
 	roll 					=true,
 	DBMCountDown			=true,
-	welcomeToGuild			=true,
+	welcomeToGuild			=false,
 	broadCastNewMember		=false,
 	ReadyCheck				=true,
 	--statReport				=true,
+	level					=true;
 	copy					=true;
 
 	scale					=1.0;
 
 	position				="BELOW_EDITBOX";
+
+	hideConfBtn				=true,
 };
+local override ={
+	_version				=190830.1,
+	channelBarStyle			="CIRCLE",
+}
 local buttons={
 	{name="shortChannelName"		,type="CheckButton"	,label=LCONFIG.shortChannelName			,key="shortChannelName"			,},
+	{name="itemLinkEnhanced"		,type="CheckButton"	,label=LCONFIG.itemLinkEnhanced			,key="itemLinkEnhanced"			,},
 	{name="chatEmote"				,type="CheckButton"	,label=LCONFIG.chatEmote				,key="chatEmote"				,},
 	{name="ColorNameByClass"		,type="CheckButton" ,label=LCONFIG.ColorNameByClass			,key="ColorNameByClass"			,},
 	{name="filterQuestAnn"			,type="CheckButton"	,label=LCONFIG.filterQuestAnn			,key="filterQuestAnn"			,},
 	{name="channelBarChannel"		,type="MultiCB"		,label=LCONFIG.channelBarChannel		,key="channelBarChannel"		,},
+	{name="channelBarStyle"			,type="DropDownMenu",label=LCONFIG.channelBarStyle			,key="channelBarStyle"			,value={"CHAR","CIRCLE","SQUARE"},},
 	{name="bfWorld_Ignore_Switch"	,type="CheckButton"	,label=LCONFIG.bfWorld_Ignore_Switch	,key="bfWorld_Ignore_Switch"	,},
 	{name="bfWorld_Ignore_BtnSize"	,type="Slider"		,label=LCONFIG.bfWorld_Ignore_BtnSize	,key="bfWorld_Ignore_BtnSize"	,minRange=12	,maxRange=96	,stepSize=4		,},
-	--{name="chatFrameScroll"			,type="CheckButton"	,label=LCONFIG.chatFrameScroll			,key="chatFrameScroll"			,},
+
 	{name="roll"					,type="CheckButton"	,label=LCONFIG.roll						,key="roll"						,},
 	{name="DBMCountDown"			,type="CheckButton"	,label=LCONFIG.DBMCountDown				,key="DBMCountDown"				,},
 	{name="welcomeToGuild"			,type="CheckButton"	,label=LCONFIG.welcomeToGuild			,key="welcomeToGuild"			,},
@@ -102,22 +115,21 @@ local buttons={
 	{name="ReadyCheck"				,type="CheckButton"	,label=LCONFIG.ReadyCheck				,key="ReadyCheck"				,},
 	--{name="statReport"				,type="CheckButton"	,label=LCONFIG.statReport				,key="statReport"				,},
 	{name="copy"					,type="CheckButton"	,label=LCONFIG.copy						,key="copy"						,},
+	{name="level"					,type="CheckButton"	,label=LCONFIG.level					,key="level"					,},
 
 	{name="scale"					,type="Slider"		,label=LCONFIG.scale					,key="scale"					,minRange=0.1	,maxRange=2.0	,stepSize=0.1	,},
-	{name="position"				,type="CheckButton"	,label=LCONFIG.position					,key="position"					,}
-	--{name="position"				,type="DropDownMenu",label=LCONFIG.position					,key="position"					,value={"BELOW_EDITBOX","ABOVE_EDITOBX","ABOVE_CHATFRAME"},}
+	--{name="position"				,type="Slider"		,label=LCONFIG.position					,key="position"					,minRange=1		,maxRange=3		,stepSize=1		,},
+	{name="position"				,type="DropDownMenu",label=LCONFIG.position					,key="position"					,value={"BELOW_EDITBOX","ABOVE_EDITOBX","ABOVE_CHATFRAME"},},
 
-	--{name="CheckButton",type="CheckButton",label="CheckButton",point="TOPLEFT",key="DBMCountDown",},
-	--{name="Reset",type="Button",inherits="UIPanelButtonTemplate",label="Reset",point="TOPLEFT",key="zTipOption.Reset",},
-	--{name="Target",type="CheckButton",var="TargetOfMouse",point="TOPLEFT",x=20,y=-35,},
+	{name="hideConfBtn"				,type="CheckButton"	,label=LCONFIG.hideConfBtn				,key="hideConfBtn"				,},
 };
 if GetLocale()~="zhCN" then
-	table.remove(buttons,7);
+	table.remove(buttons,8);
 	default.bfWorld_Ignore_BtnSize=nil;
-	table.remove(buttons,6);
+	table.remove(buttons,7);
 	default.bfWorld_Ignore_Switch=nil;
 	default.bfWorld_Ignore=nil;
-	table.remove(buttons,4);
+	table.remove(buttons,5);
 	default.filterQuestAnn=nil;
 end
 
@@ -247,7 +259,11 @@ local function dropDownInitialize(self)
 	end
 	UIDropDownMenu_SetSelectedValue(self,config[self.key]);
 end
-
+local function dropOnClick(drop, funcIndex, key, val, ...)
+	drop.fs:SetText(val);
+	config[key]=val;
+	FUNC_CALL(funcIndex, key, val, ...);
+end
 
 local function configFrame_Init()
 
@@ -310,7 +326,7 @@ local function configFrame_Init()
 	local maxWidth=-1;
 	for _,t in pairs(buttons) do
 		if t.type=="CheckButton" then
-			local cb=CreateFrame("CheckButton","alaChatConfigFrame_CheckButton_"..t.name,configFrame,"OptionsCheckButtonTemplate");
+			local cb=CreateFrame("CheckButton","alaChatConfigFrame_CheckButton_"..t.name,configFrame,"OptionsBaseCheckButtonTemplate");
 			cb.key=t.key;
 			cb.tooltipText=t.text;
 
@@ -339,7 +355,7 @@ local function configFrame_Init()
 
 			for i=1,num do
 
-				local cb=CreateFrame("CheckButton","alaChatConfigFrame_MultiCheckButton_"..t.name..i,configFrame,"OptionsCheckButtonTemplate");
+				local cb=CreateFrame("CheckButton","alaChatConfigFrame_MultiCheckButton_"..t.name..i,configFrame,"OptionsBaseCheckButtonTemplate");
 				cb:SetHitRectInsets(0,0,0,0);
 				cb.key=t.key;
 				cb.idx=i;
@@ -421,17 +437,46 @@ local function configFrame_Init()
 
 			fs:SetPoint("TOPLEFT",configFrame,"TOPLEFT",borderWidth,-titleHeight-CBLineHeight*numCBLines-(MCLineHeight0+MCLineHeight1+MCLineHeight2+MCLineHeight3)*numMCLines-SLLineHeight*numSLLines-DDLineHeight*numDDLines);
 
-			local dropDown=CreateFrame("Frame","alaChatConfigFrame_DropDownMenu_" .. t.name,configFrame,"UIDropDownMenuTemplate");
-			dropDown.key=t.key;
+			--local dropDown=CreateFrame("Frame","alaChatConfigFrame_DropDownMenu_" .. t.name,configFrame,"UIDropDownMenuTemplate");
+			--dropDown.key=t.key;
 
-			dropDown:ClearAllPoints();
-			dropDown:SetPoint("LEFT",fs,"RIGHT",space_DropDownMenu_FontString,0);
+			--dropDown:ClearAllPoints();
+			--dropDown:SetPoint("LEFT",fs,"RIGHT",space_DropDownMenu_FontString,0);
 			--dropDown:SetPoint("TOPLEFT",configFrame,"TOPLEFT",borderWidth,-titleHeight-CBLineHeight*numCBLines-SLLineHeight*numSLLines-DDLineHeight*numDDLines);
 
-			dropDown.value=t.value;
-			UIDropDownMenu_Initialize(dropDown,dropDownInitialize);
+			--dropDown.value=t.value;
+			--UIDropDownMenu_Initialize(dropDown,dropDownInitialize);
 
-			configFrame.dropDowns[t.key]=dropDown;
+			--configFrame.dropDowns[t.key]=dropDown;
+
+			local drop = CreateFrame("Button","alaChatConfigFrame_Drop_" .. t.name,configFrame);
+			drop:SetSize(28, 28)
+			drop:EnableMouse(true);
+			drop:SetNormalTexture("interface\\mainmenubar\\ui-mainmenu-scrolldownbutton-up")
+			--drop:GetNormalTexture():SetTexCoord(0.0, 1.0, 0.0, 0.5);
+			drop:SetPushedTexture("interface\\mainmenubar\\ui-mainmenu-scrolldownbutton-down")
+			--drop:GetPushedTexture():SetTexCoord(0.0, 1.0, 0.0, 0.5);
+			drop:SetHighlightTexture("Interface\\mainmenubar\\ui-mainmenu-scrolldownbutton-highlight");
+			drop:SetPoint("LEFT",fs,"RIGHT",4,0);
+			local dropfs=configFrame:CreateFontString(nil,"ARTWORK","GameFontHighlight");
+			dropfs:SetText(config and config[t.key] or "");
+			dropfs:SetPoint("LEFT",drop,"RIGHT",4,0);
+			drop.fs=dropfs;
+			drop.key=t.key;
+			local db = {
+				handler = dropOnClick,
+				elements = {},
+			};
+			for i = 1, #t.value do
+				db.elements[i]={
+					para = { drop, "SETVALUE", t.key, t.value[i], };
+					text = t.value[i];
+				};
+			end
+			drop:SetScript("OnClick" ,function(self) ALADROP(self, "BOTTOMRIGHT", db); end);
+
+
+			configFrame.dropDowns[t.key]=drop;
 			numDDLines=numDDLines+1;
 		end
 	end
@@ -441,9 +486,9 @@ end
 
 local function __OnClick(self,button)
 	if configFrame:IsShown() then
-		configFrame:Hide();
+		HideUIPanel(configFrame);
 	else
-		configFrame:Show();
+		ShowUIPanel(configFrame);
 		for _,cb in pairs(configFrame.checkButtons) do
 			local key=cb.key;
 			cb:SetChecked(config[key]);
@@ -460,48 +505,57 @@ end
 eventCall(
 	"PLAYER_ENTERING_WORLD",
 	function()
-		if alaChatConfig then
+		if _G["ElvUI"] then
+			default.position = "ABOVE_CHATFRAME";
+		end
+		if alaChatConfig and (alaChatConfig._version and alaChatConfig._version >= default._version) then
 			for k,v in pairs(alaChatConfig) do
 				if default[k]==nil then
 					alaChatConfig[k]=nil;
+				elseif type(v) == "table" then
+					for k2, v2 in pairs(default[k]) do
+						if default[k][k2] == nil then
+							v[k2] = nil;
+						end
+					end
+				end
+			end
+			for k,v in pairs(default) do
+				if alaChatConfig[k]==nil then
+					if type(v)=="table" then
+						alaChatConfig[k]={};
+						for k1,v1 in pairs(v) do
+							alaChatConfig[k][k1]=v1;
+						end
+					else
+						alaChatConfig[k]=v;
+					end
 				end
 			end
 		else
 			alaChatConfig=default;
 		end
-		--alaChatConfig=alaChatConfig or default;
-		local svConfig=alaChatConfig;
-		alaChatConfig={};
+
 		config=alaChatConfig;
+
+		if not config._version or (config._version and config._version < override._version) then
+			for k, v in pairs(override) do
+				config[k] = v;
+				print(k,v)
+			end
+		end
+		if GetLocale()=="zhCN" then
+			if config.channelBarChannel[14]==nil then
+				config.channelBarChannel[14]=true;
+			end
+		else
+			config.channelBarChannel[14]=nil;
+		end
+
 		for k,v in pairs(FUNC.INIT) do
 			v();
 		end
-		if GetLocale()=="zhCN" then
-			if not svConfig.channelBarChannel then
-				svConfig.channelBarChannel={};
-				for k1,v1 in pairs(default.channelBarChannel) do
-					svConfig.channelBarChannel[k1]=v1;
-				end
-			end
-			if svConfig.channelBarChannel[10]==nil then
-				svConfig.channelBarChannel[10]=true;
-			end
-		else
-			svConfig.channelBarChannel[10]=nil;
-		end
 		for k,v in pairs(default) do
-			if svConfig[k]==nil then
-				if type(v)=="table" then
-					config[k]={};
-					for k1,v1 in pairs(v) do
-						config[k][k1]=v1;
-					end
-				else
-					config[k]=v;
-				end
-			else
-				config[k]=svConfig[k];
-			end
 			if type(v)=="boolean" then
 				if config[k] then
 					FUNC_CALL("ON",k,true);
@@ -520,20 +574,30 @@ eventCall(
 				FUNC_CALL("SETVALUE",k,config[k],true);
 			end
 		end
-		config._version=default._version;
+
 		alaChatConfigFrame.config=config;
-		alaBaseBtn:CreateBtn(
-				btnPackIndex,
-				1,
-				"alaChatConfig",
-				"Interface\\Buttons\\UI-OptionsButton",
-				"Interface\\Buttons\\UI-OptionsButton",
-				__OnClick,
-				{
-					"\124cffffffffalaChat Config\124r",
-				}
-		);
 		configFrame_Init();
+		if LibStub then
+			local icon = LibStub("LibDBIcon-1.0", true);
+			if icon then
+				icon:Register("alaChat_Classic",
+				{
+					icon = "Interface\\AddOns\\alaChat_Classic\\icon\\emote_nor",
+					OnClick = __OnClick,
+					text = nil,
+					OnTooltipShow = function(tt)
+							tt:AddLine("alaChat_Classic");
+							tt:AddLine(" ");
+							tt:AddLine(L.DBIcon_Text);
+						end
+				},
+				{
+					minimapPos = 15,
+				}
+				);
+			end
+		end
+		print(LCONFIG.wel);
 	end
 );
 function _gp(f)
@@ -574,11 +638,56 @@ end
 FUNC.SETVALUE.position=function(pos,init)
 	if not init then
 		alaBaseBtn:Pos(pos);
+		-- if pos == 1 then
+		-- 	alaBaseBtn:Pos("BELOW_EDITBOX");
+		-- elseif pos == 2 then
+		-- 	alaBaseBtn:Pos("ABOVE_EDITOBX");
+		-- elseif pos == 3 then
+		-- 	alaBaseBtn:Pos("ABOVE_CHATFRAME");
+		-- end
+		--config.position=pos;
 	end
 end
 FUNC.ON.position=function()
-	alaBaseBtn:Pos("ABOVE_CHATFRAME");
+		alaBaseBtn:Pos("ABOVE_CHATFRAME");
+		config.position=true;
 end
 FUNC.OFF.position=function()
-	alaBaseBtn:Pos("BELOW_EDITBOX");
+		alaBaseBtn:Pos("BELOW_EDITBOX");
+		config.position=false;
 end
+local configButton = nil;
+FUNC.ON.hideConfBtn=function(init)
+	if init or config.hideConfBtn then
+		alaBaseBtn:RemoveBtn(configButton, true);
+		config.hideConfBtn = true;
+	end
+end
+FUNC.OFF.hideConfBtn=function(init)
+	if init or not config.hideConfBtn then
+		if configButton then
+			__alaBaseBtn:AddBtn(btnPackIndex, 1, configButton, false, false, true);
+			config.hideConfBtn = false;
+		else
+			configButton=alaBaseBtn:CreateBtn(
+				btnPackIndex,
+				1,
+				"alaChatConfig",
+				"Interface\\Buttons\\UI-OptionsButton",
+				"Interface\\Buttons\\UI-OptionsButton",
+				nil,
+				__OnClick,
+				{
+					"\124cffffffffalaChat Config\124r",
+				}
+		);
+		end
+	end
+end
+
+SLASH_ALACHAT1 = "/alac";
+SLASH_ALACHAT2 = "/alachat";
+SlashCmdList["ALACHAT"]=function()
+    __OnClick();
+end
+

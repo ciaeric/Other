@@ -149,8 +149,12 @@ function MkQL_SetQuest(iQuestNum)
 	local rewardMoney = GetQuestLogRewardMoney();
 	local name, texture, numItems, quality, isUsable = 1;
 	local numTotalRewards = numQuestRewards + numQuestChoices;
-	local rewardXP = 0 --GetQuestLogRewardXP()
+	local rewardXP = 0
 	
+    if (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE) then
+        rewardXP = GetQuestLogRewardXP()
+    end
+    
 	local rewardItem = nil;
 
 	if (numTotalRewards == 0 and rewardMoney == 0 and rewardXP == 0) then

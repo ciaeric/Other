@@ -1,5 +1,5 @@
 ﻿--[[--
-
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS = ...;
@@ -64,6 +64,7 @@ L.EMOTE["zhTW"] = {
 ----------------------------------------------------------------------------------------------------
 if GetLocale() ~= "zhTW" then return;end
 L.Locale = "zhTW";
+L.DBIcon_Text = "開閉設置窗體";
 L.SC_DATA1 = {
 	CHAT_WHISPER_GET = "[密]%s説: ",
 	CHAT_WHISPER_INFORM_GET = "[密]对%s説: ",
@@ -101,7 +102,11 @@ L.SC_DATA2 = {
 		{"交易",			1,6,	"交",},
 		{"本地防務",		1,12,	"本",},
 		{"尋求組隊",		1,12,	"尋",},
-		--
+		{"大脚世界频道",1,18,"世",},
+};
+L.SC_DATA3 = {
+	"^綜合 - ",
+	"^尋求組隊$",
 };
 L.CHATBAR = {
 	T_SAY = "說",
@@ -137,8 +142,10 @@ L.WTG_STRING = {
 	WTG_STRING_OFF = "\124cffff4040已關閉\124r",
 };
 L.CONFIG = {
+	wel					 = "\124cffff3f3falaChat\124r已加載,/alac或/alachat打開設置",
 	title				 = "設置",
 	shortChannelName	 = "短頻道名",
+	itemLinkEnhanced	 = "公共頻道物品鏈接",
 	chatEmote			 = "聊天表情",
 	ColorNameByClass	 = "聊天職業著色",
 	filterQuestAnn		 = "NONE",
@@ -153,8 +160,13 @@ L.CONFIG = {
 		YELL,
 		WHISPER,
 		OFFICER,
+		GENERAL,
+		TRADE,
+		"本地防務",
+		LOOK_FOR_GROUP,
 		label			 = "頻道切換欄",
 	},
+	channelBarStyle		 = "頻道切換欄風格",
 	--
 	--
 	chatFrameScroll		 = "聊天框左側滾動到底部按鈕",
@@ -165,8 +177,10 @@ L.CONFIG = {
 	ReadyCheck			 = "就位確認",
 	statReport			 = "屬性通報",
 	copy				 = "複製聊天",
+	level				 = "聊天窗體顯示公會成員等級",
 	scale				 = "縮放",
 	position			 = "位置",
+	hideConfBtn			 = "隱藏選項設置齒輪",
 };
 L.REPORT = {
 	neckLevel			 = "項鏈",

@@ -28,21 +28,14 @@ local function UpdateFrames(noPageUpdate)
 	local moduleData = AtlasLoot.ItemDB:Get(db.selected[1])
 	local dataID = db.selected[2]
 	local bossID = db.selected[3]
+	local frame, contentFrame = GUI.frame, GUI.frame.contentFrame
 	local contentName, contentIndex, contentColor = moduleData[dataID]:GetContentType()
 	local name, description, _, loreImage, dungeonAreaMapID
 	contentColor = contentColor or ATLASLOOT_UNKNOWN_COLOR
 
-	if moduleData[dataID].EncounterJournalID and moduleData[dataID].items[bossID].EncounterJournalID then
-		GUI.__EJData = { moduleData[dataID].EncounterJournalID, moduleData[dataID].items[bossID].EncounterJournalID }
-		GUI.frame.contentFrame.clasFilterButton:Show()
-	else
-		GUI.__EJData = nil
-		GUI.frame.contentFrame.clasFilterButton:Hide()
-	end
-
 	-- Set Boss name
-	GUI.frame.contentFrame.title.txt = moduleData[dataID]:GetNameForItemTable(bossID)
-	GUI.frame.contentFrame.title:SetText(GUI.frame.contentFrame.title.txt)
+	contentFrame.title.txt = moduleData[dataID]:GetNameForItemTable(bossID)
+	contentFrame.title:SetText(contentFrame.title.txt)
 
 	-- refresh background info
 	GUI.lastBgInfo = GUI.curBGInfo
@@ -72,45 +65,52 @@ local function UpdateFrames(noPageUpdate)
 			moduleData[dataID].items[bossID].DisplayIDs[1][2] = moduleData[dataID]:GetNameForItemTable(bossID)
 		end
 		GUI.ModelFrame.DisplayIDs = moduleData[dataID].items[bossID].DisplayIDs
-		GUI.frame.contentFrame.modelButton:Show()
+		contentFrame.modelButton:Show()
 	elseif moduleData[dataID].items[bossID].EncounterJournalID then
 		GUI.ModelFrame.EncounterJournalID = moduleData[dataID].items[bossID].EncounterJournalID
-		GUI.frame.contentFrame.modelButton:Show()
+		contentFrame.modelButton:Show()
 	else
 		GUI.ModelFrame.DisplayIDs = nil
 		GUI.ModelFrame.EncounterJournalID = nil
-		GUI.frame.contentFrame.modelButton:Hide()
+		contentFrame.modelButton:Hide()
 	end
 
 	-- SOUNDS
 	if moduleData[dataID].items[bossID].npcId and SoundData:GetNpcData(moduleData[dataID].items[bossID].npcId) then
 		GUI.SoundFrame.npcId = moduleData[dataID].items[bossID].npcId
-		GUI.frame.contentFrame.soundsButton:Show()
+		contentFrame.soundsButton:Show()
 	else
 		GUI.SoundFrame.npcId = nil
-		GUI.frame.contentFrame.soundsButton:Hide()
-		if GUI.frame.contentFrame.shownFrame == GUI.SoundFrame.frame then
-			GUI.frame.contentFrame.shownFrame = nil
+		contentFrame.soundsButton:Hide()
+		if contentFrame.shownFrame == GUI.SoundFrame.frame then
+			contentFrame.shownFrame = nil
 			if GUI.SoundFrame.frame then
 				GUI.SoundFrame.frame:Hide()
 			end
 		end
 	end
 
+	-- Search
+	if contentFrame.shownFrame and contentFrame.shownFrame.OnSearch then
+		contentFrame.searchBox:Show()
+	else
+		contentFrame.searchBox:Hide()
+	end
+
 	-- AtlasMapID
 	if AtlasLoot.AtlasIntegration and (AtlasLoot.AtlasIntegration.IsEnabled() and moduleData[dataID].AtlasMapID and AtlasLoot.AtlasIntegration.GetAtlasZoneData(moduleData[dataID].AtlasMapID)) then
-		GUI.frame.contentFrame.AtlasMapButton.AtlasMapID = moduleData[dataID].AtlasMapID
-		GUI.frame.contentFrame.AtlasMapButton:Show()
-		if (GUI.frame.contentFrame.soundsButton:IsVisible()) then
-			GUI.frame.contentFrame.AtlasMapButton:SetPoint("RIGHT", GUI.frame.contentFrame.soundsButton, "LEFT", -2, 0)
-		elseif (GUI.frame.contentFrame.modelButton:IsVisible()) then
-			GUI.frame.contentFrame.AtlasMapButton:SetPoint("RIGHT", GUI.frame.contentFrame.modelButton, "LEFT", -2, 0)
+		contentFrame.AtlasMapButton.AtlasMapID = moduleData[dataID].AtlasMapID
+		contentFrame.AtlasMapButton:Show()
+		if (contentFrame.soundsButton:IsVisible()) then
+			contentFrame.AtlasMapButton:SetPoint("RIGHT", contentFrame.soundsButton, "LEFT", -2, 0)
+		elseif (contentFrame.modelButton:IsVisible()) then
+			contentFrame.AtlasMapButton:SetPoint("RIGHT", contentFrame.modelButton, "LEFT", -2, 0)
 		else
-			GUI.frame.contentFrame.AtlasMapButton:SetPoint("RIGHT", GUI.frame.contentFrame.nextPageButton, "LEFT", 0, 0)
+			contentFrame.AtlasMapButton:SetPoint("RIGHT", contentFrame.nextPageButton, "LEFT", 0, 0)
 		end
 	else
-		GUI.frame.contentFrame.AtlasMapButton.AtlasMapID = nil
-		GUI.frame.contentFrame.AtlasMapButton:Hide()
+		contentFrame.AtlasMapButton.AtlasMapID = nil
+		contentFrame.AtlasMapButton:Hide()
 	end
 
 	-- BaseLvl for Items
@@ -120,32 +120,31 @@ local function UpdateFrames(noPageUpdate)
 		-- Next/Prev
 		if moduleData[dataID].items[bossID+1] then
 			if moduleData[dataID].items[bossID].ExtraList and moduleData[dataID].items[bossID+1].ExtraList then
-				GUI.frame.contentFrame.nextPageButton.info = nil
-				--GUI.frame.contentFrame.nextPageButton.info = bossID + 1
+				contentFrame.nextPageButton.info = nil
+				--contentFrame.nextPageButton.info = bossID + 1
 			elseif not moduleData[dataID].items[bossID+1].ExtraList and not moduleData[dataID].items[bossID].ExtraList then
-				GUI.frame.contentFrame.nextPageButton.info = GUI.frame.boss:CheckIfNext()
+				contentFrame.nextPageButton.info = GUI.frame.boss:CheckIfNext()
 			else
-				GUI.frame.contentFrame.nextPageButton.info = nil
+				contentFrame.nextPageButton.info = nil
 			end
 		else
-			GUI.frame.contentFrame.nextPageButton.info = nil
+			contentFrame.nextPageButton.info = nil
 		end
-		if GUI.frame.contentFrame.shownFrame and GUI.frame.contentFrame.shownFrame.prevPage and not moduleData[dataID].items[bossID].ExtraList then
-			GUI.frame.contentFrame.prevPageButton.info = tostring(GUI.frame.contentFrame.shownFrame.prevPage)
+		if contentFrame.shownFrame and contentFrame.shownFrame.prevPage and not moduleData[dataID].items[bossID].ExtraList then
+			contentFrame.prevPageButton.info = tostring(contentFrame.shownFrame.prevPage)
 		elseif moduleData[dataID].items[bossID-1] and not moduleData[dataID].items[bossID].ExtraList then
-			GUI.frame.contentFrame.prevPageButton.info = GUI.frame.boss:CheckIfPrev()
+			contentFrame.prevPageButton.info = GUI.frame.boss:CheckIfPrev()
 		else
-			GUI.frame.contentFrame.prevPageButton.info = nil
+			contentFrame.prevPageButton.info = nil
 		end
 
 		-- refresh current page
-		if GUI.frame.contentFrame.shownFrame and GUI.frame.contentFrame.shownFrame.Refresh then
-			GUI.frame.contentFrame.shownFrame:Refresh()
-		elseif not GUI.frame.contentFrame.shownFrame then
+		if contentFrame.shownFrame and contentFrame.shownFrame.Refresh then
+			contentFrame.shownFrame:Refresh()
+		elseif not contentFrame.shownFrame then
 			GUI.ItemFrame:Show()
 		end
 	end
-
 	GUI:RefreshNextPrevButtons()
 end
 
@@ -464,6 +463,25 @@ local function NextPrevButtonOnClick(self)
 				GUI.frame.boss:SetPrev()
 			end
 		end
+	end
+end
+
+local function SearchBoxOnEnter(self)
+	self:ClearFocus()
+	if GUI.frame.contentFrame.shownFrame and GUI.frame.contentFrame.shownFrame.OnSearch then
+		GUI.frame.contentFrame.shownFrame.OnSearch(self:GetText())
+	end
+end
+
+local function SearchBoxOnClear(self)
+	if GUI.frame.contentFrame.shownFrame and GUI.frame.contentFrame.shownFrame.OnSearchClear then
+		GUI.frame.contentFrame.shownFrame.OnSearchClear()
+	end
+end
+
+local function SearchBoxOnTextChanged(self, pI)
+	if pI and GUI.frame.contentFrame.shownFrame and GUI.frame.contentFrame.shownFrame.OnSearchTextChanged then
+		GUI.frame.contentFrame.shownFrame.OnSearchTextChanged(self:GetText())
 	end
 end
 
@@ -810,6 +828,15 @@ function GUI:Create()
 	frame.titleFrame:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", -30, -25)
 	frame.titleFrame.text:SetText(AL["AtlasLoot"])
 
+	frame.titleFrame.version = frame.titleFrame:CreateFontString(nil, "ARTWORK")
+	frame.titleFrame.version:SetPoint("BOTTOMRIGHT", frame.titleFrame, "BOTTOMRIGHT", -2, 1)
+	frame.titleFrame.version:SetTextColor(1, 1, 1, 0.5)
+	frame.titleFrame.version:SetSize(150, 10)
+	frame.titleFrame.version:SetFont(_G["SystemFont_Tiny"]:GetFont(), 10)
+	frame.titleFrame.version:SetJustifyH("RIGHT")
+	frame.titleFrame.version:SetJustifyV("BOTTOM")
+	frame.titleFrame.version:SetText(AtlasLoot.__addonversion)
+
 	frame.moduleSelect = GUI:CreateDropDown()
 	frame.moduleSelect:SetParPoint("TOPLEFT", frame, "TOPLEFT", 10, -40)
 	frame.moduleSelect:SetWidth(270)
@@ -956,6 +983,19 @@ function GUI:Create()
 	frame.contentFrame.soundsButton:SetText(AL["Sounds"])
 	frame.contentFrame.soundsButton:SetScript("OnClick", SoundButtonOnClick)
 
+	-- #####
+	-- Center
+	-- #####
+	frame.contentFrame.searchBox = CreateFrame("EditBox", frameName.."-SearchBox", frame.contentFrame, "SearchBoxTemplate")
+	frame.contentFrame.searchBox:SetWidth(200)
+	frame.contentFrame.searchBox:SetHeight(35)
+	frame.contentFrame.searchBox:SetPoint("CENTER", frame.contentFrame.downBG, "CENTER", 0, 0)
+	frame.contentFrame.searchBox:SetAutoFocus(false)
+	frame.contentFrame.searchBox:SetMaxLetters(50)
+	frame.contentFrame.searchBox:SetScript("OnEnterPressed", SearchBoxOnEnter)
+	frame.contentFrame.searchBox:HookScript("OnTextChanged", SearchBoxOnTextChanged)
+	frame.contentFrame.searchBox.clearButton:HookScript("OnClick", SearchBoxOnClear)
+	frame.contentFrame.searchBox:Show()
 
 	-- #####
 	-- Left -> Right
@@ -1002,13 +1042,27 @@ function GUI:Create()
 	GUI.RefreshMainFrame()
 
 	self.ItemFrame:Create()
+	-- Set itemframe as start frame
+	frame.contentFrame.shownFrame = GUI.ItemFrame.frame
 	--self.SoundFrame:Create()
 end
 
-function GUI.RefreshStyle()
-
+function GUI:ForceUpdate()
+	db = AtlasLoot.db.GUI
+	FIRST_SHOW = true
+	if self.frame:IsShown() then
+		self.frame:Hide()
+		self.frame:Show()
+	end
+	GUI.RefreshStyle()
+	--UpdateFrames()
 end
 
+function GUI.RefreshStyle()
+	GUI.RefreshContentBackGround()
+	GUI.RefreshMainFrame()
+	GUI.RefreshFonts()
+end
 
 function GUI.ResetFrames()
 	db.point = { "CENTER" }
@@ -1059,31 +1113,31 @@ function GUI.RefreshContentBackGround()
 	local frame = GUI.frame.contentFrame
 
 	-- top Bg
-	if db.contentTopBar.useContentColor and ( frame.topBG.curAlpha ~= db.contentTopBar.bgColor[4] or frame.topBG.curColor ~= GUI.curBgInfo[1]) then
-		frame.topBG:SetColorTexture(GUI.curBgInfo[1][1], GUI.curBgInfo[1][2], GUI.curBgInfo[1][3], db.contentTopBar.bgColor[4])
+	if db.contentTopBar.useContentColor and ( frame.topBG.curAlpha ~= db.contentTopBar.bgColor.a or frame.topBG.curColor ~= GUI.curBgInfo[1]) then
+		frame.topBG:SetColorTexture(GUI.curBgInfo[1][1], GUI.curBgInfo[1][2], GUI.curBgInfo[1][3], db.contentTopBar.bgColor.a)
 		frame.topBG.curColor = GUI.curBgInfo[1]
-		frame.topBG.curAlpha = db.contentTopBar.bgColor[4]
+		frame.topBG.curAlpha = db.contentTopBar.bgColor.a
 	elseif not db.contentTopBar.useContentColor and frame.topBG.curColor ~= db.contentTopBar.bgColor then
-		frame.topBG:SetColorTexture(db.contentTopBar.bgColor[1], db.contentTopBar.bgColor[2], db.contentTopBar.bgColor[3], db.contentTopBar.bgColor[4])
+		frame.topBG:SetColorTexture(db.contentTopBar.bgColor.r, db.contentTopBar.bgColor.g, db.contentTopBar.bgColor.b, db.contentTopBar.bgColor.a)
 		frame.topBG.curColor = db.contentTopBar.bgColor
 	end
 
 	-- content Bg
 	if db.content.showBgImage and GUI.curBgInfo and GUI.curBgInfo[2] ~= ( GUI.lastBgInfo and GUI.lastBgInfo[2] or nil) then
 		GUI.frame.contentFrame.itemBG:SetTexture(GUI.curBgInfo[2])
-		GUI.frame.contentFrame.itemBG:SetAlpha(db.content.bgColor[4])
+		GUI.frame.contentFrame.itemBG:SetAlpha(db.content.bgColor.a)
 	elseif not db.content.showBgImage or not GUI.curBgInfo[2] then
 		GUI.frame.contentFrame.itemBG:SetAlpha(1)
-		GUI.frame.contentFrame.itemBG:SetColorTexture(db.content.bgColor[1], db.content.bgColor[2], db.content.bgColor[3], db.content.bgColor[4])
+		GUI.frame.contentFrame.itemBG:SetColorTexture(db.content.bgColor.r, db.content.bgColor.g, db.content.bgColor.b, db.content.bgColor.a)
 	end
 
 	-- bottom Bg
-	if db.contentBottomBar.useContentColor and ( frame.downBG.curAlpha ~= db.contentBottomBar.bgColor[4] or frame.downBG.curColor ~= GUI.curBgInfo[1]) then
-		frame.downBG:SetColorTexture(GUI.curBgInfo[1][1], GUI.curBgInfo[1][2], GUI.curBgInfo[1][3], db.contentBottomBar.bgColor[4])
+	if db.contentBottomBar.useContentColor and ( frame.downBG.curAlpha ~= db.contentBottomBar.bgColor.a or frame.downBG.curColor ~= GUI.curBgInfo[1]) then
+		frame.downBG:SetColorTexture(GUI.curBgInfo[1][1], GUI.curBgInfo[1][2], GUI.curBgInfo[1][3], db.contentTopBar.bgColor.a)
 		frame.downBG.curColor = GUI.curBgInfo[1]
-		frame.downBG.curAlpha = db.contentBottomBar.bgColor[4]
+		frame.downBG.curAlpha = db.contentBottomBar.bgColor.a
 	elseif not db.contentBottomBar.useContentColor and frame.downBG.curColor ~= db.contentBottomBar.bgColor then
-		frame.downBG:SetColorTexture(db.contentBottomBar.bgColor[1], db.contentBottomBar.bgColor[2], db.contentBottomBar.bgColor[3], db.contentBottomBar.bgColor[4])
+		frame.downBG:SetColorTexture(db.contentBottomBar.bgColor.r, db.contentBottomBar.bgColor.g, db.contentBottomBar.bgColor.b, db.contentBottomBar.bgColor.a)
 		frame.downBG.curColor = db.contentBottomBar.bgColor
 	end
 end
@@ -1092,19 +1146,28 @@ function GUI.RefreshMainFrame()
 	if not GUI.frame then return end
 
 	local frame = GUI.frame
-	frame:SetBackdropColor(db.mainFrame.bgColor[1], db.mainFrame.bgColor[2], db.mainFrame.bgColor[3], db.mainFrame.bgColor[4])
-	frame.titleFrame:SetBackdropColor(db.mainFrame.title.bgColor[1], db.mainFrame.title.bgColor[2], db.mainFrame.title.bgColor[3], db.mainFrame.title.bgColor[4])
-	frame.titleFrame.text:SetTextColor(db.mainFrame.title.textColor[1], db.mainFrame.title.textColor[2], db.mainFrame.title.textColor[3], db.mainFrame.title.textColor[4])
-	frame.titleFrame.text:SetFont(LibSharedMedia:Fetch("font", db.mainFrame.title.font), db.mainFrame.title.size)
+	frame:SetBackdropColor(db.mainFrame.bgColor.r, db.mainFrame.bgColor.b, db.mainFrame.bgColor.g, db.mainFrame.bgColor.a)
+	frame.titleFrame:SetBackdropColor(db.mainFrame.title.bgColor.r, db.mainFrame.title.bgColor.g, db.mainFrame.title.bgColor.b, db.mainFrame.title.bgColor.a)
+	GUI.RefreshFonts("title")
 
 	frame:SetScale(db.mainFrame.scale)
 end
 
-function GUI.RefreshFonts()
+function GUI.RefreshFonts(obj)
 	if not GUI.frame then return end
-	local frame = GUI.frame.contentFrame
+	local frame = GUI.frame
 
+	--db.GUI.mainFrame.title.font
+	if not obj or obj == "title" then
+		frame.titleFrame:SetFont(LibSharedMedia:Fetch("font", db.mainFrame.title.font), db.mainFrame.title.size)
+		frame.titleFrame.text:SetTextColor(db.mainFrame.title.textColor.r, db.mainFrame.title.textColor.g, db.mainFrame.title.textColor.b, db.mainFrame.title.textColor.a)
+	end
+	if not obj or obj == "contentFrame" then
+		frame.contentFrame.title:SetFont(LibSharedMedia:Fetch("font", db.contentTopBar.font.font), db.contentTopBar.font.size)
+		frame.contentFrame.title:SetTextColor(db.contentTopBar.font.color.r, db.contentTopBar.font.color.g, db.contentTopBar.font.color.b, db.contentTopBar.font.color.a)
+	end
+end
 
-	frame.title:SetFont(LibSharedMedia:Fetch("font", db.contentTopBar.font.font), db.contentTopBar.font.size)
-	frame.title:SetTextColor(db.contentTopBar.font.color[1], db.contentTopBar.font.color[2], db.contentTopBar.font.color[3], db.contentTopBar.font.color[4])
+function GUI.OnLevelRangeRefresh()
+	ModuleSelectFunction(nil, db.selected[1])
 end

@@ -23,16 +23,6 @@ local ClickHandler = AtlasLoot.ClickHandler
 	-- if rep index is in between 11 and 16, means it has friendship reputation
 ]]
 
---[[
-	1 => 11 - Stranger
-	2 => 12 - Acquaintance
-	3 => 13 - Buddy
-	4 => 14 - Friend
-	5 => 15 - Good Friend
-	6 => 16 - Best Friend
-]]
-
-
 local FactionClickHandler
 local PlayerSex
 
@@ -65,11 +55,13 @@ local FACTION_IMAGES = {
 	[76] = "Interface\\Icons\\inv_misc_tournaments_symbol_orc",			--Orgrimmar
 	[81] = "Interface\\Icons\\inv_misc_tournaments_symbol_tauren",			--Thunder Bluff
 	[87] = "Interface\\Icons\\INV_Helmet_66",					--Bloodsail Buccaneers
+	[270] = "Interface\\Icons\\inv_jewelry_ring_46",					--Bloodsail Buccaneers
 	[529] = "Interface\\Icons\\inv_jewelry_talisman_07",				--Argent Dawn
 	[530] = "Interface\\Icons\\inv_misc_tournaments_symbol_troll",			--Darkspear Trolls
-	[576] = "Interface\\Icons\\achievement_reputation_timbermaw",			--Timbermaw Hold
-	[589] = "Interface\\Icons\\Achievement_Zone_Winterspring",			--Wintersaber Trainers
+	[576] = "Interface\\Icons\\inv_misc_horn_01",			--Timbermaw Hold
+	[589] = "Interface\\Icons\\ability_mount_pinktiger",			--Wintersaber Trainers
 	[609] = "Interface\\Icons\\ability_racial_ultravision",				--Cenarion Circle
+	[749] = "Interface\\Icons\\spell_shadow_demonbreath",				--Hydraxian Waterlords
 	[910] = "Interface\\Icons\\inv_misc_head_dragon_bronze",			--Brood of Nozdormu
 }
 
@@ -84,13 +76,28 @@ local FACTION_KEY = {
 	[76] = "Orgrimmar",
 	[81] = "Thunder Bluff",
 	[87] = "Bloodsail Buccaneers",
+	[270] = "Zandalar Tribe",
 	[529] = "Argent Dawn",
 	[530] = "Darkspear Trolls",
 	[576] = "Timbermaw Hold",
-	[589] = "Wintersaber Trainers",
+	[589] = AL["Wintersaber Trainers"], -- Alliance only, Horde gets no info :/
 	[609] = "Cenarion Circle",
+	[719] = "Hydraxian Waterlords",
 	[910] = "Brood of Nozdormu",
 }
+
+ClickHandler:Add(
+	"Faction",
+	{
+		--ChatLink = { "LeftButton", "Shift" },
+		types = {
+			--ChatLink = true,
+		},
+	},
+	{
+		--{ "ChatLink", 	AL["Chat Link"], 	AL["Add item into chat"] },
+	}
+)
 
 local function GetLocRepStanding(id)
 	if (id > 10) then
@@ -108,21 +115,15 @@ local function RGBToHex(t)
 	return str_format("%02x%02x%02x", r, g, b)
 end
 
+-- TODO: Create faction data module?
+function AtlasLoot:Faction_GetFactionName(factionID)
+	local name = GetFactionInfoByID(factionID)
+	return name or FACTION_KEY[factionID] or FACTION.." "..factionID
+end
+
 function Faction.OnSet(button, second)
 	if not FactionClickHandler then
-		FactionClickHandler = ClickHandler:Add(
-		"Faction",
-		{
-			--ChatLink = { "LeftButton", "Shift" },
-			types = {
-				--ChatLink = true,
-			},
-		},
-		AtlasLoot.db.Button.Faction.ClickHandler,
-		{
-			--{ "ChatLink", 	AL["Chat Link"], 	AL["Add item into chat"] },
-		}
-		)
+		FactionClickHandler = ClickHandler:GetHandler("Faction")
 
 		PlayerSex = UnitSex("player")
 
@@ -252,7 +253,7 @@ function Faction.Refresh(button)
 end
 
 function Faction.ShowToolTipFrame(button)
-
+	if not GetFactionInfoByID(button.FactionID) then return end
 	if not Faction.tooltipFrame then
 		local WIDTH = 200
 		local name = "AtlasLoot-FactionToolTip"
@@ -322,7 +323,7 @@ function Faction.ShowToolTipFrame(button)
 	frame:ClearAllPoints()
 	frame:SetParent(button:GetParent():GetParent())
 	frame:SetFrameStrata("TOOLTIP")
-	frame:SetPoint("BOTTOMLEFT", button, "TOPRIGHT")
+	frame:SetPoint("BOTTOMLEFT", button, "TOPLEFT", (button:GetWidth() * 0.5), 5)
 
 	frame.icon:SetTexture(FACTION_IMAGES[button.FactionID] or FACTION_IMAGES[0])
 	frame.name:SetText(name or "Faction "..button.FactionID)

@@ -1,6 +1,9 @@
 
 Questie = LibStub("AceAddon-3.0"):NewAddon("Questie", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceComm-3.0", "AceSerializer-3.0")
 _Questie = {...}
+if not QuestieConfigCharacter then
+    QuestieConfigCharacter = {}
+end
 
 local LibC = LibStub:GetLibrary("LibCompress")
 local LibCE = LibC:GetAddonEncodeTable()
@@ -97,6 +100,7 @@ _QuestieOptions.defaults = {
 	  fadeOverPlayerLevel = 0.5,
 	  fadeOverPlayerDistance = 0.2,
 	  debugEnabled = false,
+	  debugEnabledPrint = false,
 	  debugLevel = 4,
 	  nameplateX = -17,
 	  nameplateY = -7,
@@ -113,7 +117,11 @@ _QuestieOptions.defaults = {
 	  questieLocale = 'enUS',
 	  questieLocaleDiff = false,
 	  alwaysGlowMap = false,
-	  alwaysGlowMinimap = false
+	  alwaysGlowMinimap = false,
+	  disableObjectives = false,
+	  disableTurnins = false,
+	  disableAvailable = false,
+	  disableTooltips = false
 	},
 	  char = {
 		  complete = {},
@@ -198,7 +206,62 @@ local options = {
 								end
 							end,
 				},
-				Spacer_A = _QuestieOptions:Spacer(9),
+				enableObjectivesToggle = {
+					type = "toggle",
+					order = 6,
+					name = function() return QuestieLocale:GetUIString('ENABLE_OBJECTIVES') end,
+					desc = function() return QuestieLocale:GetUIString('ENABLE_OBJECTIVES_DESC') end,
+					width = "full",
+					get =	function ()
+								return not Questie.db.global.disableObjectives;
+							end,
+					set =	function (info, value)
+								Questie.db.global.disableObjectives = not value
+								QuestieQuest:UpdateHiddenNotes();
+							end,
+				},
+				enableTurninsToggle = {
+					type = "toggle",
+					order = 7,
+					name = function() return QuestieLocale:GetUIString('ENABLE_TURNINS') end,
+					desc = function() return QuestieLocale:GetUIString('ENABLE_TURNINS_DESC') end,
+					width = "full",
+					get =	function ()
+								return not Questie.db.global.disableTurnins;
+							end,
+					set =	function (info, value)
+								Questie.db.global.disableTurnins = not value
+								QuestieQuest:UpdateHiddenNotes();
+							end,
+				},
+				enableAvailableToggle = {
+					type = "toggle",
+					order = 8,
+					name = function() return QuestieLocale:GetUIString('ENABLE_AVAILABLE') end,
+					desc = function() return QuestieLocale:GetUIString('ENABLE_AVAILABLE_DESC') end,
+					width = "full",
+					get =	function ()
+								return not Questie.db.global.disableAvailable;
+							end,
+					set =	function (info, value)
+								Questie.db.global.disableAvailable = not value
+								QuestieQuest:UpdateHiddenNotes();
+							end,
+				},
+				enableTooltipsToggle = {
+					type = "toggle",
+					order = 9,
+					name = function() return QuestieLocale:GetUIString('ENABLE_TOOLTIPS') end,
+					desc = function() return QuestieLocale:GetUIString('ENABLE_TOOLTIPS_DESC') end,
+					width = "full",
+					get =	function ()
+								return not Questie.db.global.disableTooltips;
+							end,
+					set =	function (info, value)
+								Questie.db.global.disableTooltips = not value
+							end,
+				},
+				--Spacer_A = _QuestieOptions:Spacer(9),
 				quest_options = {
 					type = "header",
 					order = 10,
@@ -807,8 +870,8 @@ local options = {
 						['frFR'] = 'Français',
 						['deDE'] = 'Deutsch',
 						['ruRU'] = 'русский',
-						['enCN'] = '中文',
-						['enTW'] = '台湾',
+						['zhCN'] = '简体中文',
+						['zhTW'] = '正體中文',
 						['koKR'] = '한국어',
 					},
 					style = 'dropdown',
@@ -1155,13 +1218,25 @@ end
 --DEBUG_SPAM = "5DEBUG"
 
 function Questie:Debug(...)
-    if(Questie.db.global.debugEnabled) then
+    if(Questie.db.global.debugEnabled) then 
         if(Questie.db.global.debugLevel < 5 and select(1, ...) == DEBUG_SPAM)then return; end
         if(Questie.db.global.debugLevel < 4 and select(1, ...) == DEBUG_DEVELOP)then return; end
         if(Questie.db.global.debugLevel < 3 and select(1, ...) == DEBUG_INFO)then return; end
         if(Questie.db.global.debugLevel < 2 and select(1, ...) == DEBUG_ELEVATED)then return; end
         if(Questie.db.global.debugLevel < 1 and select(1, ...) == DEBUG_CRITICAL)then return; end
-        Questie:Print(...)
+        --Questie:Print(...)
+        if not Questie.debugSession then
+            Questie.debugSession = GetTime()
+            if not QuestieConfigCharacter.log then QuestieConfigCharacter.log = {} end
+            QuestieConfigCharacter.log[Questie.debugSession] = {};
+        end
+        local entry = {}
+        entry.time = GetTime()
+        entry.data = {...}
+        table.insert(QuestieConfigCharacter.log[Questie.debugSession], entry)
+        if Questie.db.global.debugEnabledPrint then
+            Questie:Print(...)	
+        end
     end
 end
 

@@ -1,5 +1,5 @@
 ﻿--[[--
-
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS=...;
@@ -29,7 +29,7 @@ local function ReadyCheck_On()
 		return;
 	end
 	control_ReadyCheck=true;
-	local ICON_PATH="Interface\\AddOns\\alaChat_Classic\\icon\\"
+	local ICON_PATH = NS.ICON_PATH;
 	if btnReadyCheck then
 		alaBaseBtn:AddBtn(btnPackIndex,-1,btnReadyCheck,true,false,true);
 	else
@@ -39,6 +39,7 @@ local function ReadyCheck_On()
 				"ReadyCheckBtn",
 				"char",
 				"C",
+				nil,
 				function(self,button)
 					DoReadyCheck();
 				end,

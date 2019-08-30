@@ -17,7 +17,7 @@ QC_ID_ASK_QUESTSLIST = 8 -- ask a player for their current quest log as a list o
 QC_ID_SEND_QUESTSLIST = 9
 
 function QuestieGetVersionString() -- todo: better place
-	local _,ver = GetAddOnInfo("QuestieDev-master")
+	local _,ver = GetAddOnInfo("Questie")
 	-- todo: better regex for this
 	ver = string.sub(ver, 32)
 	ver = string.sub(ver, 0, string.find(ver, "|")-1)

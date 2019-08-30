@@ -18,7 +18,7 @@ local data = AtlasLoot.ItemDB:Add(addonname, 1)
 local AL = AtlasLoot.Locales
 local ALIL = AtlasLoot.IngameLocales
 
-local NORMAL_DIFF = data:AddDifficulty(AL["Normal"], "n", 1)
+local NORMAL_DIFF = data:AddDifficulty(AL["Normal"], "n", 1, nil, true)
 local RAID20_DIFF = data:AddDifficulty(AL["20 Raid"], "r20", 9)
 local RAID40_DIFF = data:AddDifficulty(AL["40 Raid"], "r40", 9)
 local ALLIANCE_DIFF, HORDE_DIFF, LOAD_DIFF
@@ -85,19 +85,19 @@ local T1_SET = {
 	LoadDifficulty = LOAD_DIFF,
 	TableType = SET_ITTYPE,
 	[ALLIANCE_DIFF] = {
-		{ 1, "SetID:203:n" }, -- Warlock
-		{ 3, "SetID:202:n" }, -- Priest
-		{ 16, "SetID:201:n" }, -- Mage
-		{ 5, "SetID:204:n" }, -- Rogue
-		{ 20, "SetID:205:n" }, -- Druid
-		{ 7, "SetID:206:n" }, -- Hunter
-		{ 9, "SetID:209:n" }, -- Warrior
-		{ 24, "SetID:208:n" }, -- Paladin
+		{ 1, 203 }, -- Warlock
+		{ 3, 202 }, -- Priest
+		{ 16, 201 }, -- Mage
+		{ 5, 204 }, -- Rogue
+		{ 20, 205 }, -- Druid
+		{ 7, 206 }, -- Hunter
+		{ 9, 209 }, -- Warrior
+		{ 24, 208 }, -- Paladin
 	},
 
 	[HORDE_DIFF] = {
 		GetItemsFromDiff = ALLIANCE_DIFF,
-		{ 22, "SetID:207:n" }, -- Shaman
+		{ 22, 207 }, -- Shaman
 		{ 24 }, -- Paladin
 	},
 }
@@ -107,20 +107,21 @@ local T2_SET = {
 	ExtraList = true,
 	LoadDifficulty = LOAD_DIFF,
 	TableType = SET_ITTYPE,
+	ContentPhase = 3,
 	[ALLIANCE_DIFF] = {
-		{ 1, "SetID:212:n" }, -- Warlock
-		{ 3, "SetID:211:n" }, -- Priest
-		{ 16, "SetID:210:n" }, -- Mage
-		{ 5, "SetID:213:n" }, -- Rogue
-		{ 20, "SetID:214:n" }, -- Druid
-		{ 7, "SetID:215:n" }, -- Hunter
-		{ 9, "SetID:218:n" }, -- Warrior
-		{ 24, "SetID:217:n" }, -- Paladin
+		{ 1, 212 }, -- Warlock
+		{ 3, 211 }, -- Priest
+		{ 16, 210 }, -- Mage
+		{ 5, 213 }, -- Rogue
+		{ 20, 214 }, -- Druid
+		{ 7, 215 }, -- Hunter
+		{ 9, 218 }, -- Warrior
+		{ 24, 217 }, -- Paladin
 	},
 
 	[HORDE_DIFF] = {
 		GetItemsFromDiff = ALLIANCE_DIFF,
-		{ 22, "SetID:216:n" }, -- Shaman
+		{ 22, 216 }, -- Shaman
 		{ 24 }, -- Paladin
 	},
 }
@@ -130,20 +131,21 @@ local T3_SET = {
 	ExtraList = true,
 	LoadDifficulty = LOAD_DIFF,
 	TableType = SET_ITTYPE,
+	ContentPhase = 6,
 	[ALLIANCE_DIFF] = {
-		{ 1, "SetID:529:n" }, -- Warlock
-		{ 3, "SetID:525:n" }, -- Priest
-		{ 16, "SetID:526:n" }, -- Mage
-		{ 5, "SetID:524:n" }, -- Rogue
-		{ 20, "SetID:521:n" }, -- Druid
-		{ 7, "SetID:530:n" }, -- Hunter
-		{ 9, "SetID:523:n" }, -- Warrior
-		{ 24, "SetID:528:n" }, -- Paladin
+		{ 1, 529 }, -- Warlock
+		{ 3, 525 }, -- Priest
+		{ 16, 526 }, -- Mage
+		{ 5, 524 }, -- Rogue
+		{ 20, 521 }, -- Druid
+		{ 7, 530 }, -- Hunter
+		{ 9, 523 }, -- Warrior
+		{ 24, 528 }, -- Paladin
 	},
 
 	[HORDE_DIFF] = {
 		GetItemsFromDiff = ALLIANCE_DIFF,
-		{ 22, "SetID:527:n" }, -- Shaman
+		{ 22, 527 }, -- Shaman
 		{ 24 }, -- Paladin
 	},
 }
@@ -152,6 +154,7 @@ local AQ_OPENING = {	-- Keys
 	name = AL["AQ opening"],
 	TableType = NORMAL_ITTYPE,
 	ExtraList = true,
+	ContentPhase = 5,
 	[NORMAL_DIFF] = {
 		{ 1,  21138 }, -- Red Scepter Shard
 		{ 2,  21529 }, -- Amulet of Shadow Shielding
@@ -176,6 +179,7 @@ local AQ_OPENING = {	-- Keys
 local DM_BOOKS = { -- DMBooks
 	name = AL["Books"],
 	ExtraList = true,
+	ContentPhase = 2,
 	[NORMAL_DIFF] = {
 		{ 1,  18401 }, -- Foror's Compendium of Dragon Slaying
 		{ 3,  18362 }, -- Holy Bologna: What the Light Won't Tell You
@@ -204,6 +208,7 @@ data["Ragefire"] = {
 	AtlasMapID = "Ragefire",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {10, 13, 18},
 	items = {
 		{ -- RFCTaragaman
 			name = AL["Taragaman the Hungerer"],
@@ -233,6 +238,7 @@ data["WailingCaverns"] = {
 	AtlasMapID = "WailingCaverns",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {10, 17, 24},
 	items = {
 		{ -- WCKresh
 			name = AL["Kresh"],
@@ -244,7 +250,7 @@ data["WailingCaverns"] = {
 			},
 		},
 		{ -- WCLadyAnacondra
-			name = AL["Lady Anacondra <Fanglord>"],
+			name = AL["Lady Anacondra"],
 			npcId = 3671,
 			DisplayIDs = {{4313}},
 			[NORMAL_DIFF] = {
@@ -254,7 +260,7 @@ data["WailingCaverns"] = {
 			},
 		},
 		{ -- WCLordCobrahn
-			name = AL["Lord Cobrahn <Fanglord>"],
+			name = AL["Lord Cobrahn"],
 			npcId = 3669,
 			DisplayIDs = {{4213}},
 			[NORMAL_DIFF] = {
@@ -273,7 +279,7 @@ data["WailingCaverns"] = {
 			},
 		},
 		{ -- WCLordPythas
-			name = AL["Lord Pythas <Fanglord>"],
+			name = AL["Lord Pythas"],
 			npcId = 3670,
 			DisplayIDs = {{4214}},
 			[NORMAL_DIFF] = {
@@ -291,7 +297,7 @@ data["WailingCaverns"] = {
 			},
 		},
 		{ -- WCLordSerpentis
-			name = AL["Lord Serpentis <Fanglord>"],
+			name = AL["Lord Serpentis"],
 			npcId = 3673,
 			DisplayIDs = {{4215}},
 			[NORMAL_DIFF] = {
@@ -337,9 +343,10 @@ data["TheDeadmines"] = {
 	AtlasMapID = "TheDeadmines",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {10, 17, 26},
 	items = {
 		{	--DMRhahkZor
-			name = AL["Rhahk'Zor <The Foreman>"],
+			name = AL["Rhahk'Zor"],
 			npcId = 644,
 			DisplayIDs = {{14403}},
 			[NORMAL_DIFF] = {
@@ -357,7 +364,7 @@ data["TheDeadmines"] = {
 			},
 		},
 		{	--DMSneed
-			name = AL["Sneed <Lumbermaster>"],
+			name = AL["Sneed"],
 			npcId = 643,
 			DisplayIDs = {{7125}},
 			[NORMAL_DIFF] = {
@@ -366,7 +373,7 @@ data["TheDeadmines"] = {
 			},
 		},
 		{	--DMSneedsShredder
-			name = AL["Sneed's Shredder <Lumbermaster>"],
+			name = AL["Sneed's Shredder"],
 			npcId = 642,
 			DisplayIDs = {{1269}},
 			[NORMAL_DIFF] = {
@@ -375,7 +382,7 @@ data["TheDeadmines"] = {
 			},
 		},
 		{	--DMGilnid
-			name = AL["Gilnid <The Smelter>"],
+			name = AL["Gilnid"],
 			npcId = 1763,
 			DisplayIDs = {{7124}},
 			[NORMAL_DIFF] = {
@@ -391,7 +398,7 @@ data["TheDeadmines"] = {
 		},
 		]]--
 		{	--DMMrSmite
-			name = AL["Mr. Smite <The Ship's First Mate>"],
+			name = AL["Mr. Smite"],
 			npcId = 646,
 			DisplayIDs = {{2026}},
 			[NORMAL_DIFF] = {
@@ -411,7 +418,7 @@ data["TheDeadmines"] = {
 			},
 		},
 		{	--DMVanCleef
-			name = AL["Edwin VanCleef <Defias Kingpin>"],
+			name = AL["Edwin VanCleef"],
 			npcId = 639,
 			DisplayIDs = {{2029}},
 			[NORMAL_DIFF] = {
@@ -423,7 +430,7 @@ data["TheDeadmines"] = {
 			},
 		},
 		{	--DMCookie
-			name = AL["Cookie <The Ship's Cook>"],
+			name = AL["Cookie"],
 			npcId = 645,
 			DisplayIDs = {{1305}},
 			[NORMAL_DIFF] = {
@@ -448,9 +455,10 @@ data["ShadowfangKeep"] = {
 	AtlasMapID = "ShadowfangKeep",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {11, 22, 30},
 	items = {
 		{ -- SFKRethilgore
-			name = AL["Rethilgore <The Cell Keeper>"],
+			name = AL["Rethilgore"],
 			npcId = 3914,
 			DisplayIDs = {{524}},
 			[NORMAL_DIFF] = {
@@ -461,6 +469,7 @@ data["ShadowfangKeep"] = {
 			name = AL["Sever"],
 			npcId = 14682,
 			DisplayIDs = {{1061}},
+			ContentPhase = 6,
 			[NORMAL_DIFF] = {
 				{ 1,  23173 }, -- Abomination Skin Leggings
 				{ 2,  23171 }, -- The Axe of Severing
@@ -596,6 +605,7 @@ data["BlackfathomDeeps"] = {
 	AtlasMapID = "BlackfathomDeeps",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {15, 24, 32},
 	items = {
 		{ -- BFDGhamoora
 			name = AL["Ghamoo-ra"],
@@ -688,6 +698,7 @@ data["TheStockade"] = {
 	AtlasMapID = "TheStockade",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {15, 24, 32},
 	items = {
 		{ -- SWStKamDeepfury
 			name = AL["Kam Deepfury"],
@@ -722,6 +733,7 @@ data["Gnomeregan"] = {
 	AtlasMapID = "Gnomeregan",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {19, 29, 38},
 	items = {
 		{ -- GnTechbot
 			name = AL["Techbot"],
@@ -831,9 +843,10 @@ data["RazorfenKraul"] = {
 	AtlasMapID = "RazorfenKraul",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {25, 29, 38},
 	items = {
 		{ -- RFKAggem
-			name = AL["Aggem Thorncurse <Death's Head Prophet>"],
+			name = AL["Aggem Thorncurse"],
 			npcId = 4424,
 			DisplayIDs = {{6097}},
 			[NORMAL_DIFF] = {
@@ -841,7 +854,7 @@ data["RazorfenKraul"] = {
 			},
 		},
 		{ -- RFKDeathSpeakerJargba
-			name = AL["Death Speaker Jargba <Death's Head Captain>"],
+			name = AL["Death Speaker Jargba"],
 			npcId = 4428,
 			DisplayIDs = {{4644}},
 			[NORMAL_DIFF] = {
@@ -896,7 +909,7 @@ data["RazorfenKraul"] = {
 			},
 		},
 		{ -- RFKCharlgaRazorflank
-			name = AL["Charlga Razorflank <The Crone>"],
+			name = AL["Charlga Razorflank"],
 			npcId = 4421,
 			DisplayIDs = {{4642}},
 			[NORMAL_DIFF] = {
@@ -930,6 +943,7 @@ data["ScarletMonastery"] = {
 	AtlasMapID = "ScarletMonastery",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {20, 34, 45},
 	items = {
 		-- Graveyard
 		{ -- SMVishas
@@ -1004,7 +1018,7 @@ data["ScarletMonastery"] = {
 		},
 		-- Armory
 		{ -- SMHerod
-			name = AL["Herod <The Scarlet Champion>"],
+			name = AL["Herod"],
 			npcId = 3975,
 			DisplayIDs = {{2041}},
 			[NORMAL_DIFF] = {
@@ -1168,6 +1182,7 @@ data["RazorfenDowns"] = {
 	AtlasMapID = "RazorfenDowns",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {35, 37, 46},
 	items = {
 		{ -- RFDTutenkash
 			name = AL["Tuten'kash"],
@@ -1193,6 +1208,7 @@ data["RazorfenDowns"] = {
 			name = AL["Lady Falther'ess"],
 			npcId = 14686,
 			DisplayIDs = {{10698}},
+			ContentPhase = 6,
 			[NORMAL_DIFF] = {
 				{ 1,  23178 }, -- Mantle of Lady Falther'ess
 				{ 2,  23177 }, -- Lady Falther'ess' Finger
@@ -1273,6 +1289,7 @@ data["Uldaman"] = {
 	AtlasMapID = "Uldaman",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {30, 41, 51},
 	items = {
 		{ -- UldRevelosh
 			name = AL["Revelosh"],
@@ -1347,7 +1364,7 @@ data["Uldaman"] = {
 			},
 		},
 		{ -- UldGrimlok
-			name = AL["Grimlok <Stonevault Chieftain>"],
+			name = AL["Grimlok"],
 			npcId = 4854,
 			DisplayIDs = {{11165}},
 			[NORMAL_DIFF] = {
@@ -1357,7 +1374,7 @@ data["Uldaman"] = {
 			},
 		},
 		{ -- UldArchaedas
-			name = AL["Archaedas <Ancient Stone Watcher>"],
+			name = AL["Archaedas"],
 			npcId = 2748,
 			DisplayIDs = {{5988}},
 			[NORMAL_DIFF] = {
@@ -1381,7 +1398,7 @@ data["Uldaman"] = {
 				{ 9,  9396 }, -- Legguards of the Vault
 				{ 10, 9393 }, -- Beacon of Hope
 				{ 12, 7666 }, -- Shattered Necklace
-				{ 13, 7673 }, -- Talvash's Enhancing Necklace
+				--{ 13, 7673 }, -- Talvash's Enhancing Necklace
 				{ 16, 9381 }, -- Earthen Rod
 				{ 17, 9426 }, -- Monolithic Bow
 				{ 18, 9422 }, -- Shadowforge Bushmaster
@@ -1426,9 +1443,10 @@ data["Zul'Farrak"] = {
 	AtlasMapID = "Zul'Farrak",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {39, 42, 46},
 	items = {
 		{ -- ZFAntusul
-			name = AL["Antu'sul <Overseer of Sul>"],
+			name = AL["Antu'sul"],
 			npcId = 8127,
 			DisplayIDs = {{7353}},
 			[NORMAL_DIFF] = {
@@ -1504,6 +1522,7 @@ data["Zul'Farrak"] = {
 			name = AL["Dustwraith"],
 			npcId = 10081,
 			DisplayIDs = {{9292}},
+			ContentPhase = 5,
 			[NORMAL_DIFF] = {
 				{ 1,  12471 }, -- Desertwalker Cane
 			},
@@ -1562,6 +1581,7 @@ data["Maraudon"] = {
 	AtlasMapID = "Maraudon",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {25, 46, 55},
 	items = {
 		-- Other
 		{ -- MaraMeshlok
@@ -1675,7 +1695,7 @@ data["Maraudon"] = {
 			},
 		},
 		{ -- MaraKhanKolk
-			name = AL["Kolk <The First Kahn>"],
+			name = AL["Kolk"],
 			npcId = 13742,
 			DisplayIDs = {{4860}},
 			ExtraList = true,
@@ -1684,7 +1704,7 @@ data["Maraudon"] = {
 			},
 		},
 		{ -- MaraKhanGelk
-			name = AL["Gelk <The Second Kahn>"],
+			name = AL["Gelk"],
 			npcId = 13741,
 			DisplayIDs = {{9427}},
 			ExtraList = true,
@@ -1693,7 +1713,7 @@ data["Maraudon"] = {
 			},
 		},
 		{ -- MaraKhanMagra
-			name = AL["Magra <The Third Kahn>"],
+			name = AL["Magra"],
 			npcId = 13740,
 			DisplayIDs = {{9433}},
 			ExtraList = true,
@@ -1702,7 +1722,7 @@ data["Maraudon"] = {
 			},
 		},
 		{ -- MaraKhanMaraudos
-			name = AL["Maraudos <The Fourth Kahn>"],
+			name = AL["Maraudos"],
 			npcId = 13739,
 			DisplayIDs = {{9441}},
 			ExtraList = true,
@@ -1711,7 +1731,7 @@ data["Maraudon"] = {
 			},
 		},
 		{ -- MaraKhanVeng
-			name = AL["Veng <The Fifth Kahn>"],
+			name = AL["Veng"],
 			npcId = 13738,
 			DisplayIDs = {{9418}},
 			ExtraList = true,
@@ -1727,9 +1747,10 @@ data["TheTempleOfAtal'Hakkar"] = {
 	AtlasMapID = "TheTempleOfAtal'Hakkar",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {45, 50, 56},
 	items = {
 		{ -- STAtalalarion
-			name = AL["Atal'alarion <Guardian of the Idol>"],
+			name = AL["Atal'alarion"],
 			npcId = 8580,
 			DisplayIDs = {{7873}},
 			[NORMAL_DIFF] = {
@@ -1903,6 +1924,7 @@ data["BlackrockDepths"] = {
 	AtlasMapID = "BlackrockDepths",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {42, 52, 60},
 	items = {
 		{ -- BRDHighInterrogatorGerstahn
 			name = AL["High Interrogator Gerstahn "],
@@ -2089,7 +2111,7 @@ data["BlackrockDepths"] = {
 			},
 		},
 		{ -- BRDFineousDarkvire
-			name = AL["Fineous Darkvire <Chief Architect>"],
+			name = AL["Fineous Darkvire"],
 			npcId = 9056,
 			DisplayIDs = {{8704}},
 			[NORMAL_DIFF] = {
@@ -2307,6 +2329,7 @@ data["LowerBlackrockSpire"] = {
 	AtlasMapID = "LowerBlackrockSpire",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {48, 55, 60},
 	items = {
 		{ -- LBRSFelguard
 			name = AL["Burning Felguard"],
@@ -2527,6 +2550,7 @@ data["LowerBlackrockSpire"] = {
 			npcId = 16080,
 			DisplayIDs = {{15997}},
 			ExtraList = true,
+			ContentPhase = 5,
 			[NORMAL_DIFF] = {
 				{ 1,  22306 }, -- Ironweave Belt
 				{ 2,  22325 }, -- Belt of the Trickster
@@ -2544,6 +2568,7 @@ data["UpperBlackrockSpire"] = {
 	AtlasMapID = "UpperBlackrockSpire",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {48, 55, 60},
 	items = {
 		{ -- UBRSEmberseer
 			name = AL["Pyroguard Emberseer"],
@@ -2568,8 +2593,7 @@ data["UpperBlackrockSpire"] = {
 				{ 4,  12603 }, -- Nightbrace Tunic
 				{ 5,  12589 }, -- Dustfeather Sash
 				{ 6,  12606 }, -- Crystallized Girdle
-				{ 8,  18657, 18638 }, -- Schematic: Hyper-Radiant Flame Reflector
-				--{ 9,  18638 }, -- Hyper-Radiant Flame Reflector
+				{ 8,  18657 }, -- Schematic: Hyper-Radiant Flame Reflector
 			},
 		},
 		{ -- UBRSAnvilcrack
@@ -2582,14 +2606,11 @@ data["UpperBlackrockSpire"] = {
 				{ 3,  18047 }, -- Flame Walkers
 				{ 4,  18048 }, -- Mastersmith's Hammer
 				{ 6,  12834 }, -- Plans: Arcanite Champion
-				--{ 7,  12790 }, -- Arcanite Champion
-				{ 8,  12837 }, -- Plans: Masterwork Stormhammer
-				--{ 9,  12794 }, -- Masterwork Stormhammer
-				{ 11, 18779 }, -- Bottom Half of Advanced Armorsmithing: Volume I
+				{ 7,  12837 }, -- Plans: Masterwork Stormhammer
+				{ 9, 18779 }, -- Bottom Half of Advanced Armorsmithing: Volume I
 				{ 16, "INV_Box_01", nil, AL["Unforged Rune Covered Breastplate"], nil },
 				{ 17, 12806 }, -- Unforged Rune Covered Breastplate
 				{ 18, 12696 }, -- Plans: Demon Forged Breastplate
-				{ 19, 12628 }, -- Demon Forged Breastplate
 			},
 		},
 		{ -- UBRSRunewatcher
@@ -2671,8 +2692,7 @@ data["UpperBlackrockSpire"] = {
 				{ 9,  22253 }, -- Tome of the Lost
 				{ 10, 12602 }, -- Draconian Deflector
 				{ 12, 15730 }, -- Pattern: Red Dragonscale Breastplate
-				{ 13, 15047 }, -- Red Dragonscale Breastplate
-				{ 15, 13519 }, -- Recipe: Flask of the Titans
+				{ 14, 13519 }, -- Recipe: Flask of the Titans
 				{ 16, 16690 }, -- Devout Robe
 				{ 17, 16688 }, -- Magister's Robes
 				{ 18, 16700 }, -- Dreadmist Robe
@@ -2706,6 +2726,7 @@ data["UpperBlackrockSpire"] = {
 			npcId = 16042,
 			DisplayIDs = {{14308}},
 			ExtraList = true,
+			ContentPhase = 5,
 			[NORMAL_DIFF] = {
 				{ 1,  22302 }, -- Ironweave Cowl
 				{ 2,  22340 }, -- Pendant of Celerity
@@ -2726,6 +2747,8 @@ data["DireMaulEast"] = {
 	AtlasMapID = "DireMaul",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {31, 55, 60},
+	ContentPhase = 2,
 	items = {
 		{ -- DMEPusillin
 			name = AL["Pusillin"],
@@ -2809,6 +2832,7 @@ data["DireMaulEast"] = {
 			npcId = 16097,
 			DisplayIDs = {{16000}},
 			ExtraList = true,
+			ContentPhase = 5,
 			[NORMAL_DIFF] = {
 				{ 1,  22304 }, -- Ironweave Gloves
 				{ 2,  22472 }, -- Boots of Ferocity
@@ -2829,6 +2853,8 @@ data["DireMaulWest"] = {
 	AtlasMapID = "DireMaul",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {31, 55, 60},
+	ContentPhase = 2,
 	items = {
 		{ -- DMWTendrisWarpwood
 			name = AL["Tendris Warpwood"],
@@ -2955,6 +2981,8 @@ data["DireMaulNorth"] = {
 	AtlasMapID = "DireMaulNorth",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {31, 55, 60},
+	ContentPhase = 2,
 	items = {
 		{ -- DMNGuardMoldar
 			name = AL["Guard Mol'dar"],
@@ -2979,7 +3007,7 @@ data["DireMaulNorth"] = {
 			},
 		},
 		{ -- DMNStomperKreeg
-			name = AL["Stomper Kreeg <The Drunk>"],
+			name = AL["Stomper Kreeg"],
 			npcId = 14322,
 			DisplayIDs = {{11545}},
 			[NORMAL_DIFF] = {
@@ -3026,19 +3054,6 @@ data["DireMaulNorth"] = {
 				{ 22, 18516 }, -- Pattern: Swift Flight Bracers
 				{ 10, 18258 }, -- Gordok Ogre Suit
 				{ 11, 18240 }, -- Ogre Tannin
-				--[[
-				{ 16, 18405 }, -- Belt of the Archmage
-				{ 17, 18509 }, -- Chromatic Cloak
-				{ 18, 18510 }, -- Hide of the Wild
-				{ 19, 18511 }, -- Shifting Cloak
-				{ 21, 18407 }, -- Felcloth Gloves
-				{ 22, 18408 }, -- Inferno Gloves
-				{ 23, 18409 }, -- Mooncloth Gloves
-				{ 24, 18413 }, -- Cloak of Warding
-				{ 25, 18504 }, -- Girdle of Insight
-				{ 26, 18506 }, -- Mongoose Boots
-				{ 27, 18508 }, -- Swift Flight Bracers
-				]]--
 			},
 		},
 		{ -- DMNGuardSlipkik
@@ -3125,8 +3140,8 @@ data["DireMaulNorth"] = {
 				{ 21, 18476 }, -- Mud Stained Boots
 				{ 22, 18482 }, -- Ogre Toothpick Shooter
 				{ 23, 18481 }, -- Skullcracking Mace
-				{ 24, 18655 }, -- Schematic: Major Recombobulator
-				{ 25, 18637 }, -- Major Recombobulator
+				{ 24, 18637 }, -- Major Recombobulator
+				{ 26, 18655 }, -- Schematic: Major Recombobulator
 			},
 		},
 		{ -- DMNTrash
@@ -3150,6 +3165,7 @@ data["Scholomance"] = {
 	AtlasMapID = "Scholomance",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {33, 58, 60},
 	items = {
 		{ -- SCHOLOBlood
 			name = AL["Blood Steward of Kirtonos"],
@@ -3530,6 +3546,7 @@ data["Scholomance"] = {
 			npcId = 16118,
 			DisplayIDs = {{16020}},
 			ExtraList = true,
+			ContentPhase = 5,
 			[NORMAL_DIFF] = {
 				{ 1,  22303 }, -- Ironweave Pants
 				{ 2,  22326 }, -- Amalgam's Band
@@ -3547,6 +3564,7 @@ data["Stratholme"] = {
 	AtlasMapID = "Stratholme",
 	ContentType = DUNGEON_CONTENT,
 	LoadDifficulty = NORMAL_DIFF,
+	LevelRange = {37, 58, 60},
 	items = {
 		{ -- STRATSkull
 			name = AL["Skul"],
@@ -3620,6 +3638,7 @@ data["Stratholme"] = {
 			name = AL["Balzaphon"],
 			npcId = 14684,
 			DisplayIDs = {{7919}},
+			ContentPhase = 6,
 			[NORMAL_DIFF] = {
 				{ 1,  23125 }, -- Chains of the Lich
 				{ 2,  23126 }, -- Waistband of Balzaphon
@@ -3871,6 +3890,7 @@ data["Stratholme"] = {
 		{ -- STRATSothosJarien
 			name = AL["Sothos and Jarien's Heirlooms"].." - "..format(AL["Tier %s Sets"], "0.5"),
 			ExtraList = true,
+			ContentPhase = 5,
 			[NORMAL_DIFF] = {
 				{ 1,  22327 }, -- Amulet of the Redeemed
 				{ 2,  22301 }, -- Ironweave Robe
@@ -3949,6 +3969,7 @@ data["MoltenCore"] = {
 				{ 7,  16843 },	-- Earthfury Legguards
 				{ 8,  16855 },	-- Lawbringer Legplates
 				{ 9,  16867 },	-- Legplates of Might
+				{ 11, 18203 },	-- Eskhandar's Right Claw
 				{ 16, 17065 },	-- Medallion of Steadfast Might
 				{ 17, 18829 },	-- Deep Earth Spaulders
 				{ 18, 18823 },	-- Aged Core Leather Gloves
@@ -3961,9 +3982,8 @@ data["MoltenCore"] = {
 				{ 25, 18820 },	-- Talisman of Ephemeral Power
 				{ 26, 19142 },	-- Fire Runed Grimoire
 				{ 27, 17069 },	-- Striker's Mark
-				{ 28, 18203 },	-- Eskhandar's Right Claw
-				{ 29, 17073 },	-- Earthshaker
-				{ 30, 18822 },	-- Obsidian Edged Blade
+				{ 28, 17073 },	-- Earthshaker
+				{ 29, 18822 },	-- Obsidian Edged Blade
 			},
 		},
 		{	--MCGehennas
@@ -3994,17 +4014,16 @@ data["MoltenCore"] = {
 			npcId = 12057,
 			DisplayIDs = {{12110}, {5781}},
 			[NORMAL_DIFF] = {
-				{ 1,  16813 },	-- Circlet of Prophecy
-				{ 2,  16795 },	-- Arcanist Crown
-				{ 3,  16808 },	-- Felheart Horns
-				{ 4,  16821 },	-- Nightslayer Cover
-				{ 5,  16834 },	-- Cenarion Helm
-				{ 6,  16846 },	-- Giantstalker's Helmet
-				{ 7,  16842 },	-- Earthfury Helmet
-				{ 8,  16854 },	-- Lawbringer Helm
-				{ 9,  16866 },	-- Helm of Might
-				{ 14, 18564 },	-- Bindings of the Windseeker
-				{ 15, 19019 },	-- Thunderfury, Blessed Blade of the Windseeker
+				{ 1, 18564 },	-- Bindings of the Windseeker
+				{ 3,  16813 },	-- Circlet of Prophecy
+				{ 4,  16795 },	-- Arcanist Crown
+				{ 5,  16808 },	-- Felheart Horns
+				{ 6,  16821 },	-- Nightslayer Cover
+				{ 7,  16834 },	-- Cenarion Helm
+				{ 8,  16846 },	-- Giantstalker's Helmet
+				{ 9,  16842 },	-- Earthfury Helmet
+				{ 10,  16854 },	-- Lawbringer Helm
+				{ 11,  16866 },	-- Helm of Might
 				{ 16, 18829 },	-- Deep Earth Spaulders
 				{ 17, 18823 },	-- Aged Core Leather Gloves
 				{ 18, 19143 },	-- Flameguard Gauntlets
@@ -4050,13 +4069,12 @@ data["MoltenCore"] = {
 			npcId = 12056,
 			DisplayIDs = {{12129}},
 			[NORMAL_DIFF] = {
-				{ 1,  16797 },	-- Arcanist Mantle
-				{ 2,  16807 },	-- Felheart Shoulder Pads
-				{ 3,  16836 },	-- Cenarion Spaulders
-				{ 4,  16844 },	-- Earthfury Epaulets
-				{ 5,  16856 },	-- Lawbringer Spaulders
-				{ 14, 18563 },	-- Bindings of the Windseeker
-				{ 15, 19019 },	-- Thunderfury, Blessed Blade of the Windseeker
+				{ 1,  18563 },	-- Bindings of the Windseeker
+				{ 3,  16797 },	-- Arcanist Mantle
+				{ 4,  16807 },	-- Felheart Shoulder Pads
+				{ 5,  16836 },	-- Cenarion Spaulders
+				{ 6,  16844 },	-- Earthfury Epaulets
+				{ 7,  16856 },	-- Lawbringer Spaulders
 				{ 16, 18829 },	-- Deep Earth Spaulders
 				{ 17, 18823 },	-- Aged Core Leather Gloves
 				{ 18, 19143 },	-- Flameguard Gauntlets
@@ -4085,8 +4103,7 @@ data["MoltenCore"] = {
 				{ 7,  16841 },	-- Earthfury Vestments
 				{ 8,  16853 },	-- Lawbringer Chestguard
 				{ 9,  16865 },	-- Breastplate of Might
-				{ 14, 17203 },	-- Sulfuron Ingot
-				{ 15, 17182 },	-- Sulfuras, Hand of Ragnaros
+				{ 11, 17203 },	-- Sulfuron Ingot
 				{ 16, 18829 },	-- Deep Earth Spaulders
 				{ 17, 18823 },	-- Aged Core Leather Gloves
 				{ 18, 19143 },	-- Flameguard Gauntlets
@@ -4142,12 +4159,7 @@ data["MoltenCore"] = {
 				{ 9,  18805 }, -- Core Hound Tooth
 				{ 10, 18803 }, -- Finkle's Lava Dredger
 				{ 16, 18703 }, -- Ancient Petrified Leaf
-				{ 17, 18714 }, -- Ancient Sinew Wrapped Lamina
-				{ 18, 18713 }, -- Rhok'delar, Longbow of the Ancient Keepers
-				{ 19, 18715 }, -- Lok'delar, Stave of the Ancient Keepers
-				{ 21, 18646 }, -- The Eye of Divinity
-				{ 22, 18608 }, -- Benediction
-				{ 23, 18609 }, -- Anathema
+				{ 18, 18646 }, -- The Eye of Divinity
 			},
 		},
 		{ -- MCRagnaros
@@ -4155,19 +4167,18 @@ data["MoltenCore"] = {
 			npcId = 11502,
 			DisplayIDs = {{11121}},
 			[NORMAL_DIFF] = {
-				{ 1,  16922 }, -- Leggings of Transcendence
-				{ 2,  16915 }, -- Netherwind Pants
-				{ 3,  16930 }, -- Nemesis Leggings
-				{ 4,  16909 }, -- Bloodfang Pants
-				{ 5,  16901 }, -- Stormrage Legguards
-				{ 6,  16938 }, -- Dragonstalker's Legguards
-				{ 7,  16946 }, -- Legplates of Ten Storms
-				{ 8,  16954 }, -- Judgement Legplates
-				{ 9,  16962 }, -- Legplates of Wrath
-				{ 11, 17204 }, -- Eye of Sulfuras
-				{ 12, 17182 }, -- Sulfuras, Hand of Ragnaros
-				{ 14, 19017 }, -- Essence of the Firelord
-				{ 15, 19019 }, -- Thunderfury, Blessed Blade of the Windseeker
+				{ 1, 17204 }, -- Eye of Sulfuras
+				{ 2, 19017 }, -- Essence of the Firelord
+				{ 4,  16922 }, -- Leggings of Transcendence
+				{ 5,  16915 }, -- Netherwind Pants
+				{ 6,  16930 }, -- Nemesis Leggings
+				{ 7,  16909 }, -- Bloodfang Pants
+				{ 8,  16901 }, -- Stormrage Legguards
+				{ 9,  16938 }, -- Dragonstalker's Legguards
+				{ 10,  16946 }, -- Legplates of Ten Storms
+				{ 11,  16954 }, -- Judgement Legplates
+				{ 12,  16962 }, -- Legplates of Wrath
+				{ 14, 17082 }, -- Shard of the Flame
 				{ 16, 18817 }, -- Crown of Destruction
 				{ 17, 18814 }, -- Choker of the Fire Lord
 				{ 18, 17102 }, -- Cloak of the Shrouded Mists
@@ -4176,11 +4187,10 @@ data["MoltenCore"] = {
 				{ 21, 17063 }, -- Band of Accuria
 				{ 22, 19138 }, -- Band of Sulfuras
 				{ 23, 18815 }, -- Essence of the Pure Flame
-				{ 24, 17082 }, -- Shard of the Flame
-				{ 25, 17106 }, -- Malistar's Defender
-				{ 26, 18816 }, -- Perdition's Blade
-				{ 27, 17104 }, -- Spinal Reaper
-				{ 28, 17076 }, -- Bonereaver's Edge
+				{ 24, 17106 }, -- Malistar's Defender
+				{ 25, 18816 }, -- Perdition's Blade
+				{ 26, 17104 }, -- Spinal Reaper
+				{ 27, 17076 }, -- Bonereaver's Edge
 			},
 		},
 		{ -- MCRANDOMBOSSDROPS
@@ -4260,22 +4270,17 @@ data["Onyxia"] = {
 				{ 8,  16955 }, -- Judgement Crown
 				{ 9,  16963 }, -- Helm of Wrath
 				{ 11, 18423 }, -- Head of Onyxia
-				{ 12, 18404 }, -- Onyxia Tooth Pendant
-				{ 13, 18403 }, -- Dragonslayer's Signet
-				{ 14, 18406 }, -- Onyxia Blood Talisman
-				{ 15, 15138 }, -- Onyxia Scale Cloak
+				{ 12, 15410 }, -- Scale of Onyxia
 				{ 16, 18705 }, -- Mature Black Dragon Sinew
-				{ 17, 18713 }, -- Rhok'delar, Longbow of the Ancient Keepers
-				{ 19, 18205 }, -- Eskhandar's Collar
-				{ 20, 17078 }, -- Sapphiron Drape
-				{ 21, 18813 }, -- Ring of Binding
-				{ 22, 17064 }, -- Shard of the Scale
-				{ 23, 17067 }, -- Ancient Cornerstone Grimoire
-				{ 24, 17068 }, -- Deathbringer
-				{ 25, 17075 }, -- Vis'kag the Bloodletter
-				{ 27, 17966 }, -- Onyxia Hide Backpack
-				{ 28, 17962 }, -- Blue Sack of Gems
-				{ 30, 15410 }, -- Scale of Onyxia
+				{ 18, 18205 }, -- Eskhandar's Collar
+				{ 19, 17078 }, -- Sapphiron Drape
+				{ 20, 18813 }, -- Ring of Binding
+				{ 21, 17064 }, -- Shard of the Scale
+				{ 22, 17067 }, -- Ancient Cornerstone Grimoire
+				{ 23, 17068 }, -- Deathbringer
+				{ 24, 17075 }, -- Vis'kag the Bloodletter
+				{ 26, 17966 }, -- Onyxia Hide Backpack
+				{ 27, 17962 }, -- Blue Sack of Gems
 			},
 		},
 	},
@@ -4286,6 +4291,7 @@ data["Zul'Gurub"] = {
 	AtlasMapID = "Zul'Gurub", -- ??
 	ContentType = RAID20_CONTENT,
 	LoadDifficulty = RAID20_DIFF,
+	ContentPhase = 4,
 	items = {
 		{ -- ZGJeklik
 			name = AL["High Priestess Jeklik"],
@@ -4643,6 +4649,7 @@ data["BlackwingLair"] = {
 	AtlasMapID = "BlackwingLair",
 	ContentType = RAID40_CONTENT,
 	LoadDifficulty = RAID40_DIFF,
+	ContentPhase = 3,
 	items = {
 		{ -- BWLRazorgore
 			name = AL["Razorgore the Untamed"],
@@ -4702,13 +4709,13 @@ data["BlackwingLair"] = {
 				{ 7,  16949 }, -- Greaves of Ten Storms
 				{ 8,  16957 }, -- Judgement Sabatons
 				{ 9,  16965 }, -- Sabatons of Wrath
-				{ 15, 20383 }, -- Head of the Broodlord Lashlayer
 				{ 16, 19341 }, -- Lifegiving Gem
 				{ 17, 19342 }, -- Venomous Totem
 				{ 19, 19373 }, -- Black Brood Pauldrons
 				{ 20, 19374 }, -- Bracers of Arcane Accuracy
 				{ 21, 19350 }, -- Heartstriker
 				{ 22, 19351 }, -- Maladath, Runed Blade of the Black Flight
+				{ 24, 20383 }, -- Head of the Broodlord Lashlayer
 			},
 		},
 		{ -- BWLFiremaw
@@ -4755,7 +4762,9 @@ data["BlackwingLair"] = {
 				{ 7,  16948 }, -- Gauntlets of Ten Storms
 				{ 8,  16956 }, -- Judgement Gauntlets
 				{ 9,  16964 }, -- Gauntlets of Wrath
-				{ 13, 19345 }, -- Aegis of Preservation
+				{ 11, 19345 }, -- Aegis of Preservation
+				{ 12, 19406 }, -- Drake Fang Talisman
+				{ 13, 19395 }, -- Rejuvenating Gem
 				{ 16, 19394 }, -- Drake Talon Pauldrons
 				{ 17, 19407 }, -- Ebony Flame Gloves
 				{ 18, 19396 }, -- Taut Dragonhide Belt
@@ -4763,10 +4772,9 @@ data["BlackwingLair"] = {
 				{ 21, 19368 }, -- Dragonbreath Hand Cannon
 				{ 22, 19353 }, -- Drake Talon Cleaver
 				{ 23, 19355 }, -- Shadow Wing Focus Staff
-				{ 25, 19403 }, -- Band of Forced Concentration
-				{ 26, 19397 }, -- Ring of Blackrock
-				{ 27, 19406 }, -- Drake Fang Talisman
-				{ 28, 19395 }, -- Rejuvenating Gem
+				{ 26, 19403 }, -- Band of Forced Concentration
+				{ 27, 19397 }, -- Ring of Blackrock
+
 			},
 		},
 		{ -- BWLFlamegor
@@ -4783,6 +4791,8 @@ data["BlackwingLair"] = {
 				{ 7,  16948 }, -- Gauntlets of Ten Storms
 				{ 8,  16956 }, -- Judgement Gauntlets
 				{ 9,  16964 }, -- Gauntlets of Wrath
+				{ 11, 19395 }, -- Rejuvenating Gem
+				{ 12, 19431 }, -- Styleen's Impeding Scarab
 				{ 16, 19394 }, -- Drake Talon Pauldrons
 				{ 17, 19430 }, -- Shroud of Pure Thought
 				{ 18, 19396 }, -- Taut Dragonhide Belt
@@ -4793,8 +4803,6 @@ data["BlackwingLair"] = {
 				{ 24, 19355 }, -- Shadow Wing Focus Staff
 				{ 26, 19432 }, -- Circle of Applied Force
 				{ 27, 19397 }, -- Ring of Blackrock
-				{ 28, 19395 }, -- Rejuvenating Gem
-				{ 29, 19431 }, -- Styleen's Impeding Scarab
 			},
 		},
 		{ -- BWLChromaggus
@@ -4840,10 +4848,7 @@ data["BlackwingLair"] = {
 				{ 7,  16950 }, -- Breastplate of Ten Storms
 				{ 8,  16958 }, -- Judgement Breastplate
 				{ 9,  16966 }, -- Breastplate of Wrath
-				{ 12, 19003 }, -- Head of Nefarian
-				{ 13, 19383 }, -- Master Dragonslayer's Medallion
-				{ 14, 19384 }, -- Master Dragonslayer's Ring
-				{ 15, 19366 }, -- Master Dragonslayer's Orb
+				{ 11, 19003 }, -- Head of Nefarian
 				{ 16, 19360 }, -- Lok'amir il Romathis
 				{ 17, 19363 }, -- Crul'shorukh, Edge of Chaos
 				{ 18, 19364 }, -- Ashkandi, Greatsword of the Brotherhood
@@ -4884,6 +4889,7 @@ data["TheRuinsofAhnQiraj"] = { -- AQ20
 	AtlasMapID = "TheRuinsofAhnQiraj",
 	ContentType = RAID20_CONTENT,
 	LoadDifficulty = RAID20_DIFF,
+	ContentPhase = 5,
 	items = {
 		{ -- AQ20Kurinnaxx
 			name = AL["Kurinnaxx"],
@@ -5085,6 +5091,7 @@ data["TheTempleofAhnQiraj"] = { -- AQ40
 	AtlasMapID = "TheTempleofAhnQiraj",
 	ContentType = RAID40_CONTENT,
 	LoadDifficulty = RAID40_DIFF,
+	ContentPhase = 5,
 	items = {
 		{ -- AQ40Skeram
 			name = AL["The Prophet Skeram"],
@@ -5232,10 +5239,6 @@ data["TheTempleofAhnQiraj"] = { -- AQ40
 				{ 8,  21597 }, -- Royal Scepter of Vek'lor
 				{ 9,  20735 }, -- Formula: Enchant Cloak - Subtlety
 				{ 12, 21232 }, -- Imperial Qiraji Armaments
-				--{ 12, 21242 }, -- Blessed Qiraji War Axe
-				--{ 13, 21244 }, -- Blessed Qiraji Pugio
-				--{ 14, 21272 }, -- Blessed Qiraji Musket
-				--{ 15, 21269 }, -- Blessed Qiraji Bulwark
 				{ 16, "INV_Box_01", nil, AL["Emperor Vek'nilash"], nil },
 				{ 17, 20926 }, -- Vek'nilash's Circlet
 				{ 18, 21608 }, -- Amulet of Vek'nilash
@@ -5247,9 +5250,6 @@ data["TheTempleofAhnQiraj"] = { -- AQ40
 				{ 24, 21679 }, -- Kalimdor's Revenge
 				{ 25, 20726 }, -- Formula: Enchant Gloves - Threat
 				{ 27, 21237 }, -- Imperial Qiraji Regalia
-				--{ 28, 21268 }, -- Blessed Qiraji War Hammer
-				--{ 29, 21273 }, -- Blessed Qiraji Acolyte Staff
-				--{ 30, 21275 }, -- Blessed Qiraji Augur Staff
 			},
 		},
 		{ -- AQ40Ouro
@@ -5290,11 +5290,7 @@ data["TheTempleofAhnQiraj"] = { -- AQ40
 				{ 16, 20929 }, -- Carapace of the Old God
 				{ 17, 20933 }, -- Husk of the Old God
 				{ 19, 21221 }, -- Eye of C'Thun
-				{ 24, 22734 }, -- Base of Atiesh
-				{ 25, 22631 }, -- Atiesh, Greatstaff of the Guardian
-				{ 26, 22589 }, -- Atiesh, Greatstaff of the Guardian
-				{ 27, 22630 }, -- Atiesh, Greatstaff of the Guardian
-				{ 28, 22632 }, -- Atiesh, Greatstaff of the Guardian
+				{ 21, 22734 }, -- Base of Atiesh
 			},
 		},
 		{ -- AQ40Trash1
@@ -5364,6 +5360,7 @@ data["Naxxramas"] = {
 	AtlasMapID = "Naxxramas",
 	ContentType = RAID40_CONTENT,
 	LoadDifficulty = RAID40_DIFF,
+	ContentPhase = 6,
 	items = {
 		-- The Arachnid Quarter
 		{ -- NAXAnubRekhan
@@ -5652,10 +5649,6 @@ data["Naxxramas"] = {
 				{ 23, 23066 }, -- Ring of Redemption
 				{ 24, 23059 }, -- Ring of the Dreadnaught
 				{ 26, 22733 }, -- Staff Head of Atiesh
-				{ 27, 22631 }, -- Atiesh, Greatstaff of the Guardian
-				{ 28, 22589 }, -- Atiesh, Greatstaff of the Guardian
-				{ 29, 22630 }, -- Atiesh, Greatstaff of the Guardian
-				{ 30, 22632 }, -- Atiesh, Greatstaff of the Guardian
 			},
 		},
 		{ -- NAXTrash

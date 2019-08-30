@@ -1,1 +1,0 @@
-SetCVar("ShowClassColorInFriendlyNameplate", 1)

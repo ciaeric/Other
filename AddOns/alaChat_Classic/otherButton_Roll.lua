@@ -1,5 +1,5 @@
 ﻿--[[--
-
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS=...;
@@ -27,6 +27,7 @@ local function Roll_On()
 	if control_roll then
 		return;
 	end
+	local ICON_PATH = NS.ICON_PATH;
 	control_roll=true;
 	if btnRoll then
 		alaBaseBtn:AddBtn(btnPackIndex,-1,btnRoll,true,false,true);
@@ -35,8 +36,9 @@ local function Roll_On()
 				btnPackIndex,
 				-1,
 				"RollBtn",
-				"Interface\\Buttons\\UI-GroupLoot-Dice-Up",
-				"Interface\\Buttons\\UI-GroupLoot-Dice-Down",
+				ICON_PATH .. "roll_nor",
+				ICON_PATH .. "roll_push",
+				ICON_PATH .. "roll_highlight",
 				function (self)
 					RandomRoll("1","100");
 					if GameTooltip:GetOwner()==self then

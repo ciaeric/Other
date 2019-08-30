@@ -1,5 +1,5 @@
 ﻿--[[--
-
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS=...;
@@ -28,7 +28,7 @@ local function DBMCountDown_On()
 		return;
 	end
 	control_dbmCountDown=true;
-	local ICON_PATH="Interface\\AddOns\\alaChat_Classic\\icon\\"
+	local ICON_PATH = NS.ICON_PATH;
 	if btnDBMCountDown then
 		alaBaseBtn:AddBtn(btnPackIndex,-1,btnDBMCountDown,true,false,true);
 	else
@@ -36,8 +36,9 @@ local function DBMCountDown_On()
 				btnPackIndex,
 				-1,
 				"DBMPullBtnBtn",
-				ICON_PATH.."dbm_Up.blp",
-				ICON_PATH.."dbm_Down.blp",
+				ICON_PATH .. "dbm_nor",
+				ICON_PATH .. "dbm_push",
+				ICON_PATH .. "dbm_highlight",
 				function(self,button)
 					if button=="LeftButton" then
 						if SlashCmdList["DEADLYBOSSMODS"] then

@@ -3,12 +3,16 @@ local Token = {}
 AtlasLoot.Data.Token = Token
 local AL = AtlasLoot.Locales
 
+local type, pairs = type, pairs
+
 local TOKEN_TYPE_DEFAULT = 1
 local TOKEN_TYPE_TEXT = {
 	[0] = nil,	-- empty
-	[1] = AL["|cff00ff00Left-Click:|r Show additional items."],		-- default
-	[2] = AL["|cff00ff00Left-Click:|r Show possible items."],
-	[3] = AL["|cff00ff00Left-Click:|r Show quest rewards."],
+	[1] = "|cff00ff00"..AL["L-Click"]..":|r "..AL["Show additional items."],		-- default
+	[2] = "|cff00ff00"..AL["L-Click"]..":|r "..AL["Show possible items."],
+	[3] = "|cff00ff00"..AL["L-Click"]..":|r "..AL["Show quest rewards."],
+	[4] = "|cff00ff00"..AL["L-Click"]..":|r "..AL["Quest objective."],
+	[5] = "|cff00ff00"..AL["L-Click"]..":|r "..AL["Reagent for..."],
 }
 
 local TOKEN = {
@@ -38,47 +42,47 @@ local TOKEN = {
 	--- Darkmoon cards
 	-- Portals / Darkmoon Card: Twisting Nether
 	[19277] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Portals Deck
-	[19276] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Ace of Portals
-	[19278] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Two of Portals
-	[19279] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Three of Portals
-	[19280] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Four of Portals
-	[19281] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Five of Portals
-	[19282] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Six of Portals
-	[19283] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Seven of Portals
-	[19284] = { 19277, 19290, 0, 19276, 19278, 19279, 19280, 19281, 19282, 19283, 19284 },	-- Eight of Portals
+	[19276] = 19277,	-- Ace of Portals
+	[19278] = 19277,	-- Two of Portals
+	[19279] = 19277,	-- Three of Portals
+	[19280] = 19277,	-- Four of Portals
+	[19281] = 19277,	-- Five of Portals
+	[19282] = 19277,	-- Six of Portals
+	[19283] = 19277,	-- Seven of Portals
+	[19284] = 19277,	-- Eight of Portals
 
 	-- Elementals / Darkmoon Card: Maelstrom
 	[19267] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Elementals Deck
-	[19268] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Ace of Elementals
-	[19269] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Two of Elementals
-	[19270] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Three of Elementals
-	[19271] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Four of Elementals
-	[19272] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Five of Elementals
-	[19273] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Six of Elementals
-	[19274] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Seven of Elementals
-	[19275] = { 19267, 19289, 0, 19268, 19269, 19270, 19271, 19272, 19273, 19274, 19275 },	-- Eight of Elementals
+	[19268] = 19267,	-- Ace of Elementals
+	[19269] = 19267,	-- Two of Elementals
+	[19270] = 19267,	-- Three of Elementals
+	[19271] = 19267,	-- Four of Elementals
+	[19272] = 19267,	-- Five of Elementals
+	[19273] = 19267,	-- Six of Elementals
+	[19274] = 19267,	-- Seven of Elementals
+	[19275] = 19267,	-- Eight of Elementals
 
 	-- Warlords / Darkmoon Card: Heroism
 	[19257] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Warlords Deck
-	[19258] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Ace of Warlords
-	[19259] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Two of Warlords
-	[19260] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Three of Warlords
-	[19261] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Four of Warlords
-	[19262] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Five of Warlords
-	[19263] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Six of Warlords
-	[19264] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Seven of Warlords
-	[19265] = { 19257, 19287, 0, 19258, 19259, 19260, 19261, 19262, 19263, 19264, 19265 },	-- Eight of Warlords
+	[19258] = 19257,	-- Ace of Warlords
+	[19259] = 19257,	-- Two of Warlords
+	[19260] = 19257,	-- Three of Warlords
+	[19261] = 19257,	-- Four of Warlords
+	[19262] = 19257,	-- Five of Warlords
+	[19263] = 19257,	-- Six of Warlords
+	[19264] = 19257,	-- Seven of Warlords
+	[19265] = 19257,	-- Eight of Warlords
 
 	-- Beasts / Darkmoon Card: Blue Dragon
-	[19257] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Beasts Deck
-	[19227] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Ace of Beasts
-	[19230] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Two of Beasts
-	[19231] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Three of Beasts
-	[19232] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Four of Beasts
-	[19233] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Five of Beasts
-	[19234] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Six of Beasts
-	[19235] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Seven of Beasts
-	[19236] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Eight of Beasts
+	[19228] = { 19228, 19288, 0, 19227, 19230, 19231, 19232, 19233, 19234, 19235, 19236 },	-- Beasts Deck
+	[19227] = 19228,	-- Ace of Beasts
+	[19230] = 19228,	-- Two of Beasts
+	[19231] = 19228,	-- Three of Beasts
+	[19232] = 19228,	-- Four of Beasts
+	[19233] = 19228,	-- Five of Beasts
+	[19234] = 19228,	-- Six of Beasts
+	[19235] = 19228,	-- Seven of Beasts
+	[19236] = 19228,	-- Eight of Beasts
 
 	-- Zul'Gurub
 	[19724] = { 19841, 19834, 19831 },	-- Primal Hakkari Aegis
@@ -150,15 +154,27 @@ local TOKEN = {
 
 	-- Misc
 	[11086] = { 9372, 0, 9379, 11086 }, -- Jang'thraze the Protector
-	[9379] =  { 9372, 0, 9379, 11086 }, -- Sang'thraze the Deflector
+	[9379] =  11086, -- Sang'thraze the Deflector
 	[18784] = { 12725, 0, 18783, 18784 }, -- Top Half of Advanced Armorsmithing: Volume III
-	[18783] = { 12725, 0, 18783, 18784 }, -- Bottom Half of Advanced Armorsmithing: Volume III
+	[18783] = 18784, -- Bottom Half of Advanced Armorsmithing: Volume III
 	[18780] = { 12727, 0, 18779, 18780 }, -- Top Half of Advanced Armorsmithing: Volume I
-	[18779] = { 12727, 0, 18779, 18780 }, -- Bottom Half of Advanced Armorsmithing: Volume I
+	[18779] = 18780, -- Bottom Half of Advanced Armorsmithing: Volume I
 	[12731] = { 12752, 12757, 12756 }, -- Pristine Hide of the Beast
 	[18782] = { 12726, 0, 18781, 18782 }, -- Top Half of Advanced Armorsmithing: Volume II
 	[18781] = { 12726, 0, 18781, 18782 }, -- Bottom Half of Advanced Armorsmithing: Volume II
-
+	[21813] = { 21816, 21817, 21818, 21819, 21820, 21821, 21822, 21823, type = 2}, -- Bag of Candies
+	[19697] = { {19696, 4} }, -- Bounty of the Harvest
+	[18564] = { 19019, 0, 18563, 18564, 19017 }, -- Bindings of the Windseeker <right>
+	[18563] = 18564, -- Bindings of the Windseeker <left>
+	[19017] = 18564, -- Essence of the Firelord
+	[17204] = { 17182 }, -- Eye of Sulfuras
+	[18703] = { 18714, 18713, 18715 }, -- Ancient Petrified Leaf
+	[18646] = { 18665, 18646, 0, 18608, 18609 }, -- The Eye of Divinity
+	[18665] = 18646, -- The Eye of Shadow
+	[17074] = { 17074, 17223 }, -- Shadowstrike
+	[17223] = 17074, -- Thunderstrike
+	[18608] = { 18608, 18609 }, -- Benediction
+	[18609] = 18608, -- Anathema
 
 	-- Quests
 	[10441] = { 10657, 10658, type = 3 }, -- Glowing Shard
@@ -168,19 +184,67 @@ local TOKEN = {
 	[17008] = { 17043, 17042, 17039, type = 3 }, -- Small Scroll
 	[10454] = { 10455, type = 3 }, -- Essence of Eranikus
 	[12780] = { 13966, 13968, 13965, type = 3 }, -- General Drakkisath's Command
+	[7666] = { 7673, type = 3 }, -- Shattered Necklace
+	[19003] = { 19383, 19384, 19366, type = 3 }, -- Head of Nefarian
+	[18423] = { 18404, 18403, 18406, type = 3 }, -- Head of Onyxia
+
+	-- Quest objective
+	[18705] = { 18713, type = 4 }, -- Mature Black Dragon Sinew
+	[18704] = { 18714, type = 4 }, -- Mature Blue Dragon Sinew
+	[12871] = { 12895, 0, 12903, 12945, type = 4 }, -- Chromatic Carapace
+	[18706] = { 19024, 0, {18706, 12}, type = 4 }, -- Arena Master
+
+
+	[22523] = { 22523, 22524, 0,
+				22689, 22690, 22681, 22680, 22688, 22679, 0,
+				22667, 22668, 22657, 22659, 22678, 22656, type = 4 }, -- Insignia of the Dawn
+	[22524] = 22523, -- Insignia of the Crusade
 
 	-- Naxxramas
 	[22520] = { 23207, 23206, type = 3 }, -- The Phylactery of Kel'Thuzad
 
 	-- AQ40
 	[21221] = { 21712, 21710, 21709, type = 3 }, -- Amulet of the Fallen God
+	[21762] = { 21156, 20876, 20879, 20875, 20878, 20881, 20877, 20874, 20882 }, -- Greater Scarab Coffer Key
 
 	-- AQ20
 	[21220] = { 21504, 21507, 21505, 21506, type = 3 }, -- Head of Ossirian the Unscarred
 
 	-- ZG
 	[19802] = { 19950, 19949, 19948, type = 3 }, -- Heart of Hakkar
+	[19939] = { 19939, 19940, 19941, 19942, 0,
+				19819, 19820, 19818, 19814, 19821, 19816, 19817, 19813, 19815, 0,
+				19957, 19958, 19959, 19954, 19955, 19953, 19956, 19951, 19952 }, -- Gri'lek's Blood
+	[19940] = 19939, -- Renataki's Tooth
+	[19941] = 19939, -- Wushoolay's Mane
+	[19942] = 19939, -- Hazza'rah's Dream Thread
+	-- ZG / Punctured Voodoo Doll
+	[19820] = 19939, [19818] = 19939, [19819] = 19939, [19814] = 19939, [19821] = 19939, [19816] = 19939, [19817] = 19939, [19815] = 19939, [19813] = 19939,
+
+	-- Reagent for...
+	[12811] = { "prof20034", "prof22750", "prof25079", 0, "prof18456", "prof16990", "prof23632", "prof23633", type = 5 }, -- Righteous Orb
+	[20381] = { "prof24703", type = 5 }, -- Dreamscale Breastplate
+	[12753] = { "prof22928", "prof27830", type = 5 }, -- Dreamscale Breastplate
+	[17203] = { "prof21161", type = 5 }, -- Sulfuron Ingot
+	[15410] = { "prof19106", "prof19093", type = 5 }, -- Scale of Onyxia
+
+	-- Atiesh
+	[22727] = { { 22726, 40 }, 22727, 22734, 22733, 0, 22631, 22589, 22630, 22632 }, -- Frame of Atiesh
+	[22726] = 22727, -- Splinter of Atiesh
+	[22734] = 22727, -- Base of Atiesh
+	[22733] = 22727, -- Staff Head of Atiesh
+
+	-- UBRS key
+	[12219] = { 12219, 12336, 12335, 12337, 0, 12344 }, -- Unadorned Seal of Ascension
+	[12336] = 12219, -- Gemstone of Spirestone
+	[12335] = 12219, -- Gemstone of Smolderthorn
+	[12337] = 12219, -- Gemstone of Bloodaxe
 }
+for k, v in pairs(TOKEN) do
+	if TOKEN[v] then
+		TOKEN[k] = TOKEN[v]
+	end
+end
 
 function Token.IsToken(itemID)
 	return TOKEN[itemID or 0] and true or false

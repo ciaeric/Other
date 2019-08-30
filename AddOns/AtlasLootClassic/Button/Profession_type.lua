@@ -1,6 +1,7 @@
 local AtlasLoot = _G.AtlasLoot
 local Prof = AtlasLoot.Button:AddType("Profession", "prof")
-local ItemQuery = AtlasLoot.Button:GetType("Item").Query
+local Item_ButtonType = AtlasLoot.Button:GetType("Item")
+local ItemQuery = Item_ButtonType.Query
 local AL = AtlasLoot.Locales
 local GetAlTooltip = AtlasLoot.Tooltip.GetTooltip
 local Profession = AtlasLoot.Data.Profession
@@ -14,25 +15,30 @@ local ProfClickHandler = nil
 
 local PROF_COLOR = "|cffffff00"
 local ITEM_COLORS = {}
-local WHITE_ICON_FRAME = "Interface\\Common\\WhiteIconFrame"
+
+AtlasLoot.ClickHandler:Add(
+	"Profession",
+	{
+		ChatLink = { "LeftButton", "Shift" },
+		ShowExtraItems = { "LeftButton", "None" },
+		DressUp = { "LeftButton", "Ctrl" },
+		types = {
+			ChatLink = true,
+			ShowExtraItems = true,
+			DressUp = true,
+		},
+	},
+	{
+		{ "ChatLink", 		AL["Chat Link"], 			AL["Add profession link into chat"] },
+		{ "DressUp", 		AL["Dress up"], 			AL["Shows the item in the Dressing room"] },
+		{ "ShowExtraItems", AL["Show extra items"], 	AL["Shows extra items (tokens,mats)"] },
+	}
+)
 
 function Prof.OnSet(button, second)
 	if not ProfClickHandler then
-		ProfClickHandler = AtlasLoot.ClickHandler:Add(
-		"Profession",
-		{
-			ChatLink = { "LeftButton", "Shift" },
-			ShowExtraItems = { "LeftButton", "None" },
-			types = {
-				ChatLink = true,
-				ShowExtraItems = true,
-			},
-		},
-		AtlasLoot.db.Button.Profession.ClickHandler,
-		{
-			{ "ChatLink", 	AL["Chat Link"], 	AL["Add profession link into chat"] },
-			{ "ShowExtraItems", AL["Show extra items"], 	AL["Shows extra items (tokens,mats)"] },
-		})
+		ProfClickHandler = AtlasLoot.ClickHandler:GetHandler("Profession")
+
 		-- create item colors
 		for i=0,7 do
 			local _, _, _, itemQuality = GetItemQualityColor(i)
@@ -60,6 +66,7 @@ function Prof.OnClear(button)
 	button.secButton.Profession = nil
 	button.secButton.SpellID = nil
 	button.secButton.ItemID = nil
+
 	if button.ExtraFrameShown then
 		AtlasLoot.Button:ExtraItemFrame_ClearFrame()
 		button.ExtraFrameShown = false
@@ -69,8 +76,11 @@ end
 function Prof.OnEnter(button)
 	local tooltip = GetAlTooltip()
 	tooltip:ClearLines()
-	tooltip:SetOwner(button, "ANCHOR_RIGHT", -(button:GetWidth() * 0.5), 24)
+	tooltip:SetOwner(button, "ANCHOR_RIGHT", -(button:GetWidth() * 0.5), 5)
 	tooltip:SetSpellByID(button.SpellID)
+	if AtlasLoot.db.showIDsInTT then
+		tooltip:AddDoubleLine("SpellID:", button.SpellID)
+	end
 	tooltip:Show()
 end
 
@@ -82,7 +92,17 @@ function Prof.OnMouseAction(button, mouseButton)
 	if not mouseButton then return end
 	mouseButton = ProfClickHandler:Get(mouseButton)
 	if mouseButton == "ChatLink" then
-		--AtlasLoot.Button:AddChatLink(button.tsLink or "spell:"..button.SpellID)
+		if button.ItemID then
+			local itemInfo, itemLink = GetItemInfo(button.ItemID)
+			AtlasLoot.Button:AddChatLink(itemLink)
+		end
+	elseif mouseButton == "DressUp" then
+		if button.ItemID then
+			local itemInfo, itemLink = GetItemInfo(button.ItemID)
+			if itemLink then
+				DressUpItemLink(itemLink)
+			end
+		end
 	elseif mouseButton == "ShowExtraItems" then
 		if Profession.IsProfessionSpell(button.SpellID) then
 			button.ExtraFrameShown = true
@@ -107,13 +127,13 @@ function Prof.Refresh(button)
 			itemCount = Profession.GetNumCreatedItems(button.SpellID)
 		end
 		itemQuality = itemQuality or 0
-		--ItemQuery
+
 		button.overlay:Show()
-		button.overlay:SetTexture(WHITE_ICON_FRAME)
-		button.overlay:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[LE_ITEM_QUALITY_UNCOMMON])
-		if not LOOT_BORDER_BY_QUALITY[itemQuality] then
-			button.overlay:SetDesaturated(true)
+		-- enchanting border
+		if not button.ItemID then
+			itemQuality = "gold"
 		end
+		button.overlay:SetQualityBorder(itemQuality)
 
 		if button.type == "secButton" then
 
@@ -123,12 +143,21 @@ function Prof.Refresh(button)
 			else
 				button.name:SetText(PROF_COLOR..spellName)
 			end
-			button.extra:SetText(Profession.GetSpellDescription(button.SpellID).." ( "..Profession.GetColorSkillRank(button.SpellID).." )")
+			button.extra:SetText(Profession.GetSpellDescriptionWithRank(button.SpellID))
 		end
-		if itemCount > 1 then
+		if itemCount and itemCount > 1 then
 			button.count:SetText(itemCount)
 			button.count:Show()
 		end
+		if AtlasLoot.db.ContentPhase.enableOnCrafting then
+			local phaseT = Profession.GetPhaseTextureForSpellID(button.SpellID)
+			if phaseT then
+				button.phaseIndicator:SetTexture(phaseT)
+				button.phaseIndicator:Show()
+			end
+		end
+
+		--Profession.GetPhaseTextureForSpellID(spellID)
 		button.icon:SetTexture(itemTexture or Profession.GetIcon(button.SpellID) or spellTexture)
 	end
 

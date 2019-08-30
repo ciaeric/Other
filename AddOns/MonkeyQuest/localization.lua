@@ -1,6 +1,6 @@
 ﻿-- Not translations
 MONKEYQUEST_TITLE						= "MonkeyQuest"
-MONKEYQUEST_VERSION						= "2.9.37"
+MONKEYQUEST_VERSION						= "2.9.39c"
 MONKEYQUEST_TITLE_VERSION				= MONKEYQUEST_TITLE .. " v" .. MONKEYQUEST_VERSION
 MONKEYQUEST_INFO_COLOUR					= "|cffffff00"
 MONKEYQUEST_CHAT_COLOUR					= "|cff00ff00"
@@ -17,12 +17,10 @@ MONKEYQUEST_QUEST_DONE					= "done"
 MONKEYQUEST_QUEST_FAILED				= "failed"
 MONKEYQUEST_CONFIRM_RESET				= "Okay to reset " .. MONKEYQUEST_TITLE .. " settings to default values?"
 MONKEYQUEST_CONFIRM_RESET_TO_BLIZZARD_STYLE				= "Okay to set " .. MONKEYQUEST_TITLE .. " settings to Blizzard quest tracker style?"
-MONKEYQUEST_CONFIRM_GEPY_STYLE							= "Okay to set " .. MONKEYQUEST_TITLE .. " settings to 'DaMaGepy' style?"
 
 MONKEYQUEST_SET_WIDTH_MSG				= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. ": You may need to '/console reloadui' to see the changes in width."
 MONKEYQUEST_RESET_MSG					= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. ": Settings reset."
 MONKEYQUEST_RESET_TO_BLIZZARD_STYLE_MSG	= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. ": Settings set to Blizzard quest tracker style."
-MONKEYQUEST_RESET_GEPY_STYLE_MSG		= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. ": Settings set to 'DaMaGepy' style."
 
 MONKEYQUEST_HELP_MSG					= MONKEYQUEST_INFO_COLOUR .. "Slash Command: /mquest help <command>\n" ..
 										  MONKEYQUEST_CHAT_COLOUR .. "Where <command> is any of the following: \n" ..

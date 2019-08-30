@@ -11,12 +11,7 @@ local HBD = LibStub("HereBeDragonsQuestie-2.0")
 local HBDPins = LibStub("HereBeDragonsQuestie-Pins-2.0")
 local HBDMigrate = LibStub("HereBeDragonsQuestie-Migrate")
 
---These changes allow me to develop on retail!
-if(select(4, GetBuildInfo()) > 80000) then
-    _QuestieFramePool.addonPath = "Interface\\Addons\\QuestieDev-master-retail\\"
-else
-    _QuestieFramePool.addonPath = "Interface\\Addons\\Questie\\"
-end
+_QuestieFramePool.addonPath = "Interface\\Addons\\Questie\\"
 
 --TODO: Add all types
 ICON_TYPE_AVAILABLE =  _QuestieFramePool.addonPath.."Icons\\available.blp"
@@ -27,51 +22,24 @@ ICON_TYPE_LOOT =  _QuestieFramePool.addonPath.."Icons\\loot.blp"
 ICON_TYPE_EVENT =  _QuestieFramePool.addonPath.."Icons\\event.blp"
 ICON_TYPE_OBJECT =  _QuestieFramePool.addonPath.."Icons\\object.blp"
 ICON_TYPE_GLOW = _QuestieFramePool.addonPath.."Icons\\glow.blp"
-
-
-local function testPath(tex)
-    local textestFrame = CreateFrame("Frame")-- each test needs to be done with its own frame unfortunately. TODO: Maybe use frame pool?
-    local textest = textestFrame:CreateTexture()
-    textest:SetPoint("CENTER", WorldFrame)
-    textestFrame:SetAllPoints(textest)
-    textestFrame.path = tex
-    textestFrame:SetScript("OnSizeChanged", function(self, width, height)
-        if math.floor(width+0.5) == 256 and math.floor(height+0.5) == 16 then
-            -- detected texture
-            _QuestieFramePool.addonPath = self.path
-            ICON_TYPE_AVAILABLE =  _QuestieFramePool.addonPath.."Icons\\available.blp"
-            ICON_TYPE_SLAY =  _QuestieFramePool.addonPath.."Icons\\slay.blp"
-            ICON_TYPE_COMPLETE =  _QuestieFramePool.addonPath.."Icons\\complete.blp"
-            ICON_TYPE_ITEM =  _QuestieFramePool.addonPath.."Icons\\item.blp"
-            ICON_TYPE_LOOT =  _QuestieFramePool.addonPath.."Icons\\loot.blp"
-            ICON_TYPE_EVENT =  _QuestieFramePool.addonPath.."Icons\\event.blp"
-            ICON_TYPE_OBJECT =  _QuestieFramePool.addonPath.."Icons\\object.blp"
-            ICON_TYPE_GLOW =  _QuestieFramePool.addonPath.."Icons\\glow.blp"
-        end
-        self:Hide()
-    end)
-    textest:SetTexture(tex .. "Icons\\test.blp")
-    textest:SetSize(0, 0)
-    textestFrame:Show()
-end
-testPath("Interface\\Addons\\Questie\\")
-testPath("Interface\\Addons\\QuestieDev-master\\")
-testPath("Interface\\Addons\\QuestieDev-master-retail\\")
-testPath("Interface\\Addons\\QuestieDev\\")
-testPath("Interface\\Addons\\!Questie\\")
---qtTestPaths = { -- test various texture paths
---    raw = {textest:SetTexture("Interface\\Addons\\Questie\\Icons\\available.blp"), textest:GetTexture()},
---    master = {textest:SetTexture("Interface\\Addons\\QuestieDev-master\\Icons\\available.blp"), textest:GetTexture()},
---    retail = {textest:SetTexture("Interface\\Addons\\QuestieDev-master-retail\\Icons\\available.blp"), textest:GetTexture()},
---    qdev = {textest:SetTexture("Interface\\Addons\\QuestieDev\\Icons\\available.blp"), textest:GetTexture()},
---    old = {textest:SetTexture("Interface\\Addons\\!Questie\\Icons\\available.blp"), textest:GetTexture()}
---}
-
-
+ICON_TYPE_BLACK = _QuestieFramePool.addonPath.."Icons\\black.blp"
 
 -- Global Functions --
 function QuestieFramePool:GetFrame()
-    local f = tremove(unusedframes)
+    local f = nil--tremove(unusedframes)
+    
+    -- im not sure its this, but using string keys for the table prevents double-adding to unusedframes, calling unload() twice could double-add it maybe?
+    for k,v in pairs(unusedframes) do -- yikes (why is tremove broken? is there a better to get the first key of a non-indexed table?)
+        f = v
+        unusedframes[k] = nil
+        break
+    end
+    
+    
+    if f and f.GetName and usedFrames[f:GetName()] then
+        -- something went horribly wrong (desync bug?) don't use this frame since its already in use
+        f = nil
+    end
     if not f then
         f = _QuestieFramePool:QuestieCreateFrame()
     end
@@ -84,20 +52,36 @@ function QuestieFramePool:GetFrame()
     end
     f.fadeLogic = nil
     f.miniMapIcon = nil
+    f._hidden_toggle_hack = nil -- TODO: this will be removed later, see QuestieQuest:UpdateHiddenNotes()
 
     --if f.IsShowing ~= nil and f:IsShowing() then
     f.data = {} -- this should probably be nil but QuestieCreateFrame sets it to an empty table for some reason
     f.x = nil;f.y = nil;f.AreaID = nil;
     f:Hide();
     --end
-
+    
     if f.texture then
         f.texture:SetVertexColor(1, 1, 1, 1)
     end
-    f.loaded = true;
-    f.shouldBeShowing = false;
+    f.loaded = true
+    f.shouldBeShowing = nil
+    f.hidden = nil
+    
+    if f.baseOnShow then
+        f:SetScript("OnShow", f.baseOnShow)
+    end
+    
+    if f.baseOnUpdate then
+        f:SetScript("OnUpdate", f.baseOnUpdate)
+    else
+        f:SetScript("OnUpdate", nil)
+    end
+    
+    if f.baseOnHide then
+        f:SetScript("OnHide", f.baseOnHide)
+    end
+    
     usedFrames[f:GetName()] = f
-    f:SetScript("OnUpdate", nil)
     return f
 end
 
@@ -167,6 +151,8 @@ function _QuestieFramePool:QuestieCreateFrame()
     t:SetWidth(16)
     t:SetHeight(16)
     t:SetAllPoints(f)
+    t:SetTexelSnappingBias(0)
+    t:SetSnapToPixelGrid(false)
 
     local glowt = f.glow:CreateTexture(nil, "TOOLTIP")
     glowt:SetWidth(18)
@@ -205,7 +191,7 @@ function _QuestieFramePool:QuestieCreateFrame()
             WorldMapFrame:SetMapID(self.data.UiMapID);
         end
     end);
-    f:HookScript("OnUpdate", function(self)
+    f.glowUpdate = function(self)--f:HookScript("OnUpdate", function(self)
         if self.glow and self.glow.IsShown and self.glow:IsShown() then
             self.glow:SetWidth(self:GetWidth()*1.13)
             self.glow:SetHeight(self:GetHeight()*1.13)
@@ -216,8 +202,13 @@ function _QuestieFramePool:QuestieCreateFrame()
             end
         end
         --self.glow:SetPoint("BOTTOMLEFT", self, 1, 1)
-    end)
-    f:HookScript("OnShow", function(self)
+    end--end)
+    f.baseOnUpdate = function(self)
+        if self.glowUpdate then
+            self:glowUpdate()
+        end
+    end
+    f.baseOnShow = function(self)--f:SetScript("OnShow", function(self)
         if self.data and self.data.Type and self.data.Type == "complete" then
             self:SetFrameLevel(self:GetFrameLevel() + 1)
         end
@@ -230,13 +221,16 @@ function _QuestieFramePool:QuestieCreateFrame()
             self.glow:Show()
             self.glow:SetFrameLevel(self:GetFrameLevel() - 1)
         end
-    end)
-    f:HookScript("OnHide", function(self)
+    end--end)
+    f.baseOnHide = function(self)--f:HookScript("OnHide", function(self)
         self.glow:Hide()
-    end)
+    end--end)
     --f.Unload = function(frame) _QuestieFramePool:UnloadFrame(frame) end;
     function f:Unload()
-        usedFrames[self:GetName()] = nil
+        self:SetScript("OnUpdate", nil)
+        self:SetScript("OnShow", nil)
+        self:SetScript("OnHide", nil)
+        
         --We are reseting the frames, making sure that no data is wrong.
         if self ~= nil and self.hidden and self._show ~= nil and self._hide ~= nil then -- restore state to normal (toggle questie)
             self.hidden = false
@@ -258,7 +252,10 @@ function _QuestieFramePool:QuestieCreateFrame()
         self.data = nil; -- Just to be safe
         self.loaded = nil;
         self.x = nil;self.y = nil;self.AreaID = nil;
-        table.insert(unusedframes, self)
+        if usedFrames[self:GetName()] then
+            usedFrames[self:GetName()] = nil
+            unusedframes[self:GetName()] = self--table.insert(unusedframes, self)
+        end
     end
     f.data = {}
     f:Hide()

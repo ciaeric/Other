@@ -1,5 +1,5 @@
 ﻿--[[--
-	virtual@0
+	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
 local ADDON,NS=...;
@@ -45,9 +45,10 @@ local function periodicGetMemberInfo(n)
 	GuildRoster();
 	for i=1,GetNumGuildMembers() do
 		local name,rank,rankindex0,level,class,area,_,_,_,_,eClass,ach=GetGuildRosterInfo(i);
-		name=string.match(name,"([^-]+)-.+") or name;
+		name=string.split("-",name);
+		memCache[name]=level;
 		if name==n then
-			print(i,name,rank,level,class,area);
+			--print(i,name,rank,level,class,area);
 			SendChatMessage(string.format(FORMAT_BROADCAST,name,class,level,area,ach),"GUILD");
 			return;
 		end
@@ -198,4 +199,5 @@ end
 FUNC.ON.broadCastNewMember=BroadCastNewMember_ToggleOn;
 FUNC.OFF.broadCastNewMember=BroadCastNewMember_ToggleOff;
 FUNC.TOOLTIPS.broadCastNewMember=BroadCastNewMember_Tooltips;
+
 

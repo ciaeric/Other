@@ -8,14 +8,16 @@ local AL = AtlasLoot.Locales
 -- lua
 local type, tostring = type, tostring
 local floor = math.floor
-local format = string.format
+local format, sfind, slower = string.format, string.find, string.lower
 
 -- WoW
 local GetTime = GetTime
 
 local LastRefresh = GetTime()
+local PAGE_NAME_PAGE = "%s [%d/%d]"
 local PAGE_NAME_DIFF = "%s (%s)"
 local PAGE_NAME_DIFF_PAGE = "%s (%s) [%d/%d]"
+local FILTER_ALPHA = 0.33
 
 function ItemFrame:Create()
 	if self.frame then return self.frame end
@@ -32,6 +34,9 @@ function ItemFrame:Create()
 	-- create all item buttons
 	frame.Refresh = ItemFrame.Refresh
 	frame.Clear = ItemFrame.Clear
+	frame.OnSearch = ItemFrame.OnSearch
+	frame.OnSearchClear = ItemFrame.OnSearchClear
+	frame.OnSearchTextChanged = ItemFrame.OnSearchTextChanged
 	frame.OnClassFilterUpdate = ItemFrame.OnClassFilterUpdate
 	frame.OnTransMogUpdate = ItemFrame.OnTransMogUpdate
 
@@ -67,7 +72,32 @@ function ItemFrame:ClearItems()
 		self.frame.ItemButtons[i]:Clear()
 		self.frame.ItemButtons[i]:Hide()
 	end
-	--AtlasLoot.EncounterJournal:ClearLootQuery()
+end
+
+function ItemFrame.UpdateFilter()
+	local Reset = true
+	if AtlasLoot.db.GUI.classFilter then
+		-- NYI
+		-- Reset = false
+	end
+	if ItemFrame.SearchString then
+		local searchString = ItemFrame.SearchString
+		for i=1,30 do
+			local button = ItemFrame.frame.ItemButtons[i]
+			local text = button.RawName or button.name:GetText()
+			if text and not sfind(slower(text), searchString, 1, true) then
+				button:SetAlpha(FILTER_ALPHA)
+			else
+				button:SetAlpha(1.0)
+			end
+		end
+		Reset = false
+	end
+	if Reset then
+		for i=1,30 do
+			ItemFrame.frame.ItemButtons[i]:SetAlpha(1)
+		end
+	end
 end
 
 function ItemFrame.OnClassFilterUpdate(filterTab)
@@ -98,17 +128,19 @@ function ItemFrame.OnClassFilterUpdate(filterTab)
 	]]--
 end
 
-local function TransmogCallback(button, collected)
-	--print(button.ItemString, collected)
-	if collected == nil then
-		button.highlightBg:Hide()
-	elseif collected == false then
-		button.highlightBg:SetColorTexture(1,0,0)
-		button.highlightBg:Show()
-	elseif collected == true then
-		button.highlightBg:SetColorTexture(0,1,0)
-		button.highlightBg:Show()
-	end
+function ItemFrame.OnSearch(msg)
+	ItemFrame.SearchString = ( not msg or msg == "" ) and nil or slower(msg)
+	ItemFrame.UpdateFilter()
+end
+
+function ItemFrame.OnSearchClear()
+	ItemFrame.SearchString = nil
+	ItemFrame.UpdateFilter()
+end
+
+function ItemFrame.OnSearchTextChanged(msg)
+	ItemFrame.SearchString = ( not msg or msg == "" ) and nil or slower(msg)
+	ItemFrame.UpdateFilter()
 end
 
 function ItemFrame:Refresh(skipProtect)
@@ -127,13 +159,20 @@ function ItemFrame:Refresh(skipProtect)
 		ItemFrame.LinkedInfo = items.__linkedInfo
 		ItemFrame.CurDiff = diffData.difficultyID or 1
 		ItemFrame.CurTier = diffData.tierID or 1
-
 		-- refresh title with diff and add pagenumber if there
-		if #items and items[#items] and items[#items][1] > 100 then
-			GUI.frame.contentFrame.title:SetText(format(PAGE_NAME_DIFF_PAGE, GUI.frame.contentFrame.title.txt, diffData.name, AtlasLoot.db.GUI.selected[5]+1, floor(items[#items][1]/100)+1))
-		else
-			GUI.frame.contentFrame.title:SetText(format(PAGE_NAME_DIFF, GUI.frame.contentFrame.title.txt or "", diffData.name or ""))
-		end
+			if #items and items[#items] and items[#items][1] > 100 then
+				if not diffData.textIsHidden then
+					GUI.frame.contentFrame.title:SetText(format(PAGE_NAME_DIFF_PAGE, GUI.frame.contentFrame.title.txt, diffData.name, AtlasLoot.db.GUI.selected[5]+1, floor(items[#items][1]/100)+1))
+				else
+					GUI.frame.contentFrame.title:SetText(format(PAGE_NAME_PAGE, GUI.frame.contentFrame.title.txt, AtlasLoot.db.GUI.selected[5]+1, floor(items[#items][1]/100)+1))
+				end
+			else
+				if not diffData.textIsHidden then
+					GUI.frame.contentFrame.title:SetText(format(PAGE_NAME_DIFF, GUI.frame.contentFrame.title.txt or "", diffData.name or ""))
+				else
+					GUI.frame.contentFrame.title:SetText(GUI.frame.contentFrame.title.txt or "")
+				end
+			end
 		if type(items) == "string" then
 			GUI:ShowLoadingInfo(items, true, tableType)
 			AtlasLoot.Loader:LoadModule(items, function() ItemFrame:Refresh(true) GUI.frame.contentFrame.loadingDataText:Hide() end, true)
@@ -149,7 +188,6 @@ function ItemFrame:Refresh(skipProtect)
 				ItemFrame.frame.ItemButtons[fixItemNum]:SetDifficultyID(diffData.difficultyID)
 				ItemFrame.frame.ItemButtons[fixItemNum]:SetPreSet(diffData.preset)
 				ItemFrame.frame.ItemButtons[fixItemNum]:SetContentTable(item, tableType)
-				--ItemFrame.frame.ItemButtons[fixItemNum]:SetAlpha(1)
 				setn = true
 			elseif fixItemNum > 100 then
 				GUI.frame.contentFrame.nextPageButton.info = tostring(AtlasLoot.db.GUI.selected[5] + 1)
@@ -176,7 +214,7 @@ function ItemFrame:Refresh(skipProtect)
 		end
 		]]--
 	end
-	ItemFrame.OnClassFilterUpdate()
+	ItemFrame.UpdateFilter()
 end
 
 function ItemFrame.Clear()

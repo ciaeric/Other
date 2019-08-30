@@ -5,6 +5,7 @@ local Profession = AtlasLoot.Data.Profession
 local AL = AtlasLoot.Locales
 
 local format = string.format
+local pairs = _G.pairs
 
 
 local LOC_STRING = AL["|cff00ff00Left-Click:|r %s"]
@@ -120,6 +121,7 @@ local RECIPE = {
 	[5641] = 	{ 4,	125,  	6619 }, -- Recipe: Cowardly Flight Potion
 	[5642] = 	{ 4,	150,  	6624 }, -- Recipe: Free Action Potion
 	[5643] = 	{ 4,	175,  	6618 }, -- Recipe: Great Rage Potion
+	[5657] = 	{ 13,	120,  	6651 }, -- Recipe: Instant Toxin
 	[5771] = 	{ 8,	70,  	6686 }, -- Pattern: Red Linen Bag
 	[5772] = 	{ 8,	115,  	6688 }, -- Pattern: Red Woolen Bag
 	[5773] = 	{ 8,	150,  	6692 }, -- Pattern: Robes of Arcana
@@ -832,6 +834,11 @@ local RECIPE = {
 	[23689] = 	{ 1,	300,  	30021 }, -- Manual: Crystal Infused Bandage
 	[23690] = 	{ 6,	300,  	30047 }, -- Recipe: Crystal Flake Throat Lozenge
 }
+RECIPE[21302] = { 13, 300, 25347 } -- Handbook of Deadly Poison V
+local RECIPE_TO_SPELL = {}
+for k,v in pairs(RECIPE) do
+	RECIPE_TO_SPELL[v[3]] = k
+end
 
 -- maybe weak table?
 local RecipeCache = {}
@@ -858,6 +865,22 @@ function Recipe.GetRecipeDescription(itemID)
 	return ( itemID and RECIPE[itemID] ) and RECIPE_PROF_TEXT[RECIPE[itemID][1] or RECIPE_PROF_DEFAULT] or nil
 end
 
+function Recipe.GetRecipeDescriptionWithRank(itemID)
+	return ( itemID and RECIPE[itemID] ) and ( Profession.GetSpellDescriptionWithRank(RECIPE[itemID][3]) or Recipe.GetRecipeDescription(itemID) ) or nil
+end
+
 function Recipe.GetRecipeProfession(itemID)
 	return ( itemID and RECIPE[itemID] ) and RECIPE[itemID][1] or nil
+end
+
+function Recipe.GetRecipeForSpell(spellID)
+	return RECIPE_TO_SPELL[spellID or 0]
+end
+
+function Recipe.GetRecipeSkillRankForSpell(spellID)
+	return RECIPE_TO_SPELL[spellID or 0] and RECIPE[ RECIPE_TO_SPELL[spellID or 0][2] ] or nil
+end
+
+function Recipe.GetPhaseTextureForItemID(itemID)
+	return Profession.GetPhaseTextureForSpellID(RECIPE[itemID][3])
 end

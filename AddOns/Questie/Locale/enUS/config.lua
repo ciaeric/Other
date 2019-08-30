@@ -17,11 +17,19 @@ QuestieLocale.locale['enUS'] = {
     ['LOWLEVEL_ABOVE_DESC'] = "How many levels above your character to show. ( Default: %s )",
     ['CLUSTER'] = "Objective icon cluster amount  (Not yet implemented)",
     ['CLUSTER_DESC'] = "How much objective icons should cluster.",
-
+    ['ENABLE_OBJECTIVES'] = "Enable Objective Icons",
+    ['ENABLE_OBJECTIVES_DESC'] = "When this is enabled, quest objective icons will be shown on the map/minimap",
+    ['ENABLE_TURNINS'] = "Enable Completed Quest Icons",
+    ['ENABLE_TURNINS_DESC'] = "When this is enabled, the quest turn-in locations will be shown on the map/minimap",
+    ['ENABLE_AVAILABLE'] = "Enable Available Quest Icons",
+    ['ENABLE_AVAILABLE_DESC'] = "When this is enabled, the available quest locations will be shown on the map/minimap",
+    ['ENABLE_TOOLTIPS'] = "Enable Tooltips",
+    ['ENABLE_TOOLTIPS_DESC'] = "When this is enabled, quest info will be added to relevant mob/item tooltips",
+	
 
     ['MINIMAP_TAB'] = "Minimap Options",
     ['MINIMAP_HEADER'] = "Mini-Map Note Options",
-    ['MINIMAP_GLOBAL_SCALE'] = "Scale for Mini-Map Icons",
+    ['MINIMAP_GLOBAL_SCALE'] = "Global Scale for Mini-Map Icons",
     ['MINIMAP_GLOBAL_SCALE_DESC'] = "How large the Mini-Map icons are. ( Default: %s )",
     ['MINIMAP_FADE'] = "Mini-Map Note Fading",
     ['MINIMAP_FADING'] = "Fade objective distance",
@@ -37,7 +45,7 @@ QuestieLocale.locale['enUS'] = {
     ['ENABLE_COORDS_DESC'] = "Place the Player's coordinates on the Minimap title.",
     ['MINIMAP_ALWAYS_GLOW_TOGGLE'] = "Always glow behind minimap icons",
     ['MINIMAP_ALWAYS_GLOW_TOGGLE_DESC'] = "Draw a glow texture behind minimap icons, colored unique to each quest",
-	
+
     ['MAP_TAB'] = "Map Options",
     ['ENABLE_MAP_BUTTON'] = "Show Questie Map Button",
     ['ENABLE_MAP_BUTTON_DESC'] = "Enable or disable the Show/Hide Questie Button on Map (May fix some Map Addon interactions)",
@@ -53,7 +61,7 @@ QuestieLocale.locale['enUS'] = {
     ['MAP_ALWAYS_GLOW_TOGGLE_DESC'] = "Draw a glow texture behind map icons, colored unique to each quest",
 
     ['AVAILABLE_ICON_SCALE'] = "Scale for Available/Complete Icons",
-    ['AVAILABIE_ICON_SCALE_DESC'] = "How large the available/complete icons are.  ( Default: %s )",
+    ['AVAILABLE_ICON_SCALE_DESC'] = "How large the available/complete icons are.  ( Default: %s )",
     ['LOOT_ICON_SCALE'] = "Scale for Loot Icons",
     ['LOOT_ICON_SCALE_DESC'] = "How large the loot icons are.  ( Default: %s )",
     ['MONSTER_ICON_SCALE'] = "Scale for Slay Icons",
@@ -62,7 +70,7 @@ QuestieLocale.locale['enUS'] = {
     ['OBJECT_ICON_SCALE_DESC'] = "How large the object icons are.  ( Default: %s )",
     ['EVENT_ICON_SCALE'] = "Scale for Event Icons",
     ['EVENT_ICON_SCALE_DESC'] = "How large the event icons are.  ( Default: %s )",
-	
+
     ['NAMEPLATE_TAB'] = "Nameplate Options",
     ['NAMEPLATE_HEAD'] = "Nameplate Icon Options",
     ['NAMEPLATE_TOGGLE'] = "Enable Nameplate Quest Objectives",
@@ -106,11 +114,11 @@ QuestieLocale.locale['enUS'] = {
     -- UI Elements
     ['QUESTIE_MAP_BUTTON_SHOW'] = "Show Questie",
     ['QUESTIE_MAP_BUTTON_HIDE'] = "Hide Questie",
-    ['ICON_LEFT_CLICK'] = "Left Click", 
+    ['ICON_LEFT_CLICK'] = "Left Click",
     ['ICON_TOGGLE'] = "Toggle Options",
-    ['ICON_SHIFTLEFT_CLICK'] = "Shift + Left Click", 
+    ['ICON_SHIFTLEFT_CLICK'] = "Shift + Left Click",
     ['ICON_TOGGLE_QUESTIE'] = "Toggle Questie",
-    ['ICON_CTRLRIGHT_CLICK'] = "Ctrl + Right Click", 
+    ['ICON_CTRLRIGHT_CLICK'] = "Ctrl + Right Click",
     ['ICON_HIDE'] = "Hide Minimap Button",
     ['ICON_RIGHT_CLICK'] = "Right Click",
     ['ICON_JOURNEY'] = "Toggle My Journey",
@@ -185,7 +193,7 @@ QuestieLocale.locale['enUS'] = {
     ['JOURNEY_SEARCH_EXE'] = "Search",
     ['JOURNEY_SEARCH_RESULTS'] = "Search Results",
     ['JOURNEY_SEARCH_NOMATCH'] = "No Match for Search Results: %s",
-    
+
 
 
 
