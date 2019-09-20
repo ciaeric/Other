@@ -1,0 +1,26 @@
+
+AtlasDB = {
+	["profileKeys"] = {
+		["Tagz - Arugal"] = "Default",
+		["Codeblack - Arugal"] = "Default",
+		["Soulslayer - Arugal"] = "Default",
+	},
+	["profiles"] = {
+		["Default"] = {
+			["dropdowns"] = {
+				["東部王國副本"] = 15,
+				["卡林多副本"] = 2,
+				["Kalimdor Instances"] = 7,
+			},
+			["options"] = {
+				["dropdowns"] = {
+					["module"] = 2,
+					["zone"] = 7,
+				},
+			},
+			["minimap"] = {
+				["minimapPos"] = 159.888792791104,
+			},
+		},
+	},
+}

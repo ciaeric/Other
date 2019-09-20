@@ -33,9 +33,9 @@ local tostring = _G.tostring
 local L = setmetatable({}, {
 	__index = function(self, key)
 		if key ~= nil then
-			--@debug@
+			--[===[@debug@
 			addon:Debug('Missing locale', tostring(key))
-			--@end-debug@
+			--@end-debug@]===]
 			rawset(self, key, tostring(key))
 		end
 		return tostring(key)

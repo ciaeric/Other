@@ -1,2 +1,0 @@
-
-ClassTimerDB = nil

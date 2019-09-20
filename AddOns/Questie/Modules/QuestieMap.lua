@@ -84,16 +84,16 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
     end
     if(showFlag == nil) then showFlag = HBD_PINS_WORLDMAP_SHOW_WORLD; end
     if(floatOnEdge == nil) then floatOnEdge = true; end
-    
-    -- check toggles
-    if data.Type then
-        if ((Questie.db.global.disableObjectives and (data.Type == "monster" or data.Type == "object" or data.Type == "event" or data.Type == "item"))
-         or (Questie.db.global.disableTurnins and data.Type == "complete")
-         or (Questie.db.global.disableAvailable and data.Type == "available")) then
-            return -- dont add icon
-        end
-    end
-    
+
+    -- check toggles (not anymore, we need to add then hide)
+    --if data.Type then
+    --   if (((not Questie.db.global.enableObjectives) and (data.Type == "monster" or data.Type == "object" or data.Type == "event" or data.Type == "item"))
+    --     or ((not Questie.db.global.enableTurnins) and data.Type == "complete")
+    --     or ((not Questie.db.global.enableAvailable) and data.Type == "available")) then
+    --        return -- dont add icon
+    --    end
+    --end
+
     -- check clustering
     local xcell = math.floor((x * (QUESTIE_NOTES_CLUSTERMUL_HACK)));
     local ycell = math.floor((x * (QUESTIE_NOTES_CLUSTERMUL_HACK)));
@@ -113,13 +113,18 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
         icon.x = x
         icon.y = y
         icon.AreaID = AreaID
+        icon.miniMapIcon = false;
         if AreaID then
             data.UiMapID = zoneDataAreaIDToUiMapID[AreaID];
         end
 
 
         icon.texture:SetTexture(data.Icon) -- todo: implement .GlowIcon
-        icon.texture:SetVertexColor(1, 1, 1, 1);
+        local colors = {1, 1, 1}
+        if data.IconColor ~= nil and Questie.db.global.questObjectiveColors then
+            colors = data.IconColor
+        end
+        icon.texture:SetVertexColor(colors[1], colors[2], colors[3], 1);
         -- because of how frames work, I cant seem to set the glow as being behind the note. So for now things are draw in reverse.
         if data.IconScale then
             local scale = 16 * (data:GetIconScale()*(Questie.db.global.globalScale or 0.7));
@@ -155,18 +160,43 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
                         local NormalizedValue = 1 / (Questie.db.global.fadeLevel or 1.5);
 
                         if(distance > 0.6) then
-                            self.texture:SetVertexColor(1, 1, 1, (1 - NormalizedValue * distance) + 0.5)
-                            if self.glowTexture and self.glowTexture.GetVertexColor then
-                                local r,g,b = self.glowTexture:GetVertexColor()
-                                self.glowTexture:SetVertexColor(r,g,b,(1 - NormalizedValue * distance) + 0.5)
-                            end
-                        elseif (distance < Questie.db.global.fadeOverPlayerDistance) and Questie.db.global.fadeOverPlayer then
-                            local fadeAmount = QuestieFramePool:remap(distance, 0, Questie.db.global.fadeOverPlayerDistance, Questie.db.global.fadeOverPlayerLevel, 1);
-                           -- local fadeAmount = math.max(fadeAmount, 0.5);
+                            local fadeAmount = (1 - NormalizedValue * distance) + 0.5
+                            if self.faded and fadeAmount > Questie.db.global.iconFadeLevel then fadeAmount = Questie.db.global.iconFadeLevel end
                             self.texture:SetVertexColor(1, 1, 1, fadeAmount)
                             if self.glowTexture and self.glowTexture.GetVertexColor then
                                 local r,g,b = self.glowTexture:GetVertexColor()
                                 self.glowTexture:SetVertexColor(r,g,b,fadeAmount)
+                            end
+                        elseif (distance < Questie.db.global.fadeOverPlayerDistance) and Questie.db.global.fadeOverPlayer then
+                            local fadeAmount = QuestieFramePool:remap(distance, 0, Questie.db.global.fadeOverPlayerDistance, Questie.db.global.fadeOverPlayerLevel, 1);
+                           -- local fadeAmount = math.max(fadeAmount, 0.5);
+                            if self.faded and fadeAmount > Questie.db.global.iconFadeLevel then fadeAmount = Questie.db.global.iconFadeLevel end
+                            self.texture:SetVertexColor(1, 1, 1, fadeAmount)
+                            if self.glowTexture and self.glowTexture.GetVertexColor then
+                                local r,g,b = self.glowTexture:GetVertexColor()
+                                self.glowTexture:SetVertexColor(r,g,b,fadeAmount)
+                            end
+                        else
+                            if self.faded then
+                                self.texture:SetVertexColor(1, 1, 1, Questie.db.global.iconFadeLevel)
+                                if self.glowTexture and self.glowTexture.GetVertexColor then
+                                    local r,g,b = self.glowTexture:GetVertexColor()
+                                    self.glowTexture:SetVertexColor(r,g,b,Questie.db.global.iconFadeLevel)
+                                end
+                            else
+                                self.texture:SetVertexColor(1, 1, 1, 1)
+                                if self.glowTexture and self.glowTexture.GetVertexColor then
+                                    local r,g,b = self.glowTexture:GetVertexColor()
+                                    self.glowTexture:SetVertexColor(r,g,b,1)
+                                end
+                            end
+                        end
+                    else
+                        if self.faded then
+                            self.texture:SetVertexColor(1, 1, 1, Questie.db.global.iconFadeLevel)
+                            if self.glowTexture and self.glowTexture.GetVertexColor then
+                                local r,g,b = self.glowTexture:GetVertexColor()
+                                self.glowTexture:SetVertexColor(r,g,b,Questie.db.global.iconFadeLevel)
                             end
                         else
                             self.texture:SetVertexColor(1, 1, 1, 1)
@@ -174,12 +204,6 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
                                 local r,g,b = self.glowTexture:GetVertexColor()
                                 self.glowTexture:SetVertexColor(r,g,b,1)
                             end
-                        end
-                    else
-                        self.texture:SetVertexColor(1, 1, 1, 1)
-                        if self.glowTexture and self.glowTexture.GetVertexColor then
-                            local r,g,b = self.glowTexture:GetVertexColor()
-                            self.glowTexture:SetVertexColor(r,g,b,1)
                         end
                     end
                 end
@@ -196,14 +220,30 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
             end)
         end
 
-        HBDPins:AddMinimapIconMap(Questie, iconMinimap, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, true, floatOnEdge)
-        HBDPins:AddWorldMapIconMap(Questie, icon, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, showFlag)
+        if Questie.db.global.enableMiniMapIcons then
+            HBDPins:AddMinimapIconMap(Questie, iconMinimap, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, true, floatOnEdge)
+        end
+        if Questie.db.global.enableMapIcons then
+            HBDPins:AddWorldMapIconMap(Questie, icon, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, showFlag)
+        end
         if(qQuestIdFrames[data.Id] == nil) then
             qQuestIdFrames[data.Id] = {}
         end
 
         table.insert(qQuestIdFrames[data.Id], icon:GetName())
         table.insert(qQuestIdFrames[data.Id], iconMinimap:GetName())
+        
+        -- preset hidden state when needed (logic from QuestieQuest:UpdateHiddenNotes
+        -- we should add all this code to something like obj:CheckHide() instead of copying it
+        if (QuestieQuest.NotesHidden or (((not Questie.db.global.enableObjectives) and (icon.data.Type == "monster" or icon.data.Type == "object" or icon.data.Type == "event" or icon.data.Type == "item"))
+                 or ((not Questie.db.global.enableTurnins) and icon.data.Type == "complete")
+                 or ((not Questie.db.global.enableAvailable) and icon.data.Type == "available"))
+                 or ((not Questie.db.global.enableMapIcons) and (not icon.miniMapIcon))
+                 or ((not Questie.db.global.enableMiniMapIcons) and (icon.miniMapIcon))) or (icon.data.ObjectiveData and icon.data.ObjectiveData.HideIcons) or (icon.data.QuestData and icon.data.QuestData.HideIcons and icon.data.Type ~= "complete") then
+            icon:FakeHide()
+            iconMinimap:FakeHide()
+        end
+        
         return icon, iconMinimap;
     end
     return nil, nil

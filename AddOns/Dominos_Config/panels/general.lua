@@ -92,13 +92,21 @@ do
 	})
 	showMacroTextToggle:SetPoint('TOP', showBindingsButtonToggle, 'BOTTOM', 0, -10)
 
-	--show equipped i tem borders
+	--show macro text
+	local showCountsToggle = GeneralPanel:Add('CheckButton', {
+		name = L.ShowCountText,
+		get = function() return ParentAddon:ShowCounts() end,
+		set = function(_, enable) ParentAddon:SetShowCounts(enable) end
+	})
+	showCountsToggle:SetPoint('TOP', showMacroTextToggle, 'BOTTOM', 0, -10)
+
+	--show equipped item borders
 	local showEquippedToggle = GeneralPanel:Add('CheckButton', {
 		name = L.ShowEquippedItemBorders,
 		get = function() return ParentAddon:ShowEquippedItemBorders() end,
 		set = function(_, enable) ParentAddon:SetShowEquippedItemBorders(enable) end
 	})
-	showEquippedToggle:SetPoint('TOP', showMacroTextToggle, 'BOTTOM', 0, -10)
+	showEquippedToggle:SetPoint('TOP', showCountsToggle, 'BOTTOM', 0, -10)
 
 	--show tooltips
 	local showTooltipsToggle = GeneralPanel:Add('CheckButton', {
@@ -117,6 +125,14 @@ do
 	})
 	showTooltipsInCombatToggle:SetPoint('TOP', showTooltipsToggle, 'BOTTOM', 8, -2)
 
+	-- theme action bttons
+	local themeButtons = GeneralPanel:Add('CheckButton', {
+		name = L.ThemeActionButtons,
+		get = function() return ParentAddon:ThemeButtons() end,
+		set = function(_, enable) ParentAddon:SetThemeButtons(enable) end
+	})
+	themeButtons:SetPoint('TOP', showTooltipsInCombatToggle, 'BOTTOM', -8, -10)
+
 	--show override ui
 	if ParentAddon:IsBuild("retail") then
 		local useBlizzardOverrideUIToggle = GeneralPanel:Add('CheckButton', {
@@ -124,7 +140,7 @@ do
 			get = function() return ParentAddon:UsingOverrideUI() end,
 			set = function(_, enable) ParentAddon:SetUseOverrideUI(enable) end
 		})
-		useBlizzardOverrideUIToggle:SetPoint('TOP', showTooltipsInCombatToggle, 'BOTTOM', -8, -10)
+		useBlizzardOverrideUIToggle:SetPoint('TOP', themeButtons, 'BOTTOM', 0, -10)
 	end
 
 	--right click unit

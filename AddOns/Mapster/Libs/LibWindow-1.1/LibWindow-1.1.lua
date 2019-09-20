@@ -161,8 +161,8 @@ function lib.SavePosition(frame)
 	setStorage(frame, "point", point)
 	setStorage(frame, "scale", s)
 	
-	--frame:ClearAllPoints()
-	--frame:SetPoint(point, frame:GetParent(), point, x/s, y/s);
+	frame:ClearAllPoints()
+	frame:SetPoint(point, frame:GetParent(), point, x/s, y/s);
 end
 
 

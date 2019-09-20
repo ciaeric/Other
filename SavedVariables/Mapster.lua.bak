@@ -7,14 +7,17 @@ MapsterDB = {
 		},
 	},
 	["profileKeys"] = {
+		["Codezero - Felstriker"] = "Default",
+		["Codeblack - Arugal"] = "Default",
+		["Soulslayer - Arugal"] = "Default",
 		["Tagseven - Swamp of Sorrows"] = "Default",
+		["Tagz - Arugal"] = "Default",
 	},
 	["profiles"] = {
 		["Default"] = {
-			["scale"] = 0.800000011920929,
-			["y"] = -18.6665588617311,
+			["scale"] = 0.84,
 			["x"] = 254.933280165989,
-			["point"] = "LEFT",
+			["y"] = -18.6665588617311,
 		},
 	},
 }

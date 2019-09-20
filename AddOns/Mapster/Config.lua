@@ -6,6 +6,8 @@ All rights reserved.
 local Mapster = LibStub("AceAddon-3.0"):GetAddon("Mapster")
 local L = LibStub("AceLocale-3.0"):GetLocale("Mapster")
 
+local WoWClassic = select(4, GetBuildInfo()) < 20000
+
 local optGetter, optSetter
 do
 	function optGetter(info)
@@ -80,7 +82,7 @@ local function getOptions()
 							name = L["Scale"],
 							desc = L["Scale of the big map."],
 							type = "range",
-							min = 0.1, max = 1, bigStep = 0.01,
+							min = 0.1, max = 2, bigStep = 0.01,
 							isPercent = true,
 						},
 						arrowScale = {
@@ -136,11 +138,11 @@ local function getOptions()
 			options.args[k] = (type(v) == "function") and v() or v
 		end
 	end
-	
+
 	return options
 end
 
-local function optFunc() 
+local function optFunc()
 	-- open the profiles tab before, so the menu expands
 	InterfaceOptionsFrame_OpenToCategory(Mapster.optionsFrames.Profiles)
 	InterfaceOptionsFrame_OpenToCategory(Mapster.optionsFrames.Mapster)
@@ -171,7 +173,14 @@ function Mapster:SetupMapButton()
 	self.optionsButton:SetHeight(18)
 	self.optionsButton:SetText("Mapster")
 	self.optionsButton:ClearAllPoints()
-	self.optionsButton:SetPoint("TOPRIGHT", WorldMapFrame.BorderFrame.TitleBg, "TOPRIGHT", -21, 1)
+	if WoWClassic then
+		self.optionsButton:SetParent(WorldMapFrame)
+		self.optionsButton:SetPoint("LEFT", WorldMapZoomOutButton, "RIGHT", 5, 0)
+		self.optionsButton:SetWidth(110)
+		self.optionsButton:SetHeight(22)
+	else
+		self.optionsButton:SetPoint("TOPRIGHT", WorldMapFrame.BorderFrame.TitleBg, "TOPRIGHT", -21, 1)
+	end
 
 	if self.db.profile.hideMapButton then
 		self.optionsButton:Hide()

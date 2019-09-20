@@ -43,18 +43,21 @@ ClickHandler:Add(
 		DressUp = { "LeftButton", "Ctrl" },
 		SetFavourite = { "LeftButton", "Alt" },
 		ShowExtraItems = { "LeftButton", "None" },
+		WoWHeadLink = { "RightButton", "Shift" },
 		types = {
 			ChatLink = true,
 			DressUp = true,
 			ShowExtraItems = true,
 			SetFavourite = true,
+			WoWHeadLink = true,
 		},
 	},
 	{
 		{ "ChatLink", 		AL["Chat Link"], 			AL["Add item into chat"] },
 		{ "DressUp", 		AL["Dress up"], 			AL["Shows the item in the Dressing room"] },
-		{ "SetFavourite", 	AL["Set Favourite"], 		AL["Set the item as favourite"] },
+		{ "SetFavourite", 	AL["Set Favourite"], 		AL["Set/Remove the item as favourite"] },
 		{ "ShowExtraItems", AL["Show extra items"], 	AL["Shows extra items (tokens,mats)"] },
+		{ "WoWHeadLink", 	AL["Show WowHead link"], 	AL["Shows a copyable link for WoWHead"] },
 	}
 )
 
@@ -117,6 +120,8 @@ function Item.OnMouseAction(button, mouseButton)
 		local itemInfo, itemLink = GetItemInfo(button.ItemString or button.ItemID)
 		itemLink = itemLink or button.ItemString
 		AtlasLoot.Button:AddChatLink(itemLink or "item:"..button.ItemID)
+	elseif mouseButton == "WoWHeadLink" then
+		AtlasLoot.Button:OpenWoWHeadLink(button, "item", button.ItemID)
 	elseif mouseButton == "DressUp" then
 		local itemInfo, itemLink = GetItemInfo(button.ItemString or button.ItemID)
 		itemLink = itemLink or button.ItemString
@@ -246,6 +251,9 @@ function Item.OnClear(button)
 	button.secButton.SetData = nil
 	button.secButton.RawName = nil
 
+	itemIsOnEnter = nil
+	buttonOnEnter = nil
+
 	button.secButton.overlay:Hide()
 	if button.ExtraFrameShown then
 		AtlasLoot.Button:ExtraItemFrame_ClearFrame()
@@ -321,7 +329,7 @@ end
 -- Item dess up
 --################################
 function Item.ShowQuickDressUp(itemLink, ttFrame)
-	if not itemLink or ( not IsEquippableItem(itemLink) and not Mount.IsMount(itemLink) ) then return end
+	if not itemLink or not ttFrame or ( not IsEquippableItem(itemLink) and not Mount.IsMount(itemLink) ) then return end
 	if not Item.previewTooltipFrame then
 		local name = "AtlasLoot-SetToolTip"
 		local frame = CreateFrame("Frame", name)

@@ -1,0 +1,66 @@
+
+AucAdvancedConfig = {
+	["version"] = 1,
+	["profile.Default"] = {
+		["core"] = {
+			["matcher"] = {
+				["matcherlist"] = {
+					"BeanCount", -- [1]
+					"Undercut", -- [2]
+				},
+			},
+		},
+		["uselocale"] = "zhTW",
+		["configator.left"] = 619.25927734375,
+		["util"] = {
+			["appraiser"] = {
+				["columnsortcurDir"] = -1,
+				["columnsortcurSort"] = 6,
+			},
+			["automagic"] = {
+				["ammailguix"] = 160,
+				["SavedMailButtons"] = {
+				},
+			},
+			["ahwindowcontrol"] = {
+				["ahframeanchors"] = "LEFT:LEFT:0.0:99.2",
+			},
+		},
+		["stat"] = {
+			["sales"] = {
+				["upgraded32"] = true,
+				["ignoredsigs"] = {
+				},
+			},
+		},
+		["configator.top"] = 651.666748046875,
+	},
+	["users.Arugal.Codeblack"] = "Default",
+}
+AucAdvancedData = {
+	["UtilSearchUiData"] = {
+		["Global"] = {
+			["configator.left"] = 569.259216308594,
+			["configator.top"] = 676.666748046875,
+		},
+		["Current"] = {
+			["snatch.itemsList"] = {
+			},
+		},
+		["Version"] = 1,
+		["SavedSearches"] = {
+		},
+	},
+	["Stats"] = {
+	},
+}
+AucAdvancedServers = {
+	["KnownRealms"] = {
+		["Arugal"] = "Arugal",
+	},
+	["Timestamp"] = 1567678408,
+	["Version"] = 1,
+	["KnownServerKeys"] = {
+		["Arugal"] = 1568814818,
+	},
+}

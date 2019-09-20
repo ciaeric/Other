@@ -4,7 +4,7 @@ function API:GetFriendshipReputation(...)
 	return GetFriendshipReputation and GetFriendshipReputation(...) or 0
 end
 
-function API:GetFrameAtlas()
+function API:GetPortraitAtlas()
 	if GetAtlasInfo and GetAtlasInfo('TalkingHeads-PortraitFrame') then
 		return 'TalkingHeads-PortraitFrame';
 	end
@@ -96,4 +96,23 @@ end
 
 function API:IsActiveQuestLegendary(...)
 	return IsActiveQuestLegendary and IsActiveQuestLegendary(...)
+end
+
+function API:IsAzeriteItem(...)
+	if C_AzeriteEmpoweredItem then
+		return 	C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(...) and
+				C_AzeriteEmpoweredItem.IsAzeritePreviewSourceDisplayable(...)
+	end
+end
+
+function API:IsCharacterNewlyBoosted(...)
+	return IsCharacterNewlyBoosted and IsCharacterNewlyBoosted(...)
+end
+
+function API:IsFollowerCollected(...)
+	return C_Garrison and C_Garrison.IsFollowerCollected(...)
+end
+
+function API:GetNamePlateForUnit(...)
+	return C_NamePlate and C_NamePlate.GetNamePlateForUnit(...)
 end

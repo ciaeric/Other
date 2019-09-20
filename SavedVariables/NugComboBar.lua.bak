@@ -1,8 +1,0 @@
-
-NugComboBarDB_Global = {
-	["preset3dlayer2"] = "glowOrangeStatic",
-	["adjustX"] = 2.05,
-	["charspec"] = {
-	},
-	["adjustY"] = 2.1,
-}

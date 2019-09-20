@@ -21,7 +21,10 @@ end
 local function GetOrCreateActionButton(id)
 	if id <= 12 then
 		local b = _G[('ActionButton%d'):format(id)]
+
+		-- luacheck: push ignore 122
 		b.buttonType = 'ACTIONBUTTON'
+		-- luacheck: pop
 		return b
 	elseif id <= 24 then
 		return CreateActionButton(id - 12)
@@ -72,6 +75,7 @@ function ActionButton:New(id)
 		end
 
 		button:UpdateMacro()
+		button:UpdateCount()
 		button:UpdateShowEquippedItemBorders()
 
 		self.active[id] = button
@@ -95,6 +99,7 @@ function ActionButton:Create(id)
 		button:ClearAllPoints()
 		button:SetAttribute('useparent-actionpage', nil)
 		button:SetAttribute('useparent-unit', true)
+		button:SetAttribute("statehidden", nil)
 		button:EnableMouseWheel(true)
 		button:HookScript('OnEnter', self.OnEnter)
 
@@ -110,9 +115,7 @@ function ActionButton:Restore(id)
 	if button then
 		self.unused[id] = nil
 
-		button:LoadEvents()
-		ActionButton_UpdateAction(button)
-		button:Show()
+		button:SetAttribute("statehidden", nil)
 
 		self.active[id] = button
 		return button
@@ -132,16 +135,12 @@ do
 		Addon:GetModule('Tooltips'):Unregister(self)
 		Addon.BindingsController:Unregister(self)
 
+		self:SetAttribute("statehidden", true)
 		self:SetParent(HiddenActionButtonFrame)
 		self:Hide()
 
 		self.unused[id] = self
 	end
-end
-
---these are all events that are registered OnLoad for action buttons
-function ActionButton:LoadEvents()
-	ActionBarActionEventsFrame_RegisterFrame(self)
 end
 
 --keybound support
@@ -151,6 +150,31 @@ end
 
 --override the old update hotkeys function
 hooksecurefunc('ActionButton_UpdateHotkeys', ActionButton.UpdateHotkey)
+
+-- add inventory counts in classic
+if Addon:IsBuild("classic") then
+	hooksecurefunc("ActionButton_UpdateCount", function(self)
+		local action = self.action;
+		if IsConsumableAction(action) or IsStackableAction(action)  then
+			local count = GetActionCount(action)
+			if count > (self.maxDisplayCount or 9999) then
+				self.Count:SetText("*")
+			elseif count > 0 then
+				self.Count:SetText(count)
+			else
+				self.Count:SetText("")
+			end
+		end
+	end)
+end
+
+function ActionButton:UpdateCount()
+	if Addon:ShowCounts() then
+		self.Count:Show()
+	else
+		self.Count:Hide()
+	end
+end
 
 --button visibility
 if Addon:IsBuild("classic") then

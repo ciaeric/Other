@@ -23,7 +23,8 @@ L.compat = {
 			L.config.logo:Show()
 		end
 
-		ConsolePortConfig:AddPanel({
+		local config = ConsolePortOldConfig or ConsolePortConfig
+		config:AddPanel({
 			name = _, 
 			header = _, 
 			mixin = WindowMixin,
@@ -68,12 +69,8 @@ L.compat = {
 	end;
 ----------------------------------
 	['ls_Toasts'] = function(self)
-		local type = _G.type
-		-- hacky workaround to grab the toast frames
-		hooksecurefunc('CreateFrame', function(_, name)
-			if type(name) == 'string' and name:match('LSToast') then
-				L.ToggleIgnoreFrame(_G[name], true)
-			end
+		ls_Toasts[1].RegisterCallback({}, 'ToastCreated', function(_, toast)
+			L.ToggleIgnoreFrame(toast, true)
 		end)
 	end;
 ----------------------------------

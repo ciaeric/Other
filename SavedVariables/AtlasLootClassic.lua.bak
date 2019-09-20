@@ -1,3 +1,44 @@
 
 AtlasLootClassicDB = {
+	["global"] = {
+		["__addonrevision"] = 1010011,
+	},
+	["profileKeys"] = {
+		["Codezero - Felstriker"] = "Codezero - Felstriker",
+		["Codeblack - Arugal"] = "Codeblack - Arugal",
+		["Tagz - Arugal"] = "Tagz - Arugal",
+		["Soulslayer - Arugal"] = "Soulslayer - Arugal",
+	},
+	["profiles"] = {
+		["Codezero - Felstriker"] = {
+		},
+		["Codeblack - Arugal"] = {
+			["minimap"] = {
+				["minimapPos"] = 41.9084788060584,
+			},
+			["GUI"] = {
+				["point"] = {
+					nil, -- [1]
+					nil, -- [2]
+					"CENTER", -- [3]
+					0, -- [4]
+					0, -- [5]
+				},
+				["selected"] = {
+					nil, -- [1]
+					"TheTempleOfAtal'Hakkar", -- [2]
+					nil, -- [3]
+					1, -- [4]
+					0, -- [5]
+				},
+			},
+		},
+		["Tagz - Arugal"] = {
+			["minimap"] = {
+				["minimapPos"] = 249.619981298948,
+			},
+		},
+		["Soulslayer - Arugal"] = {
+		},
+	},
 }

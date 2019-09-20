@@ -23,6 +23,13 @@ local function AddSpellToBucket(spellBuckets, type, rewardSpellIndex)
 	spellBucket[#spellBucket + 1] = rewardSpellIndex
 end
 
+local function IsValidSpellReward(texture, knownSpell, isBoostSpell, garrFollowerID)
+	-- check if already known, check if is boost spell, check if follower is collected
+	return  texture and not knownSpell and
+			(not isBoostSpell or API:IsCharacterNewlyBoosted()) and
+			(not garrFollowerID or not API:IsFollowerCollected(garrFollowerID))
+end
+
 local function GetItemButton(parentFrame, index, buttonType)
 	local rewardButtons = parentFrame.Buttons
 	if ( not rewardButtons[index] ) then
@@ -289,7 +296,7 @@ function Elements:ShowRewards()
 			local knownSpell = tonumber(spellID) and IsSpellKnownOrOverridesKnown(spellID)
 
 			-- only allow the spell reward if user can learn it
-			if ( texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) ) then
+			if IsValidSpellReward(texture, knownSpell, isBoostSpell, garrFollowerID) then
 				numQuestSpellRewards = numQuestSpellRewards + 1
 			end
 		end
@@ -422,7 +429,7 @@ function Elements:ShowRewards()
 			for rewardSpellIndex = 1, numSpellRewards do
 				local texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock, spellID = GetSpell(rewardSpellIndex)
 				local knownSpell = IsSpellKnownOrOverridesKnown(spellID)
-				if texture and not knownSpell and (not isBoostSpell or IsCharacterNewlyBoosted()) and (not garrFollowerID or not C_Garrison.IsFollowerCollected(garrFollowerID)) then
+				if IsValidSpellReward(texture, knownSpell, isBoostSpell, garrFollowerID) then
 					local bucket = 	isTradeskillSpell 	and QUEST_SPELL_REWARD_TYPE_TRADESKILL_SPELL or
 									isBoostSpell 		and QUEST_SPELL_REWARD_TYPE_ABILITY or
 									garrFollowerID 		and QUEST_SPELL_REWARD_TYPE_FOLLOWER or

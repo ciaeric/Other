@@ -1,7 +1,6 @@
 # Shadowed Unit Frames
 
-## [v4.2-Classic-Beta5](https://github.com/Nevcairiel/ShadowedUnitFrames/tree/v4.2-Classic-Beta5) (2019-08-29)
-[Full Changelog](https://github.com/Nevcairiel/ShadowedUnitFrames/compare/v4.2-Classic-Beta4...v4.2-Classic-Beta5)
+## [v4.2-Classic-Beta7](https://github.com/Nevcairiel/ShadowedUnitFrames/tree/v4.2-Classic-Beta7) (2019-09-02)
+[Full Changelog](https://github.com/Nevcairiel/ShadowedUnitFrames/compare/v4.2-Classic-Beta6...v4.2-Classic-Beta7)
 
-- Add a sanity check for calling LibClassicDurations  
-- Fix capitalization in pkgmeta  
+- Force another happiness settings upgrade for people that imported retail settings  

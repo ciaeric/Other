@@ -20,15 +20,15 @@
 ## Interface: 11302
 
 ## Title: AdiBags
-## Notes: Adirelle's bag addon for WoW Classic.
-## Author: Adirelle, Klix
-## Version: 0.0.2
+## Notes: Adirelle's bag addon.
+## Author: Adirelle
+## Version: v1.9.17-classic
 ## SavedVariables: AdiBagsDB
-## X-Date: 
+## X-Date: 2019-08-10T11:00:32Z
 ## X-License: GPL v3
-## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibSharedMedia-3.0, Scrap, BrainDead, !BugGrabber, SyLevel, ElvUI
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibSharedMedia-3.0, Scrap, BrainDead, !BugGrabber, SyLevel
 #@alpha@
-## OptionalDeps: AdiDebug, BugSack, Swatter
+# ## OptionalDeps: AdiDebug, BugSack, Swatter
 #@end-alpha@
 
 #@no-lib-strip@
@@ -77,5 +77,5 @@ modules\ChangeHighlight.lua
 core\DefaultFilters.lua
 
 #@debug@
-## Version: DEV
+# ## Version: DEV
 #@end-debug@

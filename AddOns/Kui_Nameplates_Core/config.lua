@@ -262,16 +262,16 @@ local default_config = {
     auras_count_offset_y = -2,
 }
 -- local functions #############################################################
+local GLOBAL_SCALE
 local function Scale(v)
-    if not tonumber(core.profile.global_scale) or
-       core.profile.global_scale == 1
-    then
+    if not tonumber(GLOBAL_SCALE) or GLOBAL_SCALE == 1 then
         return v
     else
-        return floor((v*core.profile.global_scale)+.5)
+        return floor((v*GLOBAL_SCALE)+.5)
     end
 end
 local function UpdateClickboxSize()
+    if kui.CLASSIC then return end -- XXX functions exist, but break display
     local o_width = (Scale(core.profile.frame_width) * addon.uiscale) + 10
     local o_height = (Scale(core.profile.frame_height) * addon.uiscale) + 20
 
@@ -789,6 +789,7 @@ configChanged.cvar_self_alpha = configChangedCVar
 configChanged.cvar_occluded_mult = configChangedCVar
 
 function configChanged.global_scale()
+    GLOBAL_SCALE = core.profile.global_scale
     configChanged.frame_glow_size(core.profile.frame_glow_size)
     configChanged.state_icons()
     configChangedCastBar()
@@ -931,14 +932,14 @@ function core:InitialiseConfig()
             end
         end
     end
-    --[[@alpha@
+    --[===[@alpha@
     if not KuiNameplatesCoreSaved or not KuiNameplatesCoreSaved.SHUT_UP then
         addon:ui_print('You are using an alpha release;')
         print('    Please report issues to www.github.com/kesava-wow/kuinameplates2')
         print('    And include the output of: /knp dump')
         print('    Thanks!')
     end
-    --@alpha@]]
+    --@end-alpha@]===]
 
     self.config = kc:Initialise('KuiNameplatesCore',default_config)
     self.profile = self.config:GetConfig()

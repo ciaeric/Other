@@ -3,6 +3,8 @@ AtlasLoot.AtlasLootDBDefaults = {
 		showIDsInTT = false,
 		showLvlRange = true,
 		showMinEnterLvl = false,
+		enableWoWHeadIntegration = true,
+		useEnglishWoWHead = false,
 		ContentPhase = {
 			enableOnLootTable = true,
 			enableOnItems = true,
@@ -13,6 +15,7 @@ AtlasLoot.AtlasLootDBDefaults = {
 		},
 		Tooltip = {	-- Core\Tooltip.lua
 			tooltip = "AtlasLootTooltip",
+			useGameTooltip = false,
 		},
 		GUI = {		-- GUI\GUI.lua
 			point = {"CENTER"},

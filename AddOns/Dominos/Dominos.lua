@@ -141,10 +141,15 @@ function Addon:GetDatabaseDefaults()
 		profile = {
 			possessBar = 1,
 
+			-- if true, applies a default dominos skin to buttons
+			-- when masque is not enabled
+			applyButtonTheme = true,
+
 			sticky = true,
 			linkedOpacity = false,
 			showMacroText = true,
 			showBindingText = true,
+			showCounts = true,
 			showEquippedItemBorders = true,
 			showTooltips = true,
 			showTooltipsCombat = true,
@@ -499,7 +504,7 @@ end
 function Addon:SetShowMacroText(enable)
 	self.db.profile.showMacroText = enable or false
 
-	for _,f in self.Frame:GetAll() do
+	for _, f in self.Frame:GetAll() do
 		if f.buttons then
 			for _,b in pairs(f.buttons) do
 				if b.UpdateMacro then
@@ -650,6 +655,37 @@ function Addon:IsLinkedOpacityEnabled()
 	return self.db.profile.linkedOpacity
 end
 
+-- button theming toggle
+function Addon:ThemeButtons()
+	return self.db.profile.applyButtonTheme
+end
+
+function Addon:SetThemeButtons(enable)
+	self.db.profile.applyButtonTheme = enable or false
+
+	self:GetModule("ButtonThemer"):Reskin()
+end
+
+-- show counts toggle
+function Addon:ShowCounts()
+	return self.db.profile.showCounts
+end
+
+function Addon:SetShowCounts(enable)
+	self.db.profile.showCounts = enable or false
+
+	for _, f in self.Frame:GetAll() do
+		if f.buttons then
+			for _,b in pairs(f.buttons) do
+				if b.UpdateCount then
+					b:UpdateCount()
+				end
+			end
+		end
+	end
+end
+
+
 -- build test
 function Addon:GetBuild()
 	return ADDON_BUILD
@@ -668,4 +704,6 @@ function Addon:IsBuild(...)
 end
 
 -- exports
+-- luacheck: push ignore 122
 _G[AddonName] = Addon
+-- luacheck: pop

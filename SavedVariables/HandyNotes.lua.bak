@@ -1,0 +1,31 @@
+
+HandyNotesDB = {
+	["profileKeys"] = {
+		["Codeblack - Arugal"] = "Codeblack - Arugal",
+		["Tagz - Arugal"] = "Tagz - Arugal",
+		["Soulslayer - Arugal"] = "Soulslayer - Arugal",
+	},
+	["profiles"] = {
+		["Codeblack - Arugal"] = {
+		},
+		["Tagz - Arugal"] = {
+		},
+		["Soulslayer - Arugal"] = {
+		},
+	},
+}
+HandyNotes_HandyNotesDB = {
+	["profileKeys"] = {
+		["Codeblack - Arugal"] = "Codeblack - Arugal",
+		["Tagz - Arugal"] = "Tagz - Arugal",
+		["Soulslayer - Arugal"] = "Soulslayer - Arugal",
+	},
+	["profiles"] = {
+		["Codeblack - Arugal"] = {
+		},
+		["Tagz - Arugal"] = {
+		},
+		["Soulslayer - Arugal"] = {
+		},
+	},
+}

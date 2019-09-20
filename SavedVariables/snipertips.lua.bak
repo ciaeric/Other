@@ -2,13 +2,14 @@
 SniperTips_DB = {
 	["profileKeys"] = {
 		["Tagseven - Swamp of Sorrows"] = "Tagseven - Swamp of Sorrows",
+		["Codeblack - Arugal"] = "Default",
 	},
 	["profiles"] = {
 		["Tagseven - Swamp of Sorrows"] = {
 			["tipColour"] = {
-				["r"] = 0.2,
-				["g"] = 0.6,
 				["b"] = 1,
+				["g"] = 0.6,
+				["r"] = 0.2,
 			},
 			["enabled"] = true,
 			["showIds"] = true,

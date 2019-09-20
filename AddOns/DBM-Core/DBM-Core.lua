@@ -68,9 +68,9 @@ local function showRealDate(curseDate)
 end
 
 DBM = {
-	Revision = parseCurseDate("20190830014859"),
-	DisplayVersion = "1.13.3", -- the string that is shown as version
-	ReleaseRevision = releaseDate(2019, 8, 29) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	Revision = parseCurseDate("20190916010455"),
+	DisplayVersion = "1.13.9", -- the string that is shown as version
+	ReleaseRevision = releaseDate(2019, 9, 15) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 }
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
@@ -126,7 +126,6 @@ DBM.DefaultOptions = {
 	SpecialWarningSound4 = "Interface\\AddOns\\DBM-Core\\sounds\\ClassicSupport\\HoodWolfTransformPlayer01.ogg",
 	SpecialWarningSound5 = "Interface\\AddOns\\DBM-Core\\sounds\\ClassicSupport\\LOA_NAXX_AGGRO02.ogg",
 	ModelSoundValue = "Short",
-	UseRetailShamanColor = false,
 	CountdownVoice = "Corsica",
 	CountdownVoice2 = "Kolt",
 	CountdownVoice3 = "Smooth",
@@ -416,7 +415,7 @@ local delayedFunction
 local dataBroker
 local voiceSessionDisabled = false
 
-local fakeBWVersion, fakeBWHash = 147, "b9e4c1e"
+local fakeBWVersion, fakeBWHash = 3, "9ab6c0c"
 local versionQueryString, versionResponseString = "Q^%d^%s", "V^%d^%s"
 
 local enableIcons = true -- set to false when a raid leader or a promoted player has a newer version of DBM
@@ -432,7 +431,6 @@ local bannedMods = { -- a list of "banned" (meaning they are replaced by another
 	"DBM-Suramar",--Renamed to DBM-Nighthold
 	"DBM-KulTiras",--Merged to DBM-Azeroth-BfA
 	"DBM-Zandalar",--Merged to DBM-Azeroth-BfA
-	"DBM-PvP",--Discontinued
 }
 
 
@@ -447,7 +445,10 @@ local LD
 if LibStub("LibDurability", true) then
 	LD = LibStub("LibDurability")
 end
-
+local ThreatLib
+if LibStub("ThreatClassic-1.0", true) and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	ThreatLib = LibStub("ThreatClassic-1.0")
+end
 
 --------------------------------------------------------
 --  Cache frequently used global variables in locals  --
@@ -470,7 +471,11 @@ local UnitExists, UnitIsDead, UnitIsFriend, UnitIsUnit = UnitExists, UnitIsDead,
 local GetSpellInfo, GetDungeonInfo, GetSpellTexture, GetSpellCooldown = GetSpellInfo, GetDungeonInfo, GetSpellTexture, GetSpellCooldown
 --local EJ_GetEncounterInfo, EJ_GetCreatureInfo, EJ_GetSectionInfo, GetSectionIconFlags = EJ_GetEncounterInfo, EJ_GetCreatureInfo, C_EncounterJournal.GetSectionInfo, C_EncounterJournal.GetSectionIconFlags
 local GetInstanceInfo = GetInstanceInfo
---local UnitDetailedThreatSituation = UnitDetailedThreatSituation--Added in wrath DO NOT REMOVE MIGHT NEED ONE DAY
+local UnitDetailedThreatSituation = ThreatLib and function(unit, mob)
+	return ThreatLib:UnitDetailedThreatSituation(unit, mob)
+end or function(unit, mob)
+	return 0, 0--If threatlib failure (shouldn't happen, but if user screws with it, UnitDetailedThreatSituation will just fail silently with not tanking
+end
 local UnitIsGroupLeader, UnitIsGroupAssistant = UnitIsGroupLeader, UnitIsGroupAssistant
 local PlaySoundFile, PlaySound = PlaySoundFile, PlaySound
 local Ambiguate = Ambiguate
@@ -1222,12 +1227,6 @@ do
 		end
 		if not savedDifficulty or not difficultyText or not difficultyIndex then--prevent error if savedDifficulty or difficultyText is nil
 			savedDifficulty, difficultyText, difficultyIndex, LastGroupSize = self:GetCurrentInstanceDifficulty()
-		end
-		if self.Options.UseRetailShamanColor then
-			RAID_CLASS_COLORS["SHAMAN"].colorStr = "ff006fdc"
-			RAID_CLASS_COLORS["SHAMAN"].b = 0.86666476726532
-			RAID_CLASS_COLORS["SHAMAN"].g = 0.4392147064209
-			RAID_CLASS_COLORS["SHAMAN"].r = 0
 		end
 	end
 
@@ -2497,8 +2496,8 @@ do
 			self:AddMsg(DBM_PIZZA_ERROR_USAGE)
 			return
 		end
-		self.Bars:CreateBar(time, text, 237538)
-		fireEvent("DBM_TimerStart", "DBMPizzaTimer", text, time, "237538", "pizzatimer", nil, 0)
+		self.Bars:CreateBar(time, text, 136106)
+		fireEvent("DBM_TimerStart", "DBMPizzaTimer", text, time, "136106", "pizzatimer", nil, 0)
 		if broadcast then
 			sendLoggedSync("U", ("%s\t%s"):format(time, text))
 		end
@@ -2577,179 +2576,25 @@ end
 do
 	--Old LDB Functions
 	local frame = CreateFrame("Frame", "DBMLDBFrame")
-	local dropdownFrame = CreateFrame("Frame", "DBMLDBDropdownFrame", frame, "UIDropDownMenuTemplate")
-	local categories = {}
-	local initialize
-	local obj
-	local catBuilt = false
-	local function createBossModEntry(id, level)
-		local info
-		local mod = DBM:GetModByName(id)
-		if not mod then return end
-		info = UIDropDownMenu_CreateInfo()
-		info.text = mod.localization.general.name
-		info.isTitle = true
-		UIDropDownMenu_AddButton(info, level)
-		info = UIDropDownMenu_CreateInfo()
-		info.text = DBM_LDB_CAT_GENERAL
-		info.notCheckable = true
-		info.notClickable = true
-		UIDropDownMenu_AddButton(info, level)
-		info = UIDropDownMenu_CreateInfo()
-		info.text = DBM_LDB_ENABLE_BOSS_MOD
-		info.keepShownOnClick = 1
-		info.checked = mod.Options.Enabled
-		info.func = function() mod:Toggle() end
-		UIDropDownMenu_AddButton(info, level)
-		for i, v in ipairs(mod.categorySort) do
-			local cat = mod.optionCategories[v]
-			info = UIDropDownMenu_CreateInfo()
-			info.text = mod.localization.cats[v]
-			info.notCheckable = true
-			info.notClickable = true
-			UIDropDownMenu_AddButton(info, level)
-			if cat then
-				for i, v in ipairs(cat) do
-					if type(mod.Options[v]) == "boolean" then
-						info = UIDropDownMenu_CreateInfo()
-						info.text = mod.localization.options[v]
-						info.keepShownOnClick = 1
-						info.checked = mod.Options[v]
-						info.func = function() mod.Options[v] = not mod.Options[v] end
-						UIDropDownMenu_AddButton(info, level)
-					end
-				end
-			end
-		end
-	end
-
-	-- ugly? yes!
-	function initialize(self, level, menuList)
-		if not catBuilt then
-			for i, v in ipairs(DBM.AddOns) do
-				if not categories[v.category] then
-					categories[v.category] = {}
-					table.insert(categories, v.category)
-				end
-				table.insert(categories[v.category], v)
-			end
-			catBuilt = true
-		end
-		local info
-		if menuList and menuList:sub(0, 3) == "mod" then
-			createBossModEntry(menuList:sub(4), level)
-		elseif level == 1 then
-			info = UIDropDownMenu_CreateInfo()
-			info.text = "Deadly Boss Mods"
-			info.isTitle = true
-			UIDropDownMenu_AddButton(info, 1)
-			for i, v in ipairs(DBM.AddOns) do
-				if IsAddOnLoaded(v.modId) then
-					info = UIDropDownMenu_CreateInfo()
-					info.text = v.name
-					info.notCheckable = true
-					info.hasArrow = true
-					info.menuList = "instance"..v.modId
-					UIDropDownMenu_AddButton(info, 1)
-				end
-			end
-			info = UIDropDownMenu_CreateInfo()
-			info.text = DBM_LDB_LOAD_MODS
-			info.notCheckable = true
-			info.hasArrow = true
-			info.menuList = "load"
-			UIDropDownMenu_AddButton(info, 1)
-		elseif level == 2 then
-			if menuList == "load" then
-				for i, v in ipairs(categories) do
-					info = UIDropDownMenu_CreateInfo()
-					info.text = getglobal("DBM_LDB_CAT_"..strupper(v)) or v
-					info.notCheckable = true
-					info.hasArrow = true
-					info.menuList = "load"..v
-					UIDropDownMenu_AddButton(info, 2)
-				end
-			elseif menuList and menuList:sub(0, 8) == "instance" then
-				local modId = menuList:sub(9)
-				for i, v in ipairs(DBM.AddOns) do
-					if v.modId == modId then
-						if v.subTabs then
-							for i, tab in ipairs(v.subTabs) do
-								info = UIDropDownMenu_CreateInfo()
-								info.text = tab
-								info.notCheckable = true
-								info.hasArrow = true
-								info.menuList = "instance\t"..v.modId.."\t"..i
-								UIDropDownMenu_AddButton(info, 2)
-							end
-							return
-						else
-							for i, v in ipairs(DBM.Mods) do
-								if v.modId == modId then
-									info = UIDropDownMenu_CreateInfo()
-									info.text = v.localization.general.name
-									info.notCheckable = true
-									info.hasArrow = true
-									info.menuList = "mod"..v.id
-									UIDropDownMenu_AddButton(info, 2)
-								end
-							end
-						end
-						break
-					end
-				end
-			end
-		elseif level == 3 then
-			if menuList and menuList:sub(0, 4) == "load" then
-				local k = menuList:sub(5)
-				for i, v in ipairs(categories[k]) do
-					if not IsAddOnLoaded(v.modId) then
-						info = UIDropDownMenu_CreateInfo()
-						info.text = v.name
-						info.notCheckable = true
-						info.func = function() DBM:LoadMod(v, true) CloseDropDownMenus() end
-						UIDropDownMenu_AddButton(info, 3)
-					end
-				end
-			elseif menuList and menuList:sub(0, 8) == "instance" then
-				local modId, subTab = select(2, string.split("\t", menuList))
-				for i, v in ipairs(DBM.Mods) do
-					if v.modId == modId and v.subTab == tonumber(subTab) then
-						info = UIDropDownMenu_CreateInfo()
-						info.text = v.localization.general.name
-						info.notCheckable = true
-						info.hasArrow = true
-						info.menuList = "mod"..v.id
-						UIDropDownMenu_AddButton(info, 3)
-					end
-				end
-			end
-		end
-	end
 
 	--New LDB Object
 	if LibStub("LibDataBroker-1.1", true) then
 		dataBroker = LibStub("LibDataBroker-1.1"):NewDataObject("DBM",
-			{type = "launcher", label = "DBM", icon = "Interface\\AddOns\\DBM-Core\\textures\\Minimap-Button-Up"}
+			{type = "launcher", label = "DBM", icon = "Interface\\AddOns\\DBM-Core\\textures\\dbm_airhorn"}--Texture valid, but wow client doesn't like it for no reason what so ever
 		)
 
 		function dataBroker.OnClick(self, button)
 			if IsShiftKeyDown() then return end
-			if button == "RightButton" then
-				UIDropDownMenu_Initialize(dropdownFrame, initialize)
-				ToggleDropDownMenu(1, nil, dropdownFrame, "cursor", 5, -10)
-			else
-				DBM:LoadGUI()
-			end
+			DBM:LoadGUI()
 		end
 
 		function dataBroker.OnTooltipShow(GameTooltip)
 			GameTooltip:SetText(DBM_CORE_MINIMAP_TOOLTIP_HEADER, 1, 1, 1)
-			GameTooltip:AddLine(ver, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+			GameTooltip:AddLine(("%s (%s)"):format(DBM.DisplayVersion, showRealDate(DBM.Revision)), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(DBM_CORE_MINIMAP_TOOLTIP_FOOTER, RAID_CLASS_COLORS.MAGE.r, RAID_CLASS_COLORS.MAGE.g, RAID_CLASS_COLORS.MAGE.b, 1)
 			GameTooltip:AddLine(DBM_LDB_TOOLTIP_HELP1, RAID_CLASS_COLORS.MAGE.r, RAID_CLASS_COLORS.MAGE.g, RAID_CLASS_COLORS.MAGE.b)
-			GameTooltip:AddLine(DBM_LDB_TOOLTIP_HELP2, RAID_CLASS_COLORS.MAGE.r, RAID_CLASS_COLORS.MAGE.g, RAID_CLASS_COLORS.MAGE.b)
+			--GameTooltip:AddLine(DBM_LDB_TOOLTIP_HELP2, RAID_CLASS_COLORS.MAGE.r, RAID_CLASS_COLORS.MAGE.g, RAID_CLASS_COLORS.MAGE.b)
 		end
 	end
 
@@ -3265,12 +3110,6 @@ function DBM:LoadModOptions(modId, inCombat, first)
 							savedOptions[id][profileNum][option] = mod.DefaultOptions[option]
 							self:Debug("Migrated "..option.." to option defaults")
 						end
-					--Fix default options for countdowns that were set to 0 because no defaults existed at time they were created, but do now.
-					elseif option:find("CVoice") then
-						if savedOptions[id][profileNum][option] and (type(savedOptions[id][profileNum][option]) == "number") and (savedOptions[id][profileNum][option] == 0) and mod.DefaultOptions[option] and mod.DefaultOptions[option] ~= 0 then
-							savedOptions[id][profileNum][option] = mod.DefaultOptions[option]
-							self:Debug("Migrated "..option.." to option defaults")
-						end
 					--Fix options for custom special warning sounds not in addons folder that are not using soundkit IDs
 					elseif option:find("SWSound") then
 						if savedOptions[id][profileNum][option] and (type(savedOptions[id][profileNum][option]) == "string") and (savedOptions[id][profileNum][option] ~= "") and (savedOptions[id][profileNum][option] ~= "None") then
@@ -3650,6 +3489,7 @@ do
 		self:UpdateWarningOptions()
 		self:UpdateSpecialWarningOptions()
 		self.Options.CoreSavedRevision = self.Revision
+		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then return end--Don't do sound migration in a situation user is loading wrong DBM version, to avoid sound path corruption
 		--Migrate user sound options to soundkit Ids if selected media doesn't exist in Interface\\AddOns
 		local migrated = false
 		if type(self.Options.RaidWarningSound) == "string" and self.Options.RaidWarningSound ~= "" then
@@ -3763,8 +3603,8 @@ function DBM:UPDATE_BATTLEFIELD_STATUS()
 		if GetBattlefieldStatus(i) == "confirm" then
 			if self.Options.ShowQueuePop and not self.Options.DontShowBossTimers then
 				queuedBattlefield[i] = select(2, GetBattlefieldStatus(i))
-				self.Bars:CreateBar(85, queuedBattlefield[i], 237538)	-- need to confirm the timer
-				fireEvent("DBM_TimerStart", "DBMBFSTimer", queuedBattlefield[i], 85, "237538", "extratimer", nil, 0)
+				self.Bars:CreateBar(85, queuedBattlefield[i], 136106)	-- need to confirm the timer
+				fireEvent("DBM_TimerStart", "DBMBFSTimer", queuedBattlefield[i], 85, "136106", "extratimer", nil, 0)
 			end
 			if self.Options.LFDEnhance then
 				self:PlaySound(8960, true)--Because regular sound uses SFX channel which is too low of volume most of time
@@ -4244,8 +4084,8 @@ do
 				threshold = floor(threshold)
 				dummyMod2 = DBM:NewMod("BreakTimerCountdownDummy")
 				DBM:GetModLocalization("BreakTimerCountdownDummy"):SetGeneralLocalization{ name = DBM_CORE_MINIMAP_TOOLTIP_HEADER }
-				dummyMod2.text = dummyMod2:NewAnnounce("%s", 1, "237538")
-				dummyMod2.timer = dummyMod2:NewTimer(20, "%s", "237538", nil, nil, 0, nil, nil, DBM.Options.DontPlayPTCountdown and 0 or 1, threshold)
+				dummyMod2.text = dummyMod2:NewAnnounce("%s", 1, "136106")
+				dummyMod2.timer = dummyMod2:NewTimer(20, "%s", "136106", nil, nil, 0, nil, nil, DBM.Options.DontPlayPTCountdown and 0 or 1, threshold)
 			end
 			--Cancel any existing break timers before creating new ones, we don't want double countdowns or mismatching blizz countdown text (cause you can't call another one if one is in progress)
 			if not DBM.Options.DontShowPT2 then--and DBM.Bars:GetBar(DBM_CORE_TIMER_BREAK)
@@ -4258,7 +4098,7 @@ do
 			self.Options.tempBreak2 = timer.."/"..time()
 			if not self.Options.DontShowPT2 then
 				dummyMod2.timer:Start(timer, DBM_CORE_TIMER_BREAK)
-				--fireEvent("DBM_TimerStart", "break", DBM_CORE_TIMER_BREAK, timer, "237538", "utilitytimer", nil, 0)
+				--fireEvent("DBM_TimerStart", "break", DBM_CORE_TIMER_BREAK, timer, "136106", "utilitytimer", nil, 0)
 			end
 			if not self.Options.DontShowPTText then
 				local hour, minute = GetGameTime()
@@ -4315,7 +4155,7 @@ do
 		--(Note, faker isn't to screw with bigwigs nor is theirs to screw with dbm, but rathor raid leaders who don't let people run WTF they want to run)
 		local VPVersion
 		local VoicePack = DBM.Options.ChosenVoicePack
-		if not voiceSessionDisabled and VoicePack ~= "None" then
+		if not voiceSessionDisabled and VoicePack ~= "None" and DBM.VoiceVersions[VoicePack] then
 			VPVersion = "/ VP"..VoicePack..": v"..DBM.VoiceVersions[VoicePack]
 		end
 		if VPVersion then
@@ -5288,8 +5128,8 @@ do
 			delayedFunction = nil
 		end
 		if watchFrameRestore then
-			--ObjectiveTrackerFrame:Show()
-			ObjectiveTracker_Expand()
+			--ObjectiveTracker_Expand()
+			QuestWatchFrame:Show()
 			watchFrameRestore = false
 		end
 	end
@@ -5363,8 +5203,8 @@ do
 			if v.noEEDetection then return end
 			if v.respawnTime and success == 0 and self.Options.ShowRespawn and not self.Options.DontShowBossTimers then--No special hacks needed for bad wrath ENCOUNTER_END. Only mods that define respawnTime have a timer, since variable per boss.
 				local name = string.split(",", name)
-				self.Bars:CreateBar(v.respawnTime, DBM_CORE_TIMER_RESPAWN:format(name), 237538)--Interface\\Icons\\Spell_Holy_BorrowedTime
-				fireEvent("DBM_TimerStart", "DBMRespawnTimer", DBM_CORE_TIMER_RESPAWN:format(name), v.respawnTime, "237538", "extratimer", nil, 0, v.id)
+				self.Bars:CreateBar(v.respawnTime, DBM_CORE_TIMER_RESPAWN:format(name), 136106)--Interface\\Icons\\Spell_nature_timestop
+				fireEvent("DBM_TimerStart", "DBMRespawnTimer", DBM_CORE_TIMER_RESPAWN:format(name), v.respawnTime, "136106", "extratimer", nil, 0, v.id)
 			end
 			if v.multiEncounterPullDetection then
 				for _, eId in ipairs(v.multiEncounterPullDetection) do
@@ -5692,7 +5532,7 @@ do
 				if self.Options.AlwaysShowSpeedKillTimer2 and mod.stats and not mod.ignoreBestkill then
 					local bestTime = mod.stats[statVarTable[savedDifficulty].."BestTime"]
 					if bestTime and bestTime > 0 then
-						local speedTimer = mod:NewTimer(bestTime, DBM_SPEED_KILL_TIMER_TEXT, "237538", nil, false)
+						local speedTimer = mod:NewTimer(bestTime, DBM_SPEED_KILL_TIMER_TEXT, "136106", nil, false)
 						speedTimer:Start()
 					end
 				end
@@ -6268,6 +6108,7 @@ do
 	local function playSound(self, path, ignoreSFX, validate)
 		local soundSetting = self.Options.UseSoundChannel
 		if type(path) == "number" then
+			fireEvent("DBM_PlaySound", path)
 			if soundSetting == "Dialog" then
 				PlaySound(path, "Dialog", false)
 			elseif ignoreSFX or soundSetting == "Master" then
@@ -6283,6 +6124,7 @@ do
 					return
 				end
 			end
+			fireEvent("DBM_PlaySound", path)
 			if soundSetting == "Dialog" then
 				PlaySoundFile(path, "Dialog")
 			elseif ignoreSFX or soundSetting == "Master" then
@@ -7257,13 +7099,13 @@ end
 --checkCooldown should never be passed with skip or COUNT interrupt warnings. It should be passed with any other interrupt filter
 function bossModPrototype:CheckInterruptFilter(sourceGUID, force, checkCooldown, ignoreTandF)
 	if DBM.Options.FilterInterrupt2 == "None" and not force then return true end--user doesn't want to use interrupt filter, always return true
-	--Pummel, Counterspell, Kick, Silence
 	local InterruptAvailable = true
 	local requireCooldown = checkCooldown
 	if (DBM.Options.FilterInterrupt2 == "onlyTandF") or self.isTrashMod and (DBM.Options.FilterInterrupt2 == "TandFandBossCooldown") then
 		requireCooldown = false
 	end
-	if requireCooldown and (UnitIsDeadOrGhost("player") or (GetSpellCooldown(6552)) ~= 0 or (GetSpellCooldown(2139)) ~= 0 or (GetSpellCooldown(1766)) ~= 0 or (GetSpellCooldown(15487)) ~= 0) then
+	--Warrior: Pummel (6552) Shield Bash (72), Mage: Counterspell (2139), Rogue: Kick (1766), Priest: Silence (15487), Shaman: Earth Shock (8042, 8044, 8045, 8046, 10412, 10413, 10414)
+	if requireCooldown and (UnitIsDeadOrGhost("player") or (GetSpellCooldown(6552)) ~= 0 or (GetSpellCooldown(72)) ~= 0 or (GetSpellCooldown(2139)) ~= 0 or (GetSpellCooldown(1766)) ~= 0 or (GetSpellCooldown(15487)) ~= 0 or (GetSpellCooldown(8042)) ~= 0 or (GetSpellCooldown(8044)) ~= 0 or (GetSpellCooldown(8045)) ~= 0 or (GetSpellCooldown(8046)) ~= 0 or (GetSpellCooldown(10412)) ~= 0 or (GetSpellCooldown(10413)) ~= 0 or (GetSpellCooldown(10414)) ~= 0) then
 		InterruptAvailable = false--checkCooldown check requested and player has no spell that can interrupt available
 	end
 	if InterruptAvailable and (ignoreTandF or UnitGUID("target") == sourceGUID) then--focus
@@ -7545,13 +7387,13 @@ do
 			if mobuId then--Have a valid mob unit ID
 				--First, use trust threat more than fallbackuId and see what we pull from it first.
 				--This is because for GetCurrentTank we want to know who is tanking it, not who it's targeting.
-				--[[local unitId = (IsInRaid() and "raid") or "party"
+				local unitId = (IsInRaid() and "raid") or "party"
 				for i = 0, GetNumGroupMembers() do
 					local id = (i == 0 and "target") or unitId..i
 					local tanking, status = UnitDetailedThreatSituation(id, mobuId)--Tanking may return 0 if npc is temporarily looking at an NPC (IE fracture) but status will still be 3 on true tank
 					if tanking or (status == 3) then uId = id end--Found highest threat target, make them uId
 					if uId then break end
-				end--]]
+				end
 				--Did not get anything useful from threat, so use who the boss was looking at, at time of cast (ie fallbackuId)
 				if fallbackuId and not uId then
 					uId = fallbackuId
@@ -7608,13 +7450,13 @@ do
 			if mobuId then--Have a valid mob unit ID
 				--First, use trust threat more than fallbackuId and see what we pull from it first.
 				--This is because for CheckTankDistance we want to know who is tanking it, not who it's targeting.
-				--[[local unitId = (IsInRaid() and "raid") or "party"
+				local unitId = (IsInRaid() and "raid") or "party"
 				for i = 0, GetNumGroupMembers() do
 					local id = (i == 0 and "target") or unitId..i
 					local tanking, status = UnitDetailedThreatSituation(id, mobuId)--Tanking may return 0 if npc is temporarily looking at an NPC (IE fracture) but status will still be 3 on true tank
 					if tanking or (status == 3) then uId = id end--Found highest threat target, make them uId
 					if uId then break end
-				end--]]
+				end
 				--Did not get anything useful from threat, so use who the boss was looking at, at time of cast (ie fallbackuId)
 				if fallbackuId and not uId then
 					uId = fallbackuId
@@ -7689,7 +7531,9 @@ do
 		},
 		["PALADIN1"] = {	--Holy Paladin
 			["Healer"] = true,
+			["Melee"] = true,--They melee when oom?
 			["Ranged"] = true,
+			["CasterDps"] = true,--Judgements, exorcism, etc
 			["ManaUser"] = true,
 			["SpellCaster"] = true,
 			["RaidCooldown"] = true,--Devotion Aura
@@ -7703,6 +7547,7 @@ do
 			["Melee"] = true,
 			["ManaUser"] = true,
 			["Physical"] = true,
+			["CasterDps"] = true,--Judgements, exorcism, etc
 			["RemovePoison"] = true,
 			["RemoveDisease"] = true,
 			["RemoveMagic"] = true,
@@ -7712,6 +7557,7 @@ do
 			["Dps"] = true,
 			["Melee"] = true,
 			["MeleeDps"] = true,
+			["CasterDps"] = true,--Judgements, exorcism, etc
 			["ManaUser"] = true,
 			["Physical"] = true,
 			["RemovePoison"] = true,
@@ -7731,7 +7577,7 @@ do
 			["Melee"] = true,
 			["Physical"] = true,
 			["HasInterrupt"] = true,
-			["MagicDispeller"] = IsSpellKnown(23922) and true or false,--Shield Slam Rank 1 talent tree talent (assumed if rank 1 is known, any rank is known)
+			["MagicDispeller"] = (IsSpellKnown(23922) or IsSpellKnown(23923) or IsSpellKnown(23924) or IsSpellKnown(23925)) and true or false,--Shield Slam
 		},
 		["DRUID1"] = {	--Balance Druid
 			["Dps"] = true,
@@ -7822,6 +7668,7 @@ do
 			["Dps"] = true,
 			["Melee"] = true,
 			["MeleeDps"] = true,
+			--["CasterDps"] = true,??
 			["ManaUser"] = true,
 			["SpellCaster"] = true,
 			["Physical"] = true,
@@ -8042,6 +7889,12 @@ function bossModPrototype:IsTanking(unit, boss, isName, onlyRequested, bossGUID)
 	end
 	--Prefer main target first
 	if boss then--Only checking one bossID as requested
+		--Check ThreatLib first
+		local tanking, status = UnitDetailedThreatSituation(unit, boss)
+		if tanking or (status == 3) then
+			return true
+		end
+		--Non threatlib fallback
 		if UnitExists(boss) then
 			local _, targetuid = self:GetBossTarget(UnitGUID(boss), true)
 			if UnitIsUnit(unit, targetuid) then
@@ -8052,6 +7905,12 @@ function bossModPrototype:IsTanking(unit, boss, isName, onlyRequested, bossGUID)
 		--Check all of them if one isn't defined
 		for i = 1, 5 do
 			local unitID = "boss"..i
+			--Check ThreatLib first
+			local tanking, status = UnitDetailedThreatSituation(unit, unitID)
+			if tanking or (status == 3) then
+				return true
+			end
+			--Non threatlib fallback
 			if UnitExists(unitID) then
 				local _, targetuid = self:GetBossTarget(UnitGUID(unitID), true)
 				if UnitIsUnit(unit, targetuid) then
@@ -8059,7 +7918,7 @@ function bossModPrototype:IsTanking(unit, boss, isName, onlyRequested, bossGUID)
 				end
 			end
 		end
-		--Check group targets if no boss unitIDs found, but we have a
+		--Check group targets if no boss unitIDs found, but we have a bossGUID
 		if bossGUID then
 			if IsInRaid() then
 				for i = 1, GetNumGroupMembers() do
@@ -8561,10 +8420,16 @@ do
 				end
 			end
 			--Message: Full message text
-			--Icon: Texture path for icon
+			--Icon: Texture path/id for icon
 			--Type: Announce type
+			----Types: you, target, targetsource, spell, ends, endtarget, fades, adds, count, stack, cast, soon, sooncount, prewarn, bait, stage, stagechange, prestage, moveto
+			------Personal/Role (Applies to you, or your job): you, stack, bait, moveto, fades
+			------General Target Messages (informative, doesn't usually apply to you): target, targetsource
+			------Fight Changes (Stages, adds, boss buff/debuff, etc): stage, stagechange, prestage, adds, ends, endtarget
+			------General (can really apply to anything): spell, count, soon, sooncount, prewarn
 			--SpellId: Raw spell or encounter journal Id if available.
 			--Mod ID: Encounter ID as string, or a generic string for mods that don't have encounter ID (such as trash, dummy/test mods)
+			--boolean: Whether or not this warning is a special warning (higher priority).
 			fireEvent("DBM_Announce", message, self.icon, self.type, self.spellId, self.mod.id)
 		else
 			self.combinedcount = 0
@@ -9230,10 +9095,18 @@ do
 				end
 			end
 			--Text: Full message text
+			--Icon: Texture path/id for icon
 			--Type: Announce type
+			----Types: spell, ends, fades, soon, bait, dispel, interrupt, interruptcount, you, youcount, youpos, soakpos, target, targetcount, defensive, taunt, close, move, keepmove, stopmove,
+			----gtfo, dodge, dodgecount, dodgeloc, moveaway, moveawaycount, moveto, soak, jump, run, cast, lookaway, reflect, count, sooncount, stack, switch, switchcount, adds, addscustom, targetchange, prewarn
+			------General Target Messages (but since it's a special warning, it applies to you in some way): target, targetcount
+			------Fight Changes (Stages, adds, boss buff/debuff, etc): adds, addscustom, targetchange, switch, switchcount, ends
+			------General (can really apply to anything): spell, count, soon, sooncount, prewarn
+			------Personal/Role (Applies to you, or your job): Everything Else
 			--SpellId: Raw spell or encounter journal Id if available.
 			--Mod ID: Encounter ID as string, or a generic string for mods that don't have encounter ID (such as trash, dummy/test mods)
-			fireEvent("DBM_Announce", text, self.type, self.spellId, self.mod.id)
+			--boolean: Whether or not this warning is a special warning (higher priority).
+			fireEvent("DBM_Announce", text, self.icon, self.type, self.spellId, self.mod.id, true)
 			if self.sound then
 				local soundId = self.option and self.mod.Options[self.option .. "SWSound"] or self.flash
 				if noteHasName and type(soundId) == "number" then soundId = noteHasName end--Change number to 5 if it's not a custom sound, else, do nothing with it
@@ -9564,11 +9437,11 @@ do
 	end
 
 	function bossModPrototype:NewSpecialWarningAdds(text, optionDefault, ...)
-		return newSpecialWarning(self, "Adds", text, nil, optionDefault, ...)
+		return newSpecialWarning(self, "adds", text, nil, optionDefault, ...)
 	end
 
 	function bossModPrototype:NewSpecialWarningAddsCustom(text, optionDefault, ...)
-		return newSpecialWarning(self, "Addscustom", text, nil, optionDefault, ...)
+		return newSpecialWarning(self, "addscustom", text, nil, optionDefault, ...)
 	end
 
 	function bossModPrototype:NewSpecialWarningTargetChange(text, optionDefault, ...)
@@ -9753,7 +9626,7 @@ do
 							local ttext = _G[bar.frame:GetName().."BarName"]:GetText() or ""
 							ttext = ttext.."("..self.id..")"
 							if bar.timer > 0.2 then
-								if timer then
+								if timer and DBM.Options.AutoCorrectTimer then
 									self.correctedCast = timer - bar.timer--Store what lowest timer is in timer object
 									self.correctedDiff = difficultyIndex--Store index of correction to ensure the change is only used in one difficulty (so a mythic timer doesn't alter heroic for example)
 								end
@@ -9826,8 +9699,10 @@ do
 						local ttext = _G[bar.frame:GetName().."BarName"]:GetText() or ""
 						ttext = ttext.."("..self.id..")"
 						if bar.timer > 0.2 then
-							self.correctedCast = timer - bar.timer--Store what lowest timer is for advanced user feature
-							self.correctedDiff = difficultyIndex--Store index of correction to ensure the change is only used in one difficulty (so a mythic timer doesn't alter heroic for example
+							if DBM.Options.AutoCorrectTimer then
+								self.correctedCast = timer - bar.timer--Store what lowest timer is for advanced user feature
+								self.correctedDiff = difficultyIndex--Store index of correction to ensure the change is only used in one difficulty (so a mythic timer doesn't alter heroic for example
+							end
 							DBM:Debug("Timer "..ttext.. " refreshed before expired. Remaining time is : "..remaining, 2)
 						end
 					end
@@ -9989,6 +9864,7 @@ do
 		end
 		if self.type == "ai" then--A learning timer
 			if not DBM.Options.AITimer then return end
+			self.lastCast = nil
 			for i = 1, 4 do
 				--Check for any phase timers that are strings and never got a chance to become AI timers, then wipe them
 				if self["phase"..i.."CastTimer"] and type(self["phase"..i.."CastTimer"]) == "string" then
@@ -10208,7 +10084,7 @@ do
 				colorType = 6
 			end
 		elseif timerType == "roleplay" then
-			icon = type(texture) == "number" and GetSpellTexture(texture) or tonumber(texture) or type(spellId) == "string" and select(4, DBM:EJ_GetSectionInfo(string.sub(spellId, 3))) ~= "" and select(4, DBM:EJ_GetSectionInfo(string.sub(spellId, 3))) or (type(spellId) == "number" and GetSpellTexture(spellId)) or 237538
+			icon = type(texture) == "number" and GetSpellTexture(texture) or tonumber(texture) or type(spellId) == "string" and select(4, DBM:EJ_GetSectionInfo(string.sub(spellId, 3))) ~= "" and select(4, DBM:EJ_GetSectionInfo(string.sub(spellId, 3))) or (type(spellId) == "number" and GetSpellTexture(spellId)) or 136106
 			colorType = 6
 		elseif timerType == "adds" or timerType == "addscustom" then
 			icon = type(texture) == "number" and GetSpellTexture(texture) or tonumber(texture) or type(spellId) == "string" and select(4, DBM:EJ_GetSectionInfo(string.sub(spellId, 3))) ~= "" and select(4, DBM:EJ_GetSectionInfo(string.sub(spellId, 3))) or (type(spellId) == "number" and GetSpellTexture(spellId)) or 136116
@@ -10643,15 +10519,32 @@ function bossModPrototype:AddSliderOption(name, minValue, maxValue, valueStep, d
 	end
 end
 
-function bossModPrototype:AddButton(name, onClick, cat, func)
+function bossModPrototype:AddEditboxOption(name, default, cat, width, height, func)
 	cat = cat or "misc"
+	self.DefaultOptions[name] = {type = "editbox", value = default or ""}
+	self.Options[name] = default or ""
 	self:SetOptionCategory(name, cat)
-	self.buttons = self.buttons or {}
-	self.buttons[name] = onClick
+	self.editboxes = self.editboxes or {}
+	self.editboxes[name] = {
+		width = width,
+		height = height
+	}
 	if func then
 		self.optionFuncs = self.optionFuncs or {}
 		self.optionFuncs[name] = func
 	end
+end
+
+function bossModPrototype:AddButton(name, onClick, cat, width, height, fontObject)
+	cat = cat or "misc"
+	self:SetOptionCategory(name, cat)
+	self.buttons = self.buttons or {}
+	self.buttons[name] = {
+		onClick = onClick,
+		width = width,
+		height = height,
+		fontObject = fontObject
+	}
 end
 
 -- FIXME: this function does not reset any settings to default if you remove an option in a later revision and a user has selected this option in an earlier revision were it still was available

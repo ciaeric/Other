@@ -1,12 +1,9 @@
-if not _G['ExtraActionBarFrame'] then return end
+if not ExtraActionBarFrame then return end
 
---[[ Globals ]]--
-
-local AddonName, Addon = ...
+local _, Addon = ...
 local KeyBound = LibStub('LibKeyBound-1.0')
 local Tooltips = Addon:GetModule('Tooltips')
 local Bindings = Addon.BindingsController
-
 
 --[[ buttons ]]--
 
@@ -64,7 +61,6 @@ do
 	end
 end
 
-
 --[[ bar ]]--
 
 local ExtraBar = Addon:CreateClass('Frame', Addon.ButtonBar)
@@ -115,7 +111,7 @@ do
 	function ExtraBar:UpdateShowBlizzardTexture()
 		local showTexture = self:ShowingBlizzardTexture()
 
-		for i, button in pairs(self.buttons) do
+		for _, button in pairs(self.buttons) do
 			if showTexture then
 				button.style:Show()
 			else
@@ -152,7 +148,9 @@ end
 local ExtraBarController = Addon:NewModule('ExtraBar')
 
 function ExtraBarController:OnInitialize()
-	_G['ExtraActionBarFrame'].ignoreFramePositionManager = true
+	-- luacheck: push ignore 122
+	ExtraActionBarFrame.ignoreFramePositionManager = true
+	-- luacheck: pop
 end
 
 function ExtraBarController:Load()

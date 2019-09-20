@@ -113,15 +113,15 @@ do
 						if not bestScore or slotScore > bestScore then
 							addon:Debug('FindSlotForItem', bag, slot, 'slotCount=', slotCount, 'score=', slotScore, 'NEW BEST SLOT')
 							bestBag, bestSlot, bestScore = bag, slot, slotScore
-						--@debug@
+						--[===[@debug@
 						else
 							addon:Debug('FindSlotForItem', bag, slot, 'slotCount=', slotCount, 'score=', slotScore, '<', bestScore)
-						--@end-debug@
+						--@end-debug@]===]
 						end
-					--@debug@
+					--[===[@debug@
 					else
 						addon:Debug('FindSlotForItem', bag, slot, 'slotCount=', slotCount, ': not enough space')
-					--@end-debug@
+					--@end-debug@]===]
 					end
 				end
 			end
@@ -422,14 +422,6 @@ local function Panel_UpdateSkin(self)
 	else
 		self:SetBackdropBorderColor(0.5+(0.5*r/m), 0.5+(0.5*g/m), 0.5+(0.5*b/m), a)
 	end
-	
-	if IsAddOnLoaded("ElvUI") then
-		self:StripTextures()
-		self:SetTemplate("Transparent")
-		if IsAddOnLoaded("ElvUI_KlixUI") then
-			self:Styling()
-		end
-	end
 end
 
 local function Panel_ConfigChanged(self, event, name)
@@ -469,16 +461,6 @@ function addon:CreateBagSlotPanel(container, name, bags, isBank)
 			button:SetParent(self)
 			button:SetPoint("TOPLEFT", x, -TOP_PADDING)
 			button:Show()
-			if IsAddOnLoaded("ElvUI") then
-				button:SetTemplate(nil, true)
-				button:StyleButton()
-				button:SetNormalTexture(nil)
-				button.icon:SetTexCoord(unpack(ElvUI[1].TexCoords))
-				button.icon:SetInside()
-				if IsAddOnLoaded("ElvUI_KlixUI") then
-					button:CreateIconShadow()
-				end
-			end
 			x = x + ITEM_SIZE + ITEM_SPACING
 			tinsert(self.buttons, button)
 		end

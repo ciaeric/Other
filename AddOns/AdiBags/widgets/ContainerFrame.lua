@@ -171,27 +171,11 @@ function containerProto:OnCreate(name, isBank, bagObject)
 	closeButton:SetPoint("TOPRIGHT", -2, -2)
 	addon.SetupTooltip(closeButton, L["Close"])
 	closeButton:SetFrameLevel(frameLevel)
-	if IsAddOnLoaded("ElvUI")  then
-		ElvUI[1]:GetModule("Skins"):HandleCloseButton(self.CloseButton)
-	end
 
 	local bagSlotButton = CreateFrame("CheckButton", nil, self)
 	bagSlotButton:SetNormalTexture([[Interface\Buttons\Button-Backpack-Up]])
-	if IsAddOnLoaded("ElvUI") then
-		bagSlotButton:SetCheckedTexture(ElvUI[1].media.normTex)
-		bagSlotButton:GetCheckedTexture():SetVertexColor(1, .82, 0, 0.5)
-		bagSlotButton:GetCheckedTexture():SetInside(bagSlotButton.backdrop, 0, 0)
-		ElvUI[1]:GetModule("Skins"):HandleIcon(bagSlotButton:GetNormalTexture(), true)
-		if IsAddOnLoaded("ElvUI_KlixUI") then
-			bagSlotButton:CreateIconShadow()
-			if ElvUI[1].db.KlixUI.general.iconShadow and not IsAddOnLoaded("Masque") then
-				bagSlotButton.ishadow:SetInside(bagSlotButton, 0, 0)
-			end
-		end
-	else
-		bagSlotButton:SetCheckedTexture([[Interface\Buttons\CheckButtonHilight]])
-		bagSlotButton:GetCheckedTexture():SetBlendMode("ADD")
-	end
+	bagSlotButton:SetCheckedTexture([[Interface\Buttons\CheckButtonHilight]])
+	bagSlotButton:GetCheckedTexture():SetBlendMode("ADD")
 	bagSlotButton:SetScript('OnClick', BagSlotButton_OnClick)
 	bagSlotButton.panel = bagSlotPanel
 	bagSlotButton:SetWidth(18)
@@ -204,17 +188,10 @@ function containerProto:OnCreate(name, isBank, bagObject)
 	headerLeftRegion:AddWidget(bagSlotButton, 50)
 
 	local searchBox = CreateFrame("EditBox", self:GetName().."SearchBox", self, "BagSearchBoxTemplate")
-	if IsAddOnLoaded("ElvUI") then
-		searchBox:SetSize(130, 18)
-	else
-		searchBox:SetSize(130, 20)
-	end
+	searchBox:SetSize(130, 20)
 	searchBox:SetFrameLevel(frameLevel)
 	headerRightRegion:AddWidget(searchBox, -10, 130, 0, -1)
 	tinsert(_G.ITEM_SEARCHBAR_LIST, searchBox:GetName())
-	if IsAddOnLoaded("ElvUI") then
-		ElvUI[1]:GetModule("Skins"):HandleEditBox(searchBox)
-	end
 
 	local title = self:CreateFontString(self:GetName().."Title","OVERLAY")
 	self.Title = title
@@ -277,9 +254,6 @@ function containerProto:CreateModuleButton(letter, order, onClick, tooltip)
 	button:SetSize(20, 20)
 	button:SetScript("OnClick", onClick)
 	button:RegisterForClicks("AnyUp")
-	if IsAddOnLoaded("ElvUI") then
-		ElvUI[1]:GetModule("Skins"):HandleButton(button)
-	end
 	if order then
 		self:AddHeaderWidget(button, order)
 	end
@@ -507,14 +481,6 @@ function containerProto:UpdateSkin()
 		self:SetBackdropBorderColor(0.5, 0.5, 0.5, a)
 	else
 		self:SetBackdropBorderColor(0.5+(0.5*r/m), 0.5+(0.5*g/m), 0.5+(0.5*b/m), a)
-	end
-	
-	if IsAddOnLoaded("ElvUI") then
-		self:StripTextures()
-		self:SetTemplate("Transparent")
-		if IsAddOnLoaded("ElvUI_KlixUI") then
-			self:Styling()
-		end
 	end
 end
 

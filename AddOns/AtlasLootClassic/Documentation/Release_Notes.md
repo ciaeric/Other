@@ -2,6 +2,34 @@
 
 This mod is distributed under Version 2 of the GPL.  A copy of the GPL is included in this zip file with links to non-english translations.
 
+## v1.1.11 (Sep. 14, 2019)
+
+- Fix koKR translation
+
+## v1.1.10 (Sep. 14, 2019)
+
+- Profession rank updates
+- Add most missing profession skill ranks
+- Fix useGameTooltip function
+- Maps: Add data for WorldBosses
+- Maps: Entrance map support
+
+## v1.1.9-beta (Sep. 03, 2019)
+
+- Add support for AtlasLootClassic_Maps Module
+
+## v1.1.8-beta (Aug. 31, 2019)
+
+- Split Scarlet Monastery into wings
+- Add Rare indicator for some bosses
+- Add support for WoW-Head links ( Shift + Right Click )
+- Some content phase fixes
+
+## v1.1.7-beta (Aug. 27, 2019)
+
+- Translation update from curseforge
+- Some small fixes
+
 ## v1.1.6-beta (Aug. 25, 2019)
 
 - Big thanks for the translation work at curseforge!

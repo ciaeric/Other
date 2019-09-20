@@ -20,7 +20,7 @@ local QuestWatchTimers = {
 local lastState = {}
 --False -> true -> nil
 local playerEntered = false;
-
+local hasFirstQLU = false;
 
 local questWatchFrames = {}
 for i = 1, 35 do
@@ -32,59 +32,69 @@ for i = 1, 35 do
     questWatchFrames[i]:RegisterEvent("QUEST_LOG_UPDATE")--, QUEST_LOG_UPDATE
     questWatchFrames[i]:SetScript("OnEvent", function(self, event, ...)
         if (event == "QUEST_LOG_UPDATE") then
-            if(self.refresh) then
-                --Get quest info
-                local QuestInfo = QuestieQuest:GetRawLeaderBoardDetails(self.questLogIndex)
+            C_Timer.After(1, function() 
+                if(self.refresh) then
+                    --Get quest info
+                    local QuestInfo = QuestieQuest:GetRawLeaderBoardDetails(self.questLogIndex)
 
-                --No need to run this unless we have to.
-                if(Questie.db.global.debugEnabled) then
-                    Questie:Debug(DEBUG_DEVELOP, event, "Updating index", self.questLogIndex, "Title:", QuestInfo.title, "Id:", QuestInfo.Id)
-                    for index, objective in pairs(QuestInfo.Objectives) do
-                        Questie:Debug(DEBUG_DEVELOP, "-------->", objective.description);
+                    --No need to run this unless we have to.
+                    if(Questie.db.global.debugEnabled) then
+                        Questie:Debug(DEBUG_DEVELOP, event, "Updating index", self.questLogIndex, "Title:", QuestInfo.title, "Id:", QuestInfo.Id)
+                        for index, objective in pairs(QuestInfo.Objectives) do
+                            Questie:Debug(DEBUG_DEVELOP, "-------->", objective.description);
+                        end
                     end
-                end
-                --Update the quest
-                C_Timer.After(1, function ()
+                    --Update the quest
+                    --C_Timer.After(1, function ()
                     QuestieQuest:UpdateQuest(QuestInfo.Id)
-                end)
-                --QuestieQuest:UpdateQuest(QuestInfo.Id);
-                self.refresh = false;
-            end
-            if(self.accept) then
-                local QuestInfo = QuestieQuest:GetRawLeaderBoardDetails(self.questLogIndex)
-                Questie:Debug(DEBUG_DEVELOP, event, "Accepted quest", self.questLogIndex, "Title:", QuestInfo.title, "Id:", QuestInfo.Id)
+                    --end)
+                    --QuestieQuest:UpdateQuest(QuestInfo.Id);
+                    self.refresh = false;
+                end
+                if(self.accept) then
+                    local QuestInfo = QuestieQuest:GetRawLeaderBoardDetails(self.questLogIndex)
+                    Questie:Debug(DEBUG_DEVELOP, event, "Accepted quest", self.questLogIndex, "Title:", QuestInfo.title, "Id:", QuestInfo.Id)
 
-                --Accept the quest.
-                QuestieQuest:AcceptQuest(QuestInfo.Id)
-                --Delay the update by 1 second to let everything propagate, should not be needed...
-                C_Timer.After(1, function ()
+                    --Accept the quest.
+                    QuestieQuest:AcceptQuest(QuestInfo.Id)
+                    --Delay the update by 1 second to let everything propagate, should not be needed...
+                    --C_Timer.After(1, function ()
                     Questie:Debug(DEBUG_DEVELOP, event, "Updated quest", self.questLogIndex, "Title:", QuestInfo.title, "Id:", QuestInfo.Id)
                     QuestieQuest:UpdateQuest(QuestInfo.Id)
-                end)
-                
-                -- deferred update (possible desync fix)
-                C_Timer.After(3, function()
-                    QuestieQuest:PopulateObjectiveNotes(QuestieDB:GetQuest(QuestInfo.Id))
-                    QuestieQuest:UpdateQuest(QuestInfo.Id)
-                end)
-                
-                self.accept = false;
-            end
+                    --end)
+                    
+                    -- deferred update (possible desync fix)
+                    C_Timer.After(2, function()
+                        QuestieQuest:PopulateObjectiveNotes(QuestieDB:GetQuest(QuestInfo.Id))
+                        QuestieQuest:UpdateQuest(QuestInfo.Id)
+                    end)
+                    
+                    self.accept = false;
+                end
+            end)
         end
     end)
 end
 
 function QuestieEventHandler:PLAYER_ENTERING_WORLD()
-    _hack_prime_log()
-    qPlayerLevel = UnitLevel("player")
-    QuestieQuest:Initialize()
-    QuestieDB:Initialize()
-    QuestieQuest:GetAllQuestIdsNoObjectives()
-    QuestieQuest:CalculateAvailableQuests()
-    QuestieQuest:DrawAllAvailableQuests()
-    QuestieNameplate:Initialize();
-    Questie:Debug(DEBUG_ELEVATED, "PLAYER_ENTERED_WORLD")
-    playerEntered = true
+    C_Timer.After(1, function()
+        QuestieDB:Initialize()
+    end)
+    C_Timer.After(4, function()
+        _hack_prime_log()
+        qPlayerLevel = UnitLevel("player")
+        QuestieQuest:Initialize()
+        QuestieQuest:GetAllQuestIdsNoObjectives()
+        QuestieQuest:CalculateAvailableQuests()
+        QuestieQuest:DrawAllAvailableQuests()
+        QuestieNameplate:Initialize();
+        Questie:Debug(DEBUG_ELEVATED, "PLAYER_ENTERED_WORLD")
+        playerEntered = true
+        -- manually fire QLU since enter has been delayed past the first QLU
+        if hasFirstQLU then
+            QuestieEventHandler:QUEST_LOG_UPDATE()
+        end
+    end)
 
 
     --[[C_Timer.After(2, function ()
@@ -207,10 +217,11 @@ function QuestieEventHandler:QUEST_REMOVED(QuestId)
     end
     
     -- deferred update (possible desync fix?)
-    C_Timer.After(3, function()
-        QuestieQuest:CalculateAvailableQuests();
-        QuestieQuest:DrawAllAvailableQuests();
-    end)
+    --C_Timer.After(3, function()
+    --    QuestieQuest:GetAllQuestIdsNoObjectives();
+    --    QuestieQuest:CalculateAvailableQuests();
+    --    QuestieQuest:DrawAllAvailableQuests();
+    --end)
 end
 
 --Fires when a quest is turned in.
@@ -220,10 +231,11 @@ function QuestieEventHandler:QUEST_TURNED_IN(questID, xpReward, moneyReward)
     QuestieQuest:CompleteQuest(questID)
     
     -- deferred update (possible desync fix?)
-    C_Timer.After(3, function()
-        QuestieQuest:CalculateAvailableQuests();
-        QuestieQuest:DrawAllAvailableQuests();
-    end)
+    --C_Timer.After(3, function()
+    --    QuestieQuest:GetAllQuestIdsNoObjectives()
+    --    QuestieQuest:CalculateAvailableQuests();
+    --    QuestieQuest:DrawAllAvailableQuests();
+    --end)
 
     -- Complete Quest added to Journey
     local data = {};
@@ -249,14 +261,18 @@ end
 
 function QuestieEventHandler:QUEST_LOG_UPDATE()
     Questie:Debug(DEBUG_DEVELOP, "QUEST_LOG_UPDATE")
+    hasFirstQLU = true
     if(playerEntered)then
         Questie:Debug(DEBUG_DEVELOP, "---> Player entered world, START.")
         C_Timer.After(1, function ()
             Questie:Debug(DEBUG_DEVELOP, "---> Player entered world, DONE.")
             QuestieQuest:GetAllQuestIds()
+            QuestieTracker:Initialize()
+            QuestieTracker:Update()
         end)
         playerEntered = nil;
     end
+    
 end
 
 function QuestieEventHandler:QUEST_WATCH_UPDATE(QuestLogIndex)
@@ -328,8 +344,8 @@ function QuestieEventHandler:PLAYER_LEVEL_UP(level, hitpoints, manapoints, talen
     Questie:Debug(DEBUG_DEVELOP, "EVENT: PLAYER_LEVEL_UP", level);
     
     qPlayerLevel = level;
-    QuestieQuest:CalculateAvailableQuests();
-    QuestieQuest:DrawAllAvailableQuests();
+    --QuestieQuest:CalculateAvailableQuests();
+    --QuestieQuest:DrawAllAvailableQuests();
     
     -- deferred update (possible desync fix?)
     C_Timer.After(3, function() 
@@ -388,4 +404,10 @@ function QuestieEventHandler:MODIFIER_STATE_CHANGED(key, down)
         GameTooltip:SetFrameStrata("TOOLTIP");
         GameTooltip:Show()
     end
+end
+
+-- Fired when some chat messages about skills are displayed
+function QuestieEventHandler:CHAT_MSG_SKILL()
+    Questie:Debug(DEBUG_DEVELOP, "CHAT_MSG_SKILL")
+    QuestieProfessions:Update()
 end

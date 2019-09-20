@@ -270,12 +270,12 @@ local function GetOptions()
 		end
 	end
 	options = {
-		--@debug@
-		name = addonName..' v0.0.2',
-		--@end-debug@
-		--[===[@non-debug@
-		name = addonName..' @project-version@',
-		--@end-non-debug@]===]
+		--[===[@debug@
+		name = addonName..' DEV',
+		--@end-debug@]===]
+		--@non-debug@
+		name = addonName..' v1.9.17-classic',
+		--@end-non-debug@
 		type = 'group',
 		handler = addon:GetOptionHandler(addon),
 		get = 'Get',
@@ -445,7 +445,6 @@ local function GetOptions()
 						type = 'group',
 						inline = true,
 						order = 20,
-						disabled = function() return IsAddOnLoaded("ElvUI") end,
 						args = {
 							texture = {
 								name = L['Texture'],

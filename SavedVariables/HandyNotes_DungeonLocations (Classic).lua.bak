@@ -1,0 +1,12 @@
+
+HandyNotes_DungeonLocationsClassicDB = {
+	["profileKeys"] = {
+		["Codeblack - Arugal"] = "Default",
+		["Tagz - Arugal"] = "Default",
+		["Soulslayer - Arugal"] = "Default",
+	},
+	["profiles"] = {
+		["Default"] = {
+		},
+	},
+}
